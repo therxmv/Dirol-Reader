@@ -1,0 +1,39 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:8:1-19:12
+INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:8:1-19:12
+INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:8:1-19:12
+	package
+		ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:9:5-39
+		INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:8:11-69
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:11:5-66
+	android:name
+		ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:11:22-64
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:12:5-80
+	android:name
+		ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:12:22-78
+application
+ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:13:5-17:19
+	android:label
+		ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:14:9-41
+	android:allowBackup
+		ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:13:18-44
+uses-sdk
+INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+		ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+		ADDED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
