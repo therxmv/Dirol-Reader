@@ -13,8 +13,8 @@ android {
         applicationId "com.therxmv.dirolreader"
         minSdk 23
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 10
+        versionName "0.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -22,7 +22,7 @@ android {
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
         buildConfigField "String", "API_HASH", "\"${properties.getProperty("API_HASH")}\""
-        buildConfigField "String", "API_ID", "\"${properties.getProperty("API_ID")}\""
+        buildConfigField "Integer", "API_ID", "${properties.getProperty("API_ID")}"
     }
 
     buildFeatures {
@@ -30,9 +30,19 @@ android {
     }
 
     buildTypes {
+        debug {
+            debuggable true
+        }
+
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "Dirol-Reader-${variant.versionName}.apk"
+                }
+            }
         }
     }
     compileOptions {

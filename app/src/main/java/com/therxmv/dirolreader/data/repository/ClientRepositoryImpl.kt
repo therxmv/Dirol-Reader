@@ -1,7 +1,6 @@
 package com.therxmv.dirolreader.data.repository
 
 import com.therxmv.dirolreader.domain.repository.ClientRepository
-import com.therxmv.dirolreader.ui.auth.AuthFragment
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 

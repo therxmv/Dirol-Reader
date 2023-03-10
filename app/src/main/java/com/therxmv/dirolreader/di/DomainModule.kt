@@ -1,7 +1,6 @@
 package com.therxmv.dirolreader.di
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
 import com.therxmv.dirolreader.domain.usecase.*

@@ -1,27 +1,13 @@
 package com.therxmv.dirolreader.data.source.locale
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.therxmv.dirolreader.data.repository.ClientRepositoryImpl
 import com.therxmv.dirolreader.data.source.locale.model.ChannelLocaleMapper
 import com.therxmv.dirolreader.domain.models.ChannelModel
-import com.therxmv.dirolreader.domain.models.NewsPostModel
-import com.therxmv.dirolreader.domain.repository.ClientRepository
 import com.therxmv.dirolreader.utils.PAGE_SIZE
 import com.therxmv.dirolreader.utils.STARTING_PAGE_INDEX
-import com.therxmv.dirolreader.utils.handlers.UpdateHandler
-import kotlinx.coroutines.*
-import org.drinkless.td.libcore.telegram.Client
-import org.drinkless.td.libcore.telegram.TdApi
-import org.drinkless.td.libcore.telegram.TdApi.Chat
-import org.drinkless.td.libcore.telegram.TdApi.DownloadFile
-import org.drinkless.td.libcore.telegram.TdApi.File
-import org.drinkless.td.libcore.telegram.TdApi.GetChat
-import org.drinkless.td.libcore.telegram.TdApi.GetMessage
-import org.drinkless.td.libcore.telegram.TdApi.Message
-import org.drinkless.td.libcore.telegram.TdApi.MessageText
-import org.drinkless.td.libcore.telegram.TdApi.ParseMarkdown
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ChannelLocaleDataSource(
     private val channelDao: ChannelDao,

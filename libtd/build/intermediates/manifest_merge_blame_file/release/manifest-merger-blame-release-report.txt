@@ -1,0 +1,29 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<!--
+3  ~ Copyright Aliaksei Levin (levlam@telegram.org), Arseny Smirnov (arseny30@gmail.com) 2014-2021
+4  ~
+5  ~ Distributed under the Boost Software License, Version 1.0. (See accompanying
+6  ~ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+7-->
+8<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+9    package="org.drinkless.td.libcore" >
+10
+11    <uses-sdk android:minSdkVersion="10" />
+11-->C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml
+12
+13    <uses-permission android:name="android.permission.INTERNET" />
+13-->C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:11:5-66
+13-->C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:11:22-64
+14    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+14-->C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:12:5-80
+14-->C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:12:22-78
+15
+16    <application
+16-->C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:13:5-17:19
+17        android:allowBackup="true"
+17-->C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:13:18-44
+18        android:label="@string/app_name" >
+18-->C:\Users\ihor3\OneDrive\Documents\Roma\Programming\Kotlin\DirolReader\libtd\src\main\AndroidManifest.xml:14:9-41
+19    </application>
+20
+21</manifest>

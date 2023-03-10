@@ -2,7 +2,6 @@ package com.therxmv.dirolreader.domain.usecase
 
 import androidx.paging.PagingData
 import com.therxmv.dirolreader.domain.models.ChannelModel
-import com.therxmv.dirolreader.domain.models.NewsPostModel
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import kotlinx.coroutines.flow.Flow
 

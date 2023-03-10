@@ -1,10 +1,9 @@
 package com.therxmv.dirolreader.ui
 
-import android.graphics.Color
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.therxmv.dirolreader.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 

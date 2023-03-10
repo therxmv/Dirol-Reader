@@ -11,9 +11,12 @@ interface ChannelDao {
     @Query("SELECT * FROM channelEntity")
     fun getAllChannels(): List<ChannelEntity>
 
-    @Query("SELECT * FROM channelEntity ORDER BY rating DESC LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM channelEntity ORDER BY lastMessageDate DESC LIMIT :limit OFFSET :offset")
     fun getChannelsByPage(limit: Int, offset: Int): List<ChannelEntity>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addChannel(channelEntity: ChannelEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addChannel(channelEntity: List<ChannelEntity>)
 }

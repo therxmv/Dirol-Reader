@@ -1,33 +1,23 @@
 package com.therxmv.dirolreader.ui.auth
 
-import android.os.Build
 import android.os.Bundle
-import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.InputType
-import android.text.method.DigitsKeyListener
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
-import com.therxmv.dirolreader.BuildConfig
 import com.therxmv.dirolreader.R
-import com.therxmv.dirolreader.data.repository.ClientRepositoryImpl
 import com.therxmv.dirolreader.databinding.FragmentAuthBinding
 import com.therxmv.dirolreader.utils.AuthState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.drinkless.td.libcore.telegram.Client
-import org.drinkless.td.libcore.telegram.TdApi.*
-import java.util.*
 
 @AndroidEntryPoint
 class AuthFragment : Fragment() {

@@ -15,7 +15,6 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/postImageViewCard"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             app:strokeWidth="0dp">

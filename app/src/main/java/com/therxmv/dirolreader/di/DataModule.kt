@@ -4,12 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.therxmv.dirolreader.data.repository.ChannelRepositoryImpl
 import com.therxmv.dirolreader.data.repository.ClientRepositoryImpl
-import com.therxmv.dirolreader.data.source.locale.ChannelDao
 import com.therxmv.dirolreader.data.source.locale.ChannelDatabase
 import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
-import com.therxmv.dirolreader.utils.handlers.UpdateHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
