@@ -37,8 +37,8 @@ class NewsViewModel @Inject constructor(
         loadChannelsFromTdLib()
     }
 
-    private fun loadChannelsFromTdLib() {
-        client?.send(TdApi.GetChats(ChatListMain(), Int.MAX_VALUE), ChatsResultHandler())
+    fun loadChannelsFromTdLib() {
+        client?.send(GetChats(ChatListMain(), Int.MAX_VALUE), ChatsResultHandler())
 
         viewModelScope.launch {
             loadedCount.collectLatest {
@@ -70,10 +70,17 @@ class NewsViewModel @Inject constructor(
                     chats.chatIds.forEach {
                         client?.send(GetChat(it)) { c ->
                             c as Chat
+
                             if(c.type is ChatTypeSupergroup && (c.type as ChatTypeSupergroup).isChannel) {
-//                                Log.d("rozmi", (c.lastMessage as Message).content.toString())
 //                                Log.d("rozmi", c.title.toString())
                                 val message = c.lastMessage as Message
+
+                                client?.send(ViewMessages(c.id, message.messageThreadId, listOf(message.id).toLongArray(), true)) {}
+
+//                                client?.send(GetChatHistory(c.id, c.lastReadInboxMessageId, 0, c.unreadCount, false)) { ms ->
+//                                    ms as Messages
+//                                    Log.d("rozmi", ms.messages.size.toString())
+//                                }
 
                                 when(message.content) {
                                     is MessageText -> {

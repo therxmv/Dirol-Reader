@@ -1,6 +1,7 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.collectLatest
 @AndroidEntryPoint
 class NewsFragment : Fragment() {
     private var binding: FragmentNewsBinding? = null
-    private var newsAdapter: NewsListAdapter? = null
     private val vm: NewsViewModel by viewModels()
 
     override fun onCreateView(
@@ -23,18 +23,28 @@ class NewsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentNewsBinding.inflate(inflater)
-        newsAdapter = NewsListAdapter()
+        vm.getClient()
 
-        binding?.recycleView?.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val recyclerView = binding?.recycleView
+        val swipeRefreshLayout = binding?.swipeRefreshLayout
+
+        val newsAdapter = NewsListAdapter()
+        val newsLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+        recyclerView?.apply {
+            layoutManager = newsLayoutManager
             adapter = newsAdapter
         }
 
-        vm.getClient()
+        swipeRefreshLayout?.setOnRefreshListener {
+            vm.loadChannelsFromTdLib()
+            swipeRefreshLayout.isRefreshing = false
+            newsLayoutManager.scrollToPositionWithOffset(0, 0)
+        }
 
         lifecycleScope.launchWhenCreated {
             vm.pagingData.collectLatest {
-                newsAdapter?.submitData(it)
+                newsAdapter.submitData(it)
             }
         }
 

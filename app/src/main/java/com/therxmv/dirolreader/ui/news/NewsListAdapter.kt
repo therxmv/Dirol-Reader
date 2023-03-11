@@ -26,9 +26,10 @@ class NewsListAdapter: PagingDataAdapter<ChannelModel, NewsListAdapter.NewsViewH
     }
 
     class NewsViewHolder(private val binding: NewsPostBinding): RecyclerView.ViewHolder(binding.root) {
-        val client = ClientRepositoryImpl.client
+        private val client = ClientRepositoryImpl.client
         fun bind(item: ChannelModel?) = with(binding) {
             if(item != null) {
+                channelAvatarImageView.setImageResource(0)
                 postImageViewCard.visibility = GONE
                 postTimeAgo.text = "Few minutes ago"
 //                timeToReadText.text = "Few minutes"
