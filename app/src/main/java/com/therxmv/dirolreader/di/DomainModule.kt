@@ -3,6 +3,7 @@ package com.therxmv.dirolreader.di
 import android.content.Context
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
+import com.therxmv.dirolreader.domain.repository.MessageRepository
 import com.therxmv.dirolreader.domain.usecase.*
 import dagger.Module
 import dagger.Provides
@@ -29,7 +30,17 @@ class DomainModule {
     }
 
     @Provides
-    fun provideGetChannelsByPageUseCase(channelRepository: ChannelRepository): GetChannelsByPageUseCase {
-        return GetChannelsByPageUseCase(channelRepository)
+    fun provideGetMessagesByPageUseCase(messageRepository: MessageRepository): GetMessagesByPageUseCase {
+        return GetMessagesByPageUseCase(messageRepository)
+    }
+
+    @Provides
+    fun provideAddMessageToRoomUseCase(messageRepository: MessageRepository): AddMessageToRoomUseCase {
+        return AddMessageToRoomUseCase(messageRepository)
+    }
+
+    @Provides
+    fun provideUpdateMessageUseCase(messageRepository: MessageRepository): UpdateMessageUseCase {
+        return UpdateMessageUseCase(messageRepository)
     }
 }

@@ -28,7 +28,7 @@ class NewsFragment : Fragment() {
         val recyclerView = binding?.recycleView
         val swipeRefreshLayout = binding?.swipeRefreshLayout
 
-        val newsAdapter = NewsListAdapter()
+        val newsAdapter = NewsListAdapter(vm::updateMessage)
         val newsLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         recyclerView?.apply {

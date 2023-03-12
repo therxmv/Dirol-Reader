@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.room.Room
 import com.therxmv.dirolreader.data.repository.ChannelRepositoryImpl
 import com.therxmv.dirolreader.data.repository.ClientRepositoryImpl
-import com.therxmv.dirolreader.data.source.locale.ChannelDatabase
-import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
+import com.therxmv.dirolreader.data.repository.MessageRepositoryImpl
+import com.therxmv.dirolreader.data.source.locale.DirolDatabase
+import com.therxmv.dirolreader.data.source.locale.channel.ChannelLocaleDataSource
+import com.therxmv.dirolreader.data.source.locale.message.MessageLocaleDataSource
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
+import com.therxmv.dirolreader.domain.repository.MessageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,17 +35,29 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideChannelLocaleDataSource(channelDatabase: ChannelDatabase): ChannelLocaleDataSource {
-        return ChannelLocaleDataSource(channelDatabase.channelDao())
+    fun provideMessageRepositoryImpl(messageLocaleDataSource: MessageLocaleDataSource): MessageRepository {
+        return MessageRepositoryImpl(messageLocaleDataSource)
     }
 
     @Provides
     @Singleton
-    fun provideChannelDatabase(@ApplicationContext context: Context): ChannelDatabase {
+    fun provideChannelLocaleDataSource(dirolDatabase: DirolDatabase): ChannelLocaleDataSource {
+        return ChannelLocaleDataSource(dirolDatabase.dirolDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageLocaleDataSource(dirolDatabase: DirolDatabase): MessageLocaleDataSource {
+        return MessageLocaleDataSource(dirolDatabase.dirolDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideDirolDatabase(@ApplicationContext context: Context): DirolDatabase {
         return Room.databaseBuilder(
             context,
-            ChannelDatabase::class.java,
-            "Channels.db"
+            DirolDatabase::class.java,
+            "Dirol.db"
         ).build()
     }
 }
