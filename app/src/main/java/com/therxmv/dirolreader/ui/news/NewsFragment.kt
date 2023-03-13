@@ -1,7 +1,6 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.therxmv.dirolreader.databinding.FragmentNewsBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class NewsFragment : Fragment() {
@@ -25,10 +25,10 @@ class NewsFragment : Fragment() {
         binding = FragmentNewsBinding.inflate(inflater)
         vm.getClient()
 
-        val recyclerView = binding?.recycleView
+        val recyclerView = binding?.recyclerView
         val swipeRefreshLayout = binding?.swipeRefreshLayout
 
-        val newsAdapter = NewsListAdapter(vm::updateMessage)
+        val newsAdapter = NewsListAdapter(vm::deleteMessage)
         val newsLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         recyclerView?.apply {
@@ -40,6 +40,15 @@ class NewsFragment : Fragment() {
             vm.loadChannelsFromTdLib()
             swipeRefreshLayout.isRefreshing = false
             newsLayoutManager.scrollToPositionWithOffset(0, 0)
+        }
+
+        lifecycleScope.launch {
+            vm.loadedCount.collectLatest {
+//                if (it > 5) {
+                    vm.loadMessagesByPage()
+//                }
+                // TODO not the best solution
+            }
         }
 
         lifecycleScope.launchWhenCreated {

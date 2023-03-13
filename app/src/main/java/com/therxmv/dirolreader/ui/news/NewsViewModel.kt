@@ -22,7 +22,7 @@ class NewsViewModel @Inject constructor(
     private val addChannelToRoomUseCase: AddChannelToRoomUseCase,
     private val addMessageToRoomUseCase: AddMessageToRoomUseCase,
     private val getMessagesByPageUseCase: GetMessagesByPageUseCase,
-    private val updateMessageUseCase: UpdateMessageUseCase,
+    private val deleteMessageUseCase: DeleteMessageUseCase,
 ) : ViewModel() {
     private var client: Client? = null
 
@@ -30,11 +30,11 @@ class NewsViewModel @Inject constructor(
     val pagingData = _pagingData.asSharedFlow()
 
     private val _loadedCount = MutableStateFlow(0)
-    private val loadedCount = _loadedCount.asStateFlow()
+    val loadedCount = _loadedCount.asStateFlow()
 
-    fun updateMessage(messageModel: MessageModel) {
+    fun deleteMessage(messageModel: MessageModel) {
         viewModelScope.launch {
-            updateMessageUseCase.invoke(messageModel)
+            deleteMessageUseCase.invoke(messageModel)
         }
     }
 
@@ -46,21 +46,57 @@ class NewsViewModel @Inject constructor(
     fun loadChannelsFromTdLib() {
         client?.send(GetChats(ChatListMain(), Int.MAX_VALUE), ChatsResultHandler())
 
-        viewModelScope.launch {
-            loadedCount.collectLatest {
-                if(it > 5) {
-                    loadMessagesByPage()
-                }
-            }
-        }
+//        viewModelScope.launch {
+//            loadedCount.collectLatest {
+//                if(it > 5) {
+//                    loadMessagesByPage()
+//                }
+//            }
+//        }
     }
 
-    private fun loadMessagesByPage() {
+    fun loadMessagesByPage() {
         viewModelScope.launch {
             getMessagesByPageUseCase.invoke().collect {
                 _pagingData.emit(it)
             }
         }
+    }
+
+    private fun saveMessage(chat: Chat, message: Message, isNew: Boolean) {
+        when(message.content) {
+            is MessageText -> {
+                addMessageToRoomUseCase.invoke(
+                    MessageModel(
+                        message.id,
+                        message.messageThreadId,
+                        chat.id,
+                        message.date,
+                        (message.content as MessageText).text.text,
+                        null,
+                        message.id == chat.lastMessage?.id,
+                        isNew
+                    )
+                )
+            }
+            else -> {
+                addMessageToRoomUseCase.invoke(
+                    MessageModel(
+                        message.id,
+                        message.messageThreadId,
+                        chat.id,
+                        message.date,
+                        "This message type is not yet supported",
+                        null,
+                        message.id == chat.lastMessage?.id,
+                        isNew
+                    )
+                )
+            }
+            // TODO handle another types
+        }
+
+        _loadedCount.value += 1
     }
 
     inner class ChatsResultHandler : Client.ResultHandler {
@@ -84,41 +120,33 @@ class NewsViewModel @Inject constructor(
 
                                 client?.send(ViewMessages(c.id, message.messageThreadId, listOf(message.id).toLongArray(), true)) {}
 
+//                                client?.send(DownloadFile(c.photo?.small?.id!!, 20, 0, 1, false)) {}
                                 addChannelToRoomUseCase.invoke(
                                     ChannelModel(
                                         c.id,
                                         c.title,
-                                        c.photo?.small?.local?.path,
+                                        c.photo?.small?.id,
                                     )
                                 )
-//                                client?.send(DownloadFile(c.photo?.small?.id!!, 20, 0, 1, false)) {}
 
-                                client?.send(GetChatHistory(c.id, c.lastReadInboxMessageId, 0, c.unreadCount, false)) { ms ->
-                                    ms as Messages
-//                                    Log.d("rozmi", ms.messages.size.toString())
-
-                                    ms.messages.map { m ->
+//                                Log.d("rozmi", c.unreadCount.toString())
+                                if(c.unreadCount == 0) {
+                                    client?.send(GetMessage(c.id, c.lastMessage?.id!!)) { m ->
                                         m as Message
+//                                        Log.d("rozmi", "Old: ${c.title}: ${(m.content as MessageText).text.text}")
+                                        saveMessage(c, m, false)
+                                    }
+                                }
+                                else {
+                                    client?.send(GetChatHistory(c.id, 0, 0, c.unreadCount, false)) { ms ->
+                                        ms as Messages
 
-                                        when(m.content) {
-                                            is MessageText -> {
-                                                addMessageToRoomUseCase.invoke(
-                                                    MessageModel(
-                                                        m.id,
-                                                        m.messageThreadId,
-                                                        c.id,
-                                                        m.date,
-                                                        (m.content as MessageText).text.text,
-                                                        null,
-                                                        false,
-                                                        m.id == c.lastMessage?.id
-                                                    )
-                                                )
-                                            }
-                                            // TODO handle another types
+//                                        Log.d("rozmi", "New: ${c.title}: ${ms.messages.size}")
+                                        ms.messages.map { m ->
+                                            m as Message
+//                                            Log.d("rozmi", "New: ${c.title}: ${(m.content as MessageText).text.text}")
+                                            saveMessage(c, m, true)
                                         }
-
-                                        _loadedCount.value += 1
                                     }
                                 }
                             }

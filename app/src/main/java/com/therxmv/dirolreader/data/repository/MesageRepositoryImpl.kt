@@ -29,7 +29,7 @@ class MessageRepositoryImpl(
         messageLocaleDataSource.addMessage(messageModel)
     }
 
-    override suspend fun updateMessage(messageModel: MessageModel) {
-        messageLocaleDataSource.updateMessage(messageModel)
+    override suspend fun deleteMessage(messageModel: MessageModel) {
+        messageLocaleDataSource.deleteMessage(messageModel)
     }
 }

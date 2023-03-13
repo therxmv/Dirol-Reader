@@ -19,8 +19,8 @@ class MessageLocaleDataSource(
         dirolDao.addMessage(MessageLocaleMapper().mapToEntity(messageModel))
     }
 
-    suspend fun updateMessage(messageModel: MessageModel) = withContext(Dispatchers.IO) {
-        dirolDao.updateMessage(MessageLocaleMapper().mapToEntity(messageModel))
+    suspend fun deleteMessage(messageModel: MessageModel) = withContext(Dispatchers.IO) {
+        dirolDao.deleteMessage(MessageLocaleMapper().mapToEntity(messageModel))
     }
 
     override fun getRefreshKey(state: PagingState<Int, PostModel>): Int? {
@@ -34,7 +34,19 @@ class MessageLocaleDataSource(
         try {
             val pageIndex = params.key ?: STARTING_PAGE_INDEX
 
-            val response = dirolDao.getMessagesByPage(PAGE_SIZE, pageIndex * params.loadSize)
+            val postsList = dirolDao.getMessagesByPage(PAGE_SIZE, pageIndex * params.loadSize)
+
+            val response =
+                if (postsList.isNotEmpty()) {
+                val newPostsList = postsList.filter { it.isNew }
+//                Log.d("rozmi", newPostsList.toString())
+                val oldPostsList = postsList.filter { !it.isNew }
+                // TODO maybe add empty model with "All message read"
+                newPostsList + oldPostsList
+            }
+            else {
+                postsList
+            }
 
 //            Log.d("rozmi", response.toString())
 

@@ -9,6 +9,6 @@ import com.therxmv.dirolreader.utils.CHANNELS_TABLE
 data class ChannelEntity (
     @PrimaryKey val id: Long,
     @ColumnInfo("title") val title: String,
-    @ColumnInfo("avatarPath") val avatarPath: String?,
+    @ColumnInfo("avatarId") val avatarId: Int?,
     @ColumnInfo(name = "rating", defaultValue = "0") val rating: Int,
 )

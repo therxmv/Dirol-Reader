@@ -8,7 +8,7 @@ class ChannelLocaleMapper: EntityMapper<ChannelEntity, ChannelModel> {
         return ChannelModel(
             entity.id,
             entity.title,
-            entity.avatarPath,
+            entity.avatarId,
             entity.rating,
         )
     }
@@ -17,7 +17,7 @@ class ChannelLocaleMapper: EntityMapper<ChannelEntity, ChannelModel> {
         return ChannelEntity(
             domainModel.id,
             domainModel.title,
-            domainModel.avatarPath,
+            domainModel.avatarId,
             domainModel.rating,
         )
     }

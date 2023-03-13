@@ -7,4 +7,7 @@
     <string name="authTitlePassword">Enter 2-step verification password</string>
     <string name="authConfirmBtn">Continue</string>
 
+    <!-- News -->
+    <string name="newsDefaultMessage">This message type is not yet supported</string>
+
 </resources>

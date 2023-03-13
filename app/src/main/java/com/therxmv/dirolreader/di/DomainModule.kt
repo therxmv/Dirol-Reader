@@ -40,7 +40,7 @@ class DomainModule {
     }
 
     @Provides
-    fun provideUpdateMessageUseCase(messageRepository: MessageRepository): UpdateMessageUseCase {
-        return UpdateMessageUseCase(messageRepository)
+    fun provideDeleteMessageUseCase(messageRepository: MessageRepository): DeleteMessageUseCase {
+        return DeleteMessageUseCase(messageRepository)
     }
 }

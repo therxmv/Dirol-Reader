@@ -12,8 +12,8 @@ class MessageLocaleMapper: EntityMapper<MessageEntity, MessageModel> {
             entity.date,
             entity.text,
             entity.photoPath,
-            entity.isViewed,
             entity.isLast,
+            entity.isNew,
         )
     }
 
@@ -25,8 +25,8 @@ class MessageLocaleMapper: EntityMapper<MessageEntity, MessageModel> {
             domainModel.date,
             domainModel.text,
             domainModel.photoPath,
-            domainModel.isViewed,
             domainModel.isLast,
+            domainModel.isNew,
         )
     }
 

@@ -13,6 +13,6 @@ data class MessageEntity(
     @ColumnInfo("date") val date: Int,
     @ColumnInfo("text") val text: String,
     @ColumnInfo("photoPath") val photoPath: String?,
-    @ColumnInfo("isViewed") val isViewed: Boolean,
     @ColumnInfo("isLast") val isLast: Boolean,
+    @ColumnInfo("isNew") val isNew: Boolean,
 )

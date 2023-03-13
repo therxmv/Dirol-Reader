@@ -7,8 +7,8 @@ data class PostModel (
     val date: Int,
     val text: String,
     val photoPath: String?,
-    val isViewed: Boolean,
     val isLast: Boolean,
+    val isNew: Boolean,
     val title: String,
-    val avatarPath: String?,
+    val avatarId: Int?,
 )

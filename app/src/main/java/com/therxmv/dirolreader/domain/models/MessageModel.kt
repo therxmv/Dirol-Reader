@@ -7,6 +7,6 @@ data class MessageModel(
     val date: Int,
     val text: String,
     val photoPath: String?,
-    val isViewed: Boolean,
     val isLast: Boolean,
+    val isNew: Boolean,
 )

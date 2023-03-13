@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.Flow
 interface MessageRepository {
     fun getMessagesByPage(): Flow<PagingData<PostModel>>
     fun addMessage(messageModel: MessageModel)
-    suspend fun updateMessage(messageModel: MessageModel)
+    suspend fun deleteMessage(messageModel: MessageModel)
 }
