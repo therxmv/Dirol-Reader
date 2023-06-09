@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Dirol Reader</string>
+
+    <!-- Auth -->
+    <string name="authTitlePhone">Enter your phone number</string>
+    <string name="authTitleCode">Enter verification code</string>
+    <string name="authTitlePassword">Enter 2-step verification password</string>
+    <string name="authTitleError">Oops… Something went wrong</string>
+    <string name="authConfirmBtn">Continue</string>
+</resources>
