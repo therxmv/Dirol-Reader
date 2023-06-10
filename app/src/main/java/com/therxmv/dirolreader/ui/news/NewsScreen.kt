@@ -32,11 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.therxmv.dirolreader.R
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbar
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -45,7 +47,7 @@ import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 import me.onebone.toolbar.rememberCollapsingToolbarState
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalToolbarApi::class)
+@OptIn(ExperimentalToolbarApi::class)
 @Composable
 fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel()
@@ -97,7 +99,7 @@ fun NewsScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = unreadChannels,
+                            text = "$unreadChannels ${stringResource(id = R.string.news_unread_channels)}",
                         )
                     }
                     Image(

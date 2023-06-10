@@ -7,5 +7,5 @@ data class NewsUiState(
 data class ToolbarState(
     val avatarPath: String = "",
     val userName: String = "",
-    val unreadChannels: String = "5 unread channels"
+    val unreadChannels: Int = 0
 )

@@ -8,20 +8,12 @@ import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
 import com.therxmv.dirolreader.ui.news.utils.NewsUiState
 import com.therxmv.dirolreader.ui.news.utils.ToolbarState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.drinkless.td.libcore.telegram.Client
-import org.drinkless.td.libcore.telegram.TdApi
-import org.drinkless.td.libcore.telegram.TdApi.ChatPhotos
-import org.drinkless.td.libcore.telegram.TdApi.File
-import org.drinkless.td.libcore.telegram.TdApi.User
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(
@@ -34,33 +26,35 @@ class NewsViewModel @Inject constructor(
 
     init {
         Log.d("rozmi", "news vm init")
+
         client = useCases.getClientUseCase()
-        getUserAvatar()
-        viewModelScope.launch {
-            useCases.addChannelToLocaleUseCase(
-                useCases.getRemoteChannelsIdsUseCase(client).map {
-                    ChannelModel(it)
-                }
-            )
-            delay(1000)
-            Log.d("rozmi", useCases.getLocaleChannelsUseCase().toString())
-        }
+        loadChannels()
     }
 
-    private suspend fun getToolbarState(): ToolbarState {
+    private suspend fun loadToolbarInfo(unreadCount: Int): ToolbarState {
         val user = useCases.getCurrentUserUseCase(client)
         val avatarPath = useCases.getCurrentUserAvatarUseCase(client, user)
 
         return ToolbarState(
             avatarPath = avatarPath,
-            userName = "${user.firstName} ${user.lastName}"
+            userName = "${user.firstName} ${user.lastName}",
+            unreadChannels = unreadCount
         )
     }
+    private fun loadChannels() {
+        viewModelScope.launch {
+            useCases.getRemoteChannelsIdsUseCase(client).collectLatest { list ->
+                setToolbar(list.filter { it.second > 0 }.size)
+                useCases.addChannelToLocaleUseCase(list.map { ChannelModel(id = it.first, unreadCount = it.second) })
+            }
+            Log.d("rozmi", useCases.getLocaleChannelsUseCase().toString())
+        }
+    }
 
-    private fun getUserAvatar() {
+    private fun setToolbar(unreadCount: Int) {
         viewModelScope.launch {
             _state.value = _state.value.copy(
-                toolbarState = getToolbarState()
+                toolbarState = loadToolbarInfo(unreadCount)
             )
         }
     }

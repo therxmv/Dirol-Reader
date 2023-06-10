@@ -1,5 +1,6 @@
 package com.therxmv.dirolreader.ui.news
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +35,7 @@ import com.therxmv.dirolreader.R
 
 @Composable
 fun NewsPost() {
+    // TODO mark as read
     Box(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 8.dp)

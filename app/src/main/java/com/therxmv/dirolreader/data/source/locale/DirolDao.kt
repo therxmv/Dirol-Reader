@@ -13,9 +13,18 @@ interface DirolDao {
     @Query("SELECT * FROM $CHANNEL_TABLE ORDER BY $CHANNEL_TABLE.id DESC")
     fun getAllChannels(): List<ChannelEntity>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addChannel(channelEntity: ChannelEntity)
+    @Query("UPDATE $CHANNEL_TABLE SET rating = rating + :num WHERE id = :id")
+    fun updateChannelRating(id: Long, num: Int)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addChannels(channelEntity: List<ChannelEntity>)
+    fun addChannel(channelEntity: ChannelEntity): Long
+
+    @Query("UPDATE $CHANNEL_TABLE SET unreadCount = :unreadCount WHERE id = :id")
+    fun updateChannel(id: Long, unreadCount: Int)
+
+    @Transaction
+    fun insertOrUpdateChannel(channelEntity: ChannelEntity) {
+        val id = addChannel(channelEntity)
+        if(id == -1L) updateChannel(channelEntity.id, channelEntity.unreadCount)
+    }
 }

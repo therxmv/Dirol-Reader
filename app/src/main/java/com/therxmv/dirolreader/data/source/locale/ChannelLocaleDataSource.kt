@@ -14,10 +14,12 @@ class ChannelLocaleDataSource(
     }
 
     suspend fun addChannel(channelEntity: ChannelEntity) = withContext(Dispatchers.IO) {
-        dirolDao.addChannel(channelEntity)
+        dirolDao.insertOrUpdateChannel(channelEntity)
     }
 
     suspend fun addChannel(channelEntity: List<ChannelEntity>) = withContext(Dispatchers.IO) {
-        dirolDao.addChannels(channelEntity)
+        channelEntity.forEach {
+            dirolDao.insertOrUpdateChannel(it)
+        }
     }
 }

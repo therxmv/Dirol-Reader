@@ -6,6 +6,7 @@ import com.therxmv.dirolreader.data.source.remote.ChannelRemoteDataSource
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.models.toEntity
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
+import kotlinx.coroutines.flow.Flow
 import org.drinkless.td.libcore.telegram.Client
 
 class ChannelRepositoryImpl(
@@ -24,7 +25,7 @@ class ChannelRepositoryImpl(
         channelLocaleDataSource.addChannel(channel.map { it.toEntity() })
     }
 
-    override suspend fun getRemoteChannelsIds(client: Client?): List<Long> {
+    override suspend fun getRemoteChannelsIds(client: Client?): Flow<List<Pair<Long, Int>>> {
         return channelRemoteDataSource.getRemoteChannelsIds(client)
     }
 }
