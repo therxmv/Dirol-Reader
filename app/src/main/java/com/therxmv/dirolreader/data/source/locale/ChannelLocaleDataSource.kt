@@ -7,10 +7,12 @@ import kotlinx.coroutines.withContext
 class ChannelLocaleDataSource(
     private val dirolDao: DirolDao
 ) {
-    suspend fun getAllChannels(): List<ChannelEntity> {
-        return withContext(Dispatchers.IO) {
-            dirolDao.getAllChannels()
-        }
+    suspend fun getAllChannels(): List<ChannelEntity> = withContext(Dispatchers.IO) {
+        dirolDao.getAllChannels()
+    }
+
+    suspend fun updateChannelRating(id: Long, num: Int) = withContext(Dispatchers.IO) {
+        dirolDao.updateChannelRating(id, num)
     }
 
     suspend fun addChannel(channelEntity: ChannelEntity) = withContext(Dispatchers.IO) {

@@ -24,6 +24,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,13 +40,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.therxmv.dirolreader.R
 import com.therxmv.dirolreader.domain.models.MessageModel
+import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
 
 @Composable
 fun NewsPost(
-    messageModel: MessageModel
+    messageModel: MessageModel,
+    likedState: MutableMap<Long, Boolean?>,
+    starredState: MutableMap<Long, Boolean>,
+    onEvent: (event: NewsUiEvent) -> Unit,
 ) {
     // TODO mark as read
     Box(
@@ -120,8 +128,11 @@ fun NewsPost(
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
+
+                    val isStarred = starredState[messageModel.channelId] ?: (messageModel.channelRating >= 100)
+
                     Icon(
-                        painter = painterResource(id = R.drawable.star_outline_icon),
+                        painter = if(isStarred) painterResource(id = R.drawable.star_filled_icon) else painterResource(id = R.drawable.star_outline_icon),
                         contentDescription = "star",
                         modifier = Modifier
                             .size(24.dp)
@@ -129,8 +140,16 @@ fun NewsPost(
                                 interactionSource = MutableInteractionSource(),
                                 indication = null
                             ) {
-                                // TODO add to favorite
+                                onEvent(
+                                    NewsUiEvent.UpdateRating(
+                                        messageModel.channelId,
+                                        if (isStarred) -100 else 100
+                                    )
+                                )
+
+                                starredState[messageModel.channelId] = !isStarred
                             },
+                        tint = if(isStarred) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Text(
@@ -144,12 +163,18 @@ fun NewsPost(
                         .padding(top = 12.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
+                    val isLiked = likedState[messageModel.id]
+
                     IconButton(
                         modifier = Modifier
                             .padding(end = 16.dp)
                             .size(24.dp),
                         onClick = {
-                            // TODO like
+                            onEvent(NewsUiEvent.UpdateRating(
+                                messageModel.channelId,
+                                if (isLiked == null) 1 else if(isLiked == false) 2 else 0
+                            ))
+                            likedState[messageModel.id] = true
                         },
                     ) {
                         Icon(
@@ -157,13 +182,18 @@ fun NewsPost(
                             contentDescription = "like",
                             modifier = Modifier
                                 .clip(MaterialTheme.shapes.small),
+                            tint = if(isLiked == null || isLiked == false) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                         )
                     }
                     IconButton(
                         modifier = Modifier
                             .size(24.dp),
                         onClick = {
-                            // TODO dislike
+                            onEvent(NewsUiEvent.UpdateRating(
+                                messageModel.channelId,
+                                if (isLiked == null) -1 else if(isLiked == false) -2 else 0
+                            ))
+                            likedState[messageModel.id] = false
                         }
                     ) {
                         Icon(
@@ -171,6 +201,7 @@ fun NewsPost(
                             contentDescription = "dislike",
                             modifier = Modifier
                                 .clip(MaterialTheme.shapes.small),
+                            tint = if(isLiked == null || isLiked == true) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -187,19 +218,21 @@ private fun getPostTime(date: Int): String {
     // TODO maybe add "today", "yesterday"
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewNewsPost() {
-    NewsPost(
-        MessageModel(
-            0,
-            0,
-            0,
-            "Channel Name",
-            null,
-            1856546,
-            "Lorem ipsum dolor sit amet, consectetur adipiscing consectetur consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-        null
-        )
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewNewsPost() {
+//    NewsPost(
+//        MessageModel(
+//            0,
+//            0,
+//            0,
+//            "Channel Name",
+//            null,
+//            1856546,
+//            "Lorem ipsum dolor sit amet, consectetur adipiscing consectetur consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+//        null
+//        ),
+//        null,
+//        { },
+//    )
+//}

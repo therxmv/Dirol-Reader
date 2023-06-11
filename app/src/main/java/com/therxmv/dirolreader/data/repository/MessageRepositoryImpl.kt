@@ -48,6 +48,7 @@ class MessageRepositoryImpl(
     override suspend fun getMessagesByPage(client: Client?, offset: Int, limit: Int): Flow<List<MessageModel>> {
         return withContext(Dispatchers.IO) {
             val channelsList = getChannelsList(offset, limit)
+            Log.d("rozmi", channelsList.toString())
 
             suspendCoroutine {
                 it.resume(

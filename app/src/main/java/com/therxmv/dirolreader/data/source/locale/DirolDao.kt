@@ -10,7 +10,7 @@ import com.therxmv.dirolreader.utils.CHANNEL_TABLE
 
 @Dao
 interface DirolDao {
-    @Query("SELECT * FROM $CHANNEL_TABLE ORDER BY $CHANNEL_TABLE.id DESC")
+    @Query("SELECT * FROM $CHANNEL_TABLE ORDER BY $CHANNEL_TABLE.rating DESC")
     fun getAllChannels(): List<ChannelEntity>
 
     @Query("UPDATE $CHANNEL_TABLE SET rating = rating + :num WHERE id = :id")

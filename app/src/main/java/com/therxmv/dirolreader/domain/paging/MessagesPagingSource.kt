@@ -31,7 +31,7 @@ class MessagesPagingSource(
             messageRepository.getMessagesByPage(client, pageIndex * params.loadSize, PAGE_SIZE).collectLatest {
                 data.addAll(it)
             }
-//            Log.d("rozmi", data.toString())
+//            Log.d("rozmi_paging", data.toString())
 
             if(data.isEmpty()) {
                 LoadResult.Error(EmptyListException())

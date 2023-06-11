@@ -30,6 +30,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +53,7 @@ import androidx.paging.compose.itemKey
 import androidx.paging.compose.items
 import com.therxmv.dirolreader.R
 import com.therxmv.dirolreader.domain.models.MessageModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbar
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -95,10 +101,11 @@ fun NewsScreen(
                                 indication = null
                             ) {
                                 coroutineScope.launch {
-                                    newsFeedState.scrollToItem(0)
+                                    toolbarState.toolbarState.expand(500)
                                 }
                                 coroutineScope.launch {
-                                    toolbarState.toolbarState.expand(500)
+                                    delay(100)
+                                    newsFeedState.scrollToItem(0)
                                 }
                             }
                             .road(Alignment.Center, Alignment.BottomCenter),
@@ -135,6 +142,9 @@ fun NewsScreen(
             },
         ) {
             if(news != null) {
+                val likedState = remember { mutableStateMapOf<Long, Boolean?>() }
+                val starredState = remember { mutableStateMapOf<Long, Boolean>() }
+
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     state = newsFeedState,
@@ -144,7 +154,14 @@ fun NewsScreen(
                         key = news.itemKey(key = { it.id }),
                         contentType = news.itemContentType()
                     ) { index ->
-                        NewsPost(news[index]!!)
+                        val item = news[index]!!
+
+                        NewsPost(
+                            item,
+                            likedState,
+                            starredState,
+                            viewModel::onEvent
+                        )
                     }
                 }
             }

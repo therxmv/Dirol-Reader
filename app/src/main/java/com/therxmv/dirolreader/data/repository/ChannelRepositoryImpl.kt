@@ -28,4 +28,8 @@ class ChannelRepositoryImpl(
     override suspend fun getRemoteChannelsIds(client: Client?): Flow<List<ChannelModel>> {
         return channelRemoteDataSource.getRemoteChannelsIds(client)
     }
+
+    override suspend fun updateChannelRating(id: Long, num: Int) {
+        channelLocaleDataSource.updateChannelRating(id, num)
+    }
 }

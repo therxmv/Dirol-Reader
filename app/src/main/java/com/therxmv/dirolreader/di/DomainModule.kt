@@ -16,6 +16,7 @@ import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
 import com.therxmv.dirolreader.domain.usecase.channel.AddChannelToLocaleUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetLocaleChannelsUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetRemoteChannelsIdsUseCase
+import com.therxmv.dirolreader.domain.usecase.channel.UpdateChannelRatingUseCase
 import com.therxmv.dirolreader.domain.usecase.message.GetMessagePagingUseCase
 import dagger.Module
 import dagger.Provides
@@ -81,21 +82,26 @@ class DomainModule {
     )
 
     @Provides
+    fun provideUpdateChannelRatingUseCase(channelRepository: ChannelRepository): UpdateChannelRatingUseCase {
+        return UpdateChannelRatingUseCase(channelRepository)
+    }
+
+    @Provides
     fun provideNewsViewModelUseCases(
         getClientUseCase: GetClientUseCase,
         getCurrentUserUseCase: GetCurrentUserUseCase,
         getCurrentUserAvatarUseCase: GetCurrentUserAvatarUseCase,
         addChannelToLocaleUseCase: AddChannelToLocaleUseCase,
-        getLocaleChannelsUseCase: GetLocaleChannelsUseCase,
         getRemoteChannelsIdsUseCase: GetRemoteChannelsIdsUseCase,
         getMessagePagingUseCase: GetMessagePagingUseCase,
+        updateChannelRatingUseCase: UpdateChannelRatingUseCase,
     ) = NewsViewModelUseCases(
         getClientUseCase,
         getCurrentUserUseCase,
         getCurrentUserAvatarUseCase,
         addChannelToLocaleUseCase,
-        getLocaleChannelsUseCase,
         getRemoteChannelsIdsUseCase,
-        getMessagePagingUseCase
+        getMessagePagingUseCase,
+        updateChannelRatingUseCase,
     )
 }
