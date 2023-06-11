@@ -19,12 +19,12 @@ interface DirolDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addChannel(channelEntity: ChannelEntity): Long
 
-    @Query("UPDATE $CHANNEL_TABLE SET unreadCount = :unreadCount WHERE id = :id")
-    fun updateChannel(id: Long, unreadCount: Int)
+    @Query("UPDATE $CHANNEL_TABLE SET unreadCount = :unreadCount, lastReadMessageId = :lastId WHERE id = :id")
+    fun updateChannel(id: Long, unreadCount: Int, lastId: Long)
 
     @Transaction
     fun insertOrUpdateChannel(channelEntity: ChannelEntity) {
         val id = addChannel(channelEntity)
-        if(id == -1L) updateChannel(channelEntity.id, channelEntity.unreadCount)
+        if(id == -1L) updateChannel(channelEntity.id, channelEntity.unreadCount, channelEntity.lastReadMessageId)
     }
 }

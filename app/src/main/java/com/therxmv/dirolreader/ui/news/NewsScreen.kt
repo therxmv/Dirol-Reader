@@ -17,8 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,7 +41,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
+import androidx.paging.compose.items
 import com.therxmv.dirolreader.R
+import com.therxmv.dirolreader.domain.models.MessageModel
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbar
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -53,6 +62,8 @@ fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsState().value
+    val news = viewModel.news?.collectAsLazyPagingItems()
+
     val coroutineScope = rememberCoroutineScope()
 
     val newsFeedState = rememberLazyListState()
@@ -84,7 +95,7 @@ fun NewsScreen(
                                 indication = null
                             ) {
                                 coroutineScope.launch {
-                                    newsFeedState.animateScrollToItem(0)
+                                    newsFeedState.scrollToItem(0)
                                 }
                                 coroutineScope.launch {
                                     toolbarState.toolbarState.expand(500)
@@ -117,18 +128,33 @@ fun NewsScreen(
                             }
                             .road(Alignment.CenterEnd, Alignment.TopCenter)
                     )
+                    coroutineScope.launch {
+                        toolbarState.toolbarState.expand(1000)
+                    }
                 }
             },
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                state = newsFeedState
-            ) {
-                coroutineScope.launch {
-                    toolbarState.toolbarState.expand(1000)
+            if(news != null) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = newsFeedState,
+                ) {
+                    items(
+                        count = news.itemCount,
+                        key = news.itemKey(key = { it.id }),
+                        contentType = news.itemContentType()
+                    ) { index ->
+                        NewsPost(news[index]!!)
+                    }
                 }
-                items(10) {
-                    NewsPost()
+            }
+            else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
             }
         }

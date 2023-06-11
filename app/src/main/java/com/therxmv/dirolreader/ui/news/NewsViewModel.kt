@@ -3,11 +3,16 @@ package com.therxmv.dirolreader.ui.news
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.therxmv.dirolreader.domain.models.ChannelModel
+import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
 import com.therxmv.dirolreader.ui.news.utils.NewsUiState
 import com.therxmv.dirolreader.ui.news.utils.ToolbarState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -22,12 +27,13 @@ class NewsViewModel @Inject constructor(
     private val _state = MutableStateFlow(NewsUiState())
     val state = _state.asStateFlow()
 
-    private var client: Client? = null
+    private var client: Client? = useCases.getClientUseCase()
+
+    var news: Flow<PagingData<MessageModel>>? = null
 
     init {
         Log.d("rozmi", "news vm init")
 
-        client = useCases.getClientUseCase()
         loadChannels()
     }
 
@@ -44,10 +50,13 @@ class NewsViewModel @Inject constructor(
     private fun loadChannels() {
         viewModelScope.launch {
             useCases.getRemoteChannelsIdsUseCase(client).collectLatest { list ->
-                setToolbar(list.filter { it.second > 0 }.size)
-                useCases.addChannelToLocaleUseCase(list.map { ChannelModel(id = it.first, unreadCount = it.second) })
+                setToolbar(list.filter { it.unreadCount > 0 }.size)
+                useCases.addChannelToLocaleUseCase(list)
+                _state.value = _state.value.copy(
+                    isLoaded = true
+                )
+                news = useCases.getMessagePagingUseCase(client).cachedIn(viewModelScope)
             }
-            Log.d("rozmi", useCases.getLocaleChannelsUseCase().toString())
         }
     }
 

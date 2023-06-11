@@ -25,7 +25,7 @@ class ChannelRepositoryImpl(
         channelLocaleDataSource.addChannel(channel.map { it.toEntity() })
     }
 
-    override suspend fun getRemoteChannelsIds(client: Client?): Flow<List<Pair<Long, Int>>> {
+    override suspend fun getRemoteChannelsIds(client: Client?): Flow<List<ChannelModel>> {
         return channelRemoteDataSource.getRemoteChannelsIds(client)
     }
 }

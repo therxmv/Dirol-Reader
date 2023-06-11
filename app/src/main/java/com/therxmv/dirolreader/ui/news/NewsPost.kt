@@ -1,6 +1,6 @@
 package com.therxmv.dirolreader.ui.news
 
-import android.util.Log
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,14 +27,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.therxmv.dirolreader.R
+import com.therxmv.dirolreader.domain.models.MessageModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.TimeZone
 
 @Composable
-fun NewsPost() {
+fun NewsPost(
+    messageModel: MessageModel
+) {
     // TODO mark as read
     Box(
         modifier = Modifier
@@ -45,16 +54,19 @@ fun NewsPost() {
                 .wrapContentHeight()
                 .fillMaxWidth(),
         ) {
-            val painter = painterResource(id = R.drawable.example_post_photo)
-            val imageRatio = painter.intrinsicSize.width / painter.intrinsicSize.height
-            Image(
-                painter = painter,
-                contentDescription = "photo",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(imageRatio)
-                    .clip(MaterialTheme.shapes.small)
-            )
+            if(messageModel.photoPath != null) {
+                val bitmap = BitmapFactory.decodeFile(messageModel.photoPath).asImageBitmap()
+                val imageRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+
+                Image(
+                    bitmap = bitmap,
+                    contentDescription = "photo",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(imageRatio)
+                        .clip(MaterialTheme.shapes.small)
+                )
+            }
             Column(
                 modifier = Modifier
                     .padding(12.dp)
@@ -63,15 +75,35 @@ fun NewsPost() {
                     modifier = Modifier
                         .height(IntrinsicSize.Min),
                 ) {
-                    Image(
-                        painter = painter,
-                        contentDescription = "photo",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .width(48.dp)
-                            .height(48.dp)
-                            .clip(MaterialTheme.shapes.small)
-                    )
+                    if (messageModel.channelAvatarPath.isNullOrEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .width(48.dp)
+                                .height(48.dp)
+                                .clip(MaterialTheme.shapes.small)
+                                .background(MaterialTheme.colorScheme.primary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = messageModel.channelName[0].toString(),
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                    else {
+                        Image(
+                            bitmap = BitmapFactory.decodeFile(messageModel.channelAvatarPath).asImageBitmap(),
+                            contentDescription = "avatar",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .width(48.dp)
+                                .height(48.dp)
+                                .clip(MaterialTheme.shapes.small)
+                        )
+                    }
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -80,11 +112,11 @@ fun NewsPost() {
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Channel name",
+                            text = messageModel.channelName,
                             style = MaterialTheme.typography.titleLarge,
                         )
                         Text(
-                            text = "Post time ago",
+                            text = getPostTime(messageModel.timestamp),
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
@@ -102,7 +134,7 @@ fun NewsPost() {
                     )
                 }
                 Text(
-                    text = "Lorem ipsum dolor sit amet, consectetur adipiscing consectetur consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                    text = messageModel.text,
                     modifier = Modifier
                         .padding(top = 12.dp)
                 )
@@ -116,7 +148,9 @@ fun NewsPost() {
                         modifier = Modifier
                             .padding(end = 16.dp)
                             .size(24.dp),
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            // TODO like
+                        },
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_up_icon),
@@ -128,7 +162,9 @@ fun NewsPost() {
                     IconButton(
                         modifier = Modifier
                             .size(24.dp),
-                        onClick = { /*TODO*/ }
+                        onClick = {
+                            // TODO dislike
+                        }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_down_icon),
@@ -143,8 +179,27 @@ fun NewsPost() {
     }
 }
 
+private fun getPostTime(date: Int): String {
+    val dateFormat = SimpleDateFormat("dd.MM, HH:mm")
+    dateFormat.timeZone = TimeZone.getDefault()
+
+    return dateFormat.format(Date(date * 1000L))
+    // TODO maybe add "today", "yesterday"
+}
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewNewsPost() {
-    NewsPost()
+    NewsPost(
+        MessageModel(
+            0,
+            0,
+            0,
+            "Channel Name",
+            null,
+            1856546,
+            "Lorem ipsum dolor sit amet, consectetur adipiscing consectetur consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        null
+        )
+    )
 }

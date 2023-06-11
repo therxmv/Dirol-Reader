@@ -1,8 +1,10 @@
 package com.therxmv.dirolreader.di
 
 import android.content.Context
+import com.therxmv.dirolreader.domain.paging.MessagesPagingSource
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
+import com.therxmv.dirolreader.domain.repository.MessageRepository
 import com.therxmv.dirolreader.domain.repository.UserRepository
 import com.therxmv.dirolreader.domain.usecase.AuthViewModelUseCases
 import com.therxmv.dirolreader.domain.usecase.client.CreateClientUseCase
@@ -14,6 +16,7 @@ import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
 import com.therxmv.dirolreader.domain.usecase.channel.AddChannelToLocaleUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetLocaleChannelsUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetRemoteChannelsIdsUseCase
+import com.therxmv.dirolreader.domain.usecase.message.GetMessagePagingUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -64,6 +67,11 @@ class DomainModule {
     }
 
     @Provides
+    fun provideGetMessagePagingUseCase(messageRepository: MessageRepository): GetMessagePagingUseCase {
+        return GetMessagePagingUseCase(messageRepository)
+    }
+
+    @Provides
     fun provideAuthViewModelUseCases(
         createClientUseCase: CreateClientUseCase,
         getTdLibParametersUseCase: GetTdLibParametersUseCase
@@ -80,6 +88,7 @@ class DomainModule {
         addChannelToLocaleUseCase: AddChannelToLocaleUseCase,
         getLocaleChannelsUseCase: GetLocaleChannelsUseCase,
         getRemoteChannelsIdsUseCase: GetRemoteChannelsIdsUseCase,
+        getMessagePagingUseCase: GetMessagePagingUseCase,
     ) = NewsViewModelUseCases(
         getClientUseCase,
         getCurrentUserUseCase,
@@ -87,5 +96,6 @@ class DomainModule {
         addChannelToLocaleUseCase,
         getLocaleChannelsUseCase,
         getRemoteChannelsIdsUseCase,
+        getMessagePagingUseCase
     )
 }

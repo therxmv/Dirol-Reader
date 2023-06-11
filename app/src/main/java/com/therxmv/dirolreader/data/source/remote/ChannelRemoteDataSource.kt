@@ -22,7 +22,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class ChannelRemoteDataSource {
-    suspend fun getRemoteChannelsIds(client: Client?): Flow<List<Pair<Long, Int>>> {
+    suspend fun getRemoteChannelsIds(client: Client?): Flow<List<ChannelModel>> {
         return withContext(Dispatchers.IO) {
             suspendCoroutine {
                 client?.send(GetChats(ChatListMain(), Int.MAX_VALUE)) { chats ->
@@ -44,7 +44,13 @@ class ChannelRemoteDataSource {
                                 suspendCoroutine { continuation ->
                                     client.send(GetChat(elem)) { c ->
                                         c as TdApi.Chat
-                                        continuation.resume(Pair(elem, c.unreadCount))
+                                        continuation.resume(
+                                            ChannelModel(
+                                                c.id,
+                                                c.unreadCount,
+                                                c.lastReadInboxMessageId
+                                            )
+                                        )
                                     }
                                 }
                             }

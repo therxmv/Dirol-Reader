@@ -8,5 +8,5 @@ interface ChannelRepository {
     suspend fun getLocaleChannels(): List<ChannelModel>
     suspend fun addChannelToLocale(channel: ChannelModel)
     suspend fun addChannelToLocale(channel: List<ChannelModel>)
-    suspend fun getRemoteChannelsIds(client: Client?): Flow<List<Pair<Long, Int>>>
+    suspend fun getRemoteChannelsIds(client: Client?): Flow<List<ChannelModel>>
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.therxmv.dirolreader.data.repository.ChannelRepositoryImpl
 import com.therxmv.dirolreader.data.repository.ClientRepositoryImpl
+import com.therxmv.dirolreader.data.repository.MessageRepositoryImpl
 import com.therxmv.dirolreader.data.repository.UserRepositoryImpl
 import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
 import com.therxmv.dirolreader.data.source.locale.DirolDatabase
@@ -11,6 +12,7 @@ import com.therxmv.dirolreader.data.source.remote.ChannelRemoteDataSource
 import com.therxmv.dirolreader.data.source.remote.UserRemoteDataSource
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
+import com.therxmv.dirolreader.domain.repository.MessageRepository
 import com.therxmv.dirolreader.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -35,11 +37,18 @@ class DataModule {
     }
 
     @Provides
+    @Singleton
     fun provideChannelRepositoryImpl(
         channelLocaleDataSource: ChannelLocaleDataSource,
         channelRemoteDataSource: ChannelRemoteDataSource
     ): ChannelRepository {
         return ChannelRepositoryImpl(channelLocaleDataSource, channelRemoteDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageRepositoryImpl(channelLocaleDataSource: ChannelLocaleDataSource): MessageRepository {
+        return MessageRepositoryImpl(channelLocaleDataSource)
     }
 
     @Provides
@@ -55,6 +64,7 @@ class DataModule {
     }
 
     @Provides
+    @Singleton
     fun provideChannelRemoteDataSource(): ChannelRemoteDataSource {
         return ChannelRemoteDataSource()
     }

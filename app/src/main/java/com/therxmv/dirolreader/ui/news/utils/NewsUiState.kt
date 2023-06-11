@@ -1,7 +1,8 @@
 package com.therxmv.dirolreader.ui.news.utils
 
 data class NewsUiState(
-    val toolbarState: ToolbarState = ToolbarState()
+    val toolbarState: ToolbarState = ToolbarState(),
+    val isLoaded: Boolean = false
 )
 
 data class ToolbarState(
