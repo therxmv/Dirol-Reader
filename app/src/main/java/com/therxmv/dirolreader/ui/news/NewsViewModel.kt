@@ -11,12 +11,14 @@ import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import com.therxmv.dirolreader.ui.news.utils.NewsUiState
 import com.therxmv.dirolreader.ui.news.utils.ToolbarState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.Client
+import org.drinkless.td.libcore.telegram.TdApi
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,9 +33,7 @@ class NewsViewModel @Inject constructor(
     var news: Flow<PagingData<MessageModel>>? = null
 
     init {
-        Log.d("rozmi", "news vm init")
-
-        loadChannels()
+        loadChannels(null)
     }
 
     fun onEvent(event: NewsUiEvent) {
@@ -42,6 +42,14 @@ class NewsViewModel @Inject constructor(
                 viewModelScope.launch {
                     useCases.updateChannelRatingUseCase(event.id, event.num)
                 }
+            }
+            is NewsUiEvent.MarkAsRead -> {
+                client?.send(TdApi.ViewMessages(
+                    event.channelId,
+                    0,
+                    longArrayOf(event.messageId),
+                    true
+                )) {}
             }
         }
     }
@@ -56,17 +64,29 @@ class NewsViewModel @Inject constructor(
             unreadChannels = unreadCount
         )
     }
-    private fun loadChannels() {
+    fun loadChannels(onRefresh: (() -> Unit)?) {
+        _state.value = _state.value.copy(
+            isLoaded = false
+        )
+
         viewModelScope.launch {
+            delay(500)
             useCases.getRemoteChannelsIdsUseCase(client).collectLatest { list ->
                 setToolbar(list.filter { it.unreadCount > 0 }.size)
                 useCases.addChannelToLocaleUseCase(list)
-                _state.value = _state.value.copy(
-                    isLoaded = true
-                )
+            }
+
+            if(news == null) {
                 news = useCases.getMessagePagingUseCase(client).cachedIn(viewModelScope)
             }
+            else {
+                onRefresh?.let { it() }
+            }
         }
+
+        _state.value = _state.value.copy(
+            isLoaded = true
+        )
     }
 
     private fun setToolbar(unreadCount: Int) {

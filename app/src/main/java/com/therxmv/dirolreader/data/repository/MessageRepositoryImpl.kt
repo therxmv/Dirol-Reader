@@ -48,7 +48,6 @@ class MessageRepositoryImpl(
     override suspend fun getMessagesByPage(client: Client?, offset: Int, limit: Int): Flow<List<MessageModel>> {
         return withContext(Dispatchers.IO) {
             val channelsList = getChannelsList(offset, limit)
-            Log.d("rozmi", channelsList.toString())
 
             suspendCoroutine {
                 it.resume(
@@ -150,6 +149,34 @@ class MessageRepositoryImpl(
                         )
                     )
                 }
+            }
+            is TdApi.MessageVideo -> {
+                continuation.resume(
+                    MessageModel(
+                        message.id,
+                        channel.id,
+                        channel.rating,
+                        chat.title,
+                        avatarPath,
+                        message.date,
+                        "*VIDEO is not yet supported* ${(message.content as TdApi.MessageVideo).caption.text}",
+                        null
+                    )
+                )
+            }
+            is TdApi.MessageDocument -> {
+                continuation.resume(
+                    MessageModel(
+                        message.id,
+                        channel.id,
+                        channel.rating,
+                        chat.title,
+                        avatarPath,
+                        message.date,
+                        "*FILE is not yet supported* ${(message.content as TdApi.MessageDocument).caption.text}",
+                        null
+                    )
+                )
             }
             else -> {
                 continuation.resume(

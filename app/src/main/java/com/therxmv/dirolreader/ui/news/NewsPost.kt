@@ -1,6 +1,7 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -50,9 +52,9 @@ fun NewsPost(
     messageModel: MessageModel,
     likedState: MutableMap<Long, Boolean?>,
     starredState: MutableMap<Long, Boolean>,
+    readState: MutableMap<Long, Boolean>,
     onEvent: (event: NewsUiEvent) -> Unit,
 ) {
-    // TODO mark as read
     Box(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 8.dp)
@@ -207,6 +209,14 @@ fun NewsPost(
                 }
             }
         }
+    }
+
+    val isRead = readState[messageModel.id] ?: false
+
+    if(!isRead) {
+        Log.d("rozmi", "${messageModel.text} read")
+        onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
+        readState[messageModel.id] = true
     }
 }
 

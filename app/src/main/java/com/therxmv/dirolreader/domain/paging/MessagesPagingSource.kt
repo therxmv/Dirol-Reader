@@ -31,18 +31,13 @@ class MessagesPagingSource(
             messageRepository.getMessagesByPage(client, pageIndex * params.loadSize, PAGE_SIZE).collectLatest {
                 data.addAll(it)
             }
-//            Log.d("rozmi_paging", data.toString())
+//            Log.d("rozmi_paging", data.map { it.channelName }.toString())
 
-            if(data.isEmpty()) {
-                LoadResult.Error(EmptyListException())
-            }
-            else {
-                LoadResult.Page(
-                    data = data,
-                    prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
-                    nextKey = if (data.isEmpty()) null else pageIndex + 1,
-                )
-            }
+            LoadResult.Page(
+                data = data,
+                prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
+                nextKey = if (data.isEmpty()) null else pageIndex + 1,
+            )
         }
         catch (e: Exception) {
             LoadResult.Error(e)

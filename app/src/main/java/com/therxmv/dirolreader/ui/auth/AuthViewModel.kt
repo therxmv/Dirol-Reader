@@ -28,7 +28,6 @@ class AuthViewModel @Inject constructor(
     private var client: Client? = null
 
     init {
-        Log.d("rozmi", "auth vm init")
         client = useCases.createClientUseCase(ClientUpdateHandler())
         getAuthorizationState()
     }
