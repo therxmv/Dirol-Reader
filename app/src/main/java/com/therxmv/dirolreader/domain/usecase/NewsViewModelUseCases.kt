@@ -6,6 +6,7 @@ import com.therxmv.dirolreader.domain.usecase.channel.GetRemoteChannelsIdsUseCas
 import com.therxmv.dirolreader.domain.usecase.channel.UpdateChannelRatingUseCase
 import com.therxmv.dirolreader.domain.usecase.client.GetClientUseCase
 import com.therxmv.dirolreader.domain.usecase.message.GetMessagePagingUseCase
+import com.therxmv.dirolreader.domain.usecase.message.GetMessagePhotoUseCase
 import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserAvatarUseCase
 import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserUseCase
 
@@ -17,4 +18,5 @@ data class NewsViewModelUseCases(
     val getRemoteChannelsIdsUseCase: GetRemoteChannelsIdsUseCase,
     val getMessagePagingUseCase: GetMessagePagingUseCase,
     val updateChannelRatingUseCase: UpdateChannelRatingUseCase,
+    val getMessagePhotoUseCase: GetMessagePhotoUseCase,
 )

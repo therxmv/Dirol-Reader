@@ -1,12 +1,14 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
+import com.therxmv.dirolreader.ui.news.utils.NewsPostUiState
 import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import com.therxmv.dirolreader.ui.news.utils.NewsUiState
 import com.therxmv.dirolreader.ui.news.utils.ToolbarState
@@ -27,6 +29,8 @@ class NewsViewModel @Inject constructor(
 ): ViewModel() {
     private val _state = MutableStateFlow(NewsUiState())
     val state = _state.asStateFlow()
+
+    val postState = mutableStateMapOf<Long, NewsPostUiState>()
 
     private var client: Client? = useCases.getClientUseCase()
 
@@ -51,6 +55,16 @@ class NewsViewModel @Inject constructor(
                     true
                 )) {}
             }
+            is NewsUiEvent.LoadPhoto -> {
+                loadMessagePhoto(event.messageId, event.photoId)
+            }
+        }
+    }
+
+    private fun loadMessagePhoto(messageId: Long, photoId: Int) {
+        viewModelScope.launch {
+            val path = useCases.getMessagePhotoUseCase(client, photoId)
+            postState[messageId] = postState[messageId]?.copy(photoPath = path) ?: NewsPostUiState(photoPath = path)
         }
     }
 

@@ -1,14 +1,10 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,10 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -32,12 +25,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -48,16 +37,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import androidx.paging.compose.items
 import com.therxmv.dirolreader.R
-import com.therxmv.dirolreader.domain.models.MessageModel
-import kotlinx.coroutines.delay
+import com.therxmv.dirolreader.ui.news.utils.NewsPostUiState
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbar
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -145,9 +130,9 @@ fun NewsScreen(
             },
         ) {
             if(news != null) {
-                val likedState = remember { mutableStateMapOf<Long, Boolean?>() }
-                val starredState = remember { mutableStateMapOf<Long, Boolean>() }
-                val readState = remember { mutableStateMapOf<Long, Boolean>() }
+                val postState = remember { viewModel.postState }
+
+                val starredChannelState = remember { mutableStateMapOf<Long, Boolean>() }
                 val pullRefreshState = rememberPullRefreshState(
                     refreshing = !state.isLoaded,
                     onRefresh = {
@@ -174,9 +159,8 @@ fun NewsScreen(
 
                             NewsPost(
                                 item,
-                                likedState,
-                                starredState,
-                                readState,
+                                postState,
+                                starredChannelState,
                                 viewModel::onEvent
                             )
                         }

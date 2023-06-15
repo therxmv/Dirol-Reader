@@ -1,7 +1,7 @@
 package com.therxmv.dirolreader.ui.news
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,11 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,10 +33,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.therxmv.dirolreader.R
 import com.therxmv.dirolreader.domain.models.MessageModel
+import com.therxmv.dirolreader.ui.news.utils.NewsPostUiState
 import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -50,11 +45,12 @@ import java.util.TimeZone
 @Composable
 fun NewsPost(
     messageModel: MessageModel,
-    likedState: MutableMap<Long, Boolean?>,
+    postState: MutableMap<Long, NewsPostUiState>,
     starredState: MutableMap<Long, Boolean>,
-    readState: MutableMap<Long, Boolean>,
     onEvent: (event: NewsUiEvent) -> Unit,
 ) {
+    val state = postState[messageModel.id] ?: NewsPostUiState()
+
     Box(
         modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 8.dp)
@@ -64,18 +60,30 @@ fun NewsPost(
                 .wrapContentHeight()
                 .fillMaxWidth(),
         ) {
-            if(messageModel.photoPath != null) {
-                val bitmap = BitmapFactory.decodeFile(messageModel.photoPath).asImageBitmap()
-                val imageRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+            if(messageModel.photo != null) {
+                if(state.photoPath.isNullOrBlank()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height((messageModel.photo.height / 2).dp)
+                            .clip(MaterialTheme.shapes.small)
+                            .background(MaterialTheme.colorScheme.secondary)
+                    )
+                    onEvent(NewsUiEvent.LoadPhoto(messageModel.id, messageModel.photo.photo.id))
+                }
+                else {
+                    val bitmap = BitmapFactory.decodeFile(state.photoPath).asImageBitmap()
+                    val imageRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
 
-                Image(
-                    bitmap = bitmap,
-                    contentDescription = "photo",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(imageRatio)
-                        .clip(MaterialTheme.shapes.small)
-                )
+                    Image(
+                        bitmap = bitmap,
+                        contentDescription = "photo",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(imageRatio)
+                            .clip(MaterialTheme.shapes.small)
+                    )
+                }
             }
             Column(
                 modifier = Modifier
@@ -165,7 +173,7 @@ fun NewsPost(
                         .padding(top = 12.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    val isLiked = likedState[messageModel.id]
+                    val isLiked = state.isLiked
 
                     IconButton(
                         modifier = Modifier
@@ -176,7 +184,7 @@ fun NewsPost(
                                 messageModel.channelId,
                                 if (isLiked == null) 1 else if(isLiked == false) 2 else 0
                             ))
-                            likedState[messageModel.id] = true
+                            postState[messageModel.id] = state.copy(isLiked = true)
                         },
                     ) {
                         Icon(
@@ -195,7 +203,7 @@ fun NewsPost(
                                 messageModel.channelId,
                                 if (isLiked == null) -1 else if(isLiked == false) -2 else 0
                             ))
-                            likedState[messageModel.id] = false
+                            postState[messageModel.id] = state.copy(isLiked = false)
                         }
                     ) {
                         Icon(
@@ -211,12 +219,11 @@ fun NewsPost(
         }
     }
 
-    val isRead = readState[messageModel.id] ?: false
+    val isRead = state.isRead
 
     if(!isRead) {
-        Log.d("rozmi", "${messageModel.text} read")
         onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
-        readState[messageModel.id] = true
+        postState[messageModel.id] = state.copy(isRead = true)
     }
 }
 

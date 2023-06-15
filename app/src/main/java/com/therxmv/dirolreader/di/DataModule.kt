@@ -9,6 +9,7 @@ import com.therxmv.dirolreader.data.repository.UserRepositoryImpl
 import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
 import com.therxmv.dirolreader.data.source.locale.DirolDatabase
 import com.therxmv.dirolreader.data.source.remote.ChannelRemoteDataSource
+import com.therxmv.dirolreader.data.source.remote.MessageRemoteDataSource
 import com.therxmv.dirolreader.data.source.remote.UserRemoteDataSource
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
@@ -47,8 +48,8 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideMessageRepositoryImpl(channelLocaleDataSource: ChannelLocaleDataSource): MessageRepository {
-        return MessageRepositoryImpl(channelLocaleDataSource)
+    fun provideMessageRepositoryImpl(channelLocaleDataSource: ChannelLocaleDataSource, messageRemoteDataSource: MessageRemoteDataSource): MessageRepository {
+        return MessageRepositoryImpl(channelLocaleDataSource, messageRemoteDataSource)
     }
 
     @Provides
@@ -67,6 +68,12 @@ class DataModule {
     @Singleton
     fun provideChannelRemoteDataSource(): ChannelRemoteDataSource {
         return ChannelRemoteDataSource()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageRemoteDataSource(): MessageRemoteDataSource {
+        return MessageRemoteDataSource()
     }
 
     @Provides
