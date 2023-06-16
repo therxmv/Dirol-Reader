@@ -26,7 +26,10 @@ class MessageRemoteDataSource {
         }
     }
 
-    suspend fun getMessagesByPage(client: Client?, channelsList: List<Pair<ChannelModel, Int>>): Flow<List<MessageModel>> {
+    suspend fun getMessagesByPage(
+        client: Client?,
+        channelsList: List<Pair<ChannelModel, Int>>
+    ): Flow<List<MessageModel>> {
         return withContext(Dispatchers.IO) {
             suspendCoroutine {
                 it.resume(
@@ -35,25 +38,34 @@ class MessageRemoteDataSource {
                     }.map { list ->
                         list.map { elem ->
                             val channel = elem.first
-                            val historyOffset = elem.second - 1
-
+                            val historyOffset = elem.second
+                            // TODO compare timestamp with prevItem and add photoId to list
                             suspendCoroutine { continuation ->
                                 // TODO add while loop if doesn't load all messages
-                                client?.send(TdApi.GetChatHistory(channel.id, channel.lastReadMessageId, historyOffset, historyOffset * -1, false)) { ms ->
+                                client?.send(
+                                    TdApi.GetChatHistory(
+                                        channel.id,
+                                        channel.lastReadMessageId,
+                                        historyOffset,
+                                        historyOffset * -1,
+                                        false
+                                    )
+                                ) { ms ->
                                     ms as TdApi.Messages
                                     val m = ms.messages.first()
-//                                    Log.d("rozmi_id", m.id.toString())
+//                                    Log.d("rozmi", ms.messages.map { it.id }.toString())
+//                                    Log.d("rozmi_id", "${m.id}")
 
                                     client.send(TdApi.GetChat(channel.id)) { c ->
                                         c as TdApi.Chat
-//                                        if(c.title == "Dirol test channel") {
+//                                        if (c.title == "Dirol test channel") {
 //                                            Log.d("rozmi", ms.messages.size.toString())
 //                                            ms.messages.forEach { i ->
-//                                                Log.d("rozmi", i.content.toString())
+//                                                Log.d("rozmi", "${channel.lastReadMessageId} - ${m.id}: ${i.id}")
 //                                            }
 //                                        }
 
-                                        if(c.photo != null) {
+                                        if (c.photo != null) {
                                             client.send(TdApi.DownloadFile(c.photo?.small?.id!!, 22, 0, 1, true)) { f ->
                                                 f as TdApi.File
                                                 handleMessageType(
@@ -64,8 +76,7 @@ class MessageRemoteDataSource {
                                                     f.local.path
                                                 )
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             handleMessageType(
                                                 continuation,
                                                 channel,
@@ -102,7 +113,7 @@ class MessageRemoteDataSource {
             null
         )
 
-        when(message.content) {
+        when (message.content) {
             is TdApi.MessageText -> {
                 continuation.resume(
                     defaultModel.copy(
@@ -110,6 +121,7 @@ class MessageRemoteDataSource {
                     )
                 )
             }
+
             is TdApi.MessagePhoto -> {
                 continuation.resume(
                     defaultModel.copy(
@@ -118,6 +130,7 @@ class MessageRemoteDataSource {
                     )
                 )
             }
+
             is TdApi.MessageVideo -> {
                 continuation.resume(
                     defaultModel.copy(
@@ -125,6 +138,7 @@ class MessageRemoteDataSource {
                     )
                 )
             }
+
             is TdApi.MessageDocument -> {
                 continuation.resume(
                     defaultModel.copy(
@@ -132,6 +146,7 @@ class MessageRemoteDataSource {
                     )
                 )
             }
+
             else -> {
                 continuation.resume(defaultModel)
             }

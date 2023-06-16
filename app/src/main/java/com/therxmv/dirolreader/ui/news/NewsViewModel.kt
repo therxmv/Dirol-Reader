@@ -30,6 +30,8 @@ class NewsViewModel @Inject constructor(
     private val _state = MutableStateFlow(NewsUiState())
     val state = _state.asStateFlow()
 
+    private val readMessages = mutableListOf<Long>()
+
     val postState = mutableStateMapOf<Long, NewsPostUiState>()
 
     private var client: Client? = useCases.getClientUseCase()
@@ -48,12 +50,17 @@ class NewsViewModel @Inject constructor(
                 }
             }
             is NewsUiEvent.MarkAsRead -> {
-                client?.send(TdApi.ViewMessages(
-                    event.channelId,
-                    0,
-                    longArrayOf(event.messageId),
-                    true
-                )) {}
+                if(!readMessages.contains(event.messageId)) {
+                    Log.d("rozmi", "${event.messageId} read")
+                    client?.send(TdApi.ViewMessages(
+                        event.channelId,
+                        0,
+                        longArrayOf(event.messageId),
+                        true
+                    )) {}
+
+                    readMessages.add(event.messageId)
+                }
             }
             is NewsUiEvent.LoadPhoto -> {
                 loadMessagePhoto(event.messageId, event.photoId)

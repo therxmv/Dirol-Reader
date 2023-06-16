@@ -219,12 +219,7 @@ fun NewsPost(
         }
     }
 
-    val isRead = state.isRead
-
-    if(!isRead) {
-        onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
-        postState[messageModel.id] = state.copy(isRead = true)
-    }
+    onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
 }
 
 private fun getPostTime(date: Int): String {

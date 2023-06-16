@@ -1,6 +1,7 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -51,7 +52,7 @@ import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 import me.onebone.toolbar.rememberCollapsingToolbarState
 
-@OptIn(ExperimentalToolbarApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalToolbarApi::class, ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel()
@@ -150,6 +151,7 @@ fun NewsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         state = newsFeedState,
                     ) {
+                        Log.d("rozmi", "column recompose")
                         items(
                             count = news.itemCount,
                             key = news.itemKey(key = { it.id }),
