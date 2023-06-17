@@ -33,20 +33,22 @@ class MessageRepositoryImpl(
         ).flow
     }
 
-    override suspend fun getMessagesByPage(client: Client?, offset: Int, limit: Int): Flow<List<MessageModel>> {
+    override suspend fun getMessagesByPage(client: Client?, offset: Int, limit: Int): List<MessageModel> {
         return messageRemoteDataSource.getMessagesByPage(client, getChannelsList(offset, limit))
     }
 
-    private suspend fun getChannelsList(offset: Int, limit: Int): List<Pair<ChannelModel, Int>> {
-        val list = mutableListOf<Pair<ChannelModel, Int>>()
+    private suspend fun getChannelsList(offset: Int, limit: Int): List<List<ChannelModel>> {
+        val list = mutableListOf<ChannelModel>()
 
         channelLocaleDataSource.getAllChannels().map { elem ->
             for (i in 0 until elem.unreadCount) {
-                list.add(Pair(elem.toDomain(), (i + 1) * -1))
+                list.add(elem.toDomain())
             }
         }
 
-        return list.slice(offset until list.size).take(limit)
+        val temp = list.slice(offset until list.size).take(limit)
+
+        return temp.groupBy { it.id }.values.toList()
     }
 
     override suspend fun getMessagePhoto(client: Client?, photoId: Int): String {

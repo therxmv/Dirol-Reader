@@ -51,15 +51,13 @@ class NewsViewModel @Inject constructor(
             }
             is NewsUiEvent.MarkAsRead -> {
                 if(!readMessages.contains(event.messageId)) {
-                    Log.d("rozmi", "${event.messageId} read")
+                    readMessages.add(event.messageId)
                     client?.send(TdApi.ViewMessages(
                         event.channelId,
                         0,
                         longArrayOf(event.messageId),
                         true
                     )) {}
-
-                    readMessages.add(event.messageId)
                 }
             }
             is NewsUiEvent.LoadPhoto -> {

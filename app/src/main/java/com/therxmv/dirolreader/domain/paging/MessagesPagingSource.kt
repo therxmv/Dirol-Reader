@@ -26,11 +26,7 @@ class MessagesPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MessageModel> = withContext(Dispatchers.IO) {
         try {
             val pageIndex = params.key ?: STARTING_PAGE_INDEX
-            val data = mutableListOf<MessageModel>()
-
-            messageRepository.getMessagesByPage(client, pageIndex * params.loadSize, PAGE_SIZE).collectLatest {
-                data.addAll(it)
-            }
+            val data = messageRepository.getMessagesByPage(client, pageIndex * params.loadSize, PAGE_SIZE)
 //            Log.d("rozmi_paging", data.map { it.id }.toString())
 
             LoadResult.Page(

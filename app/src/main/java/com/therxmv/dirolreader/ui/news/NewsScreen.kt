@@ -151,7 +151,6 @@ fun NewsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         state = newsFeedState,
                     ) {
-                        Log.d("rozmi", "column recompose")
                         items(
                             count = news.itemCount,
                             key = news.itemKey(key = { it.id }),
