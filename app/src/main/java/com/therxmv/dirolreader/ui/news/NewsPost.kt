@@ -1,7 +1,7 @@
 package com.therxmv.dirolreader.ui.news
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,37 +19,50 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.therxmv.dirolreader.R
 import com.therxmv.dirolreader.domain.models.MessageModel
-import com.therxmv.dirolreader.ui.news.utils.NewsPostUiState
 import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
+import kotlinx.coroutines.launch
+import org.drinkless.td.libcore.telegram.TdApi.PhotoSize
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
+import kotlin.reflect.KSuspendFunction1
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NewsPost(
     messageModel: MessageModel,
-    postState: MutableMap<Long, NewsPostUiState>,
     starredState: MutableMap<Long, Boolean>,
+    loadPhotos: KSuspendFunction1<List<Int>, List<String>>,
     onEvent: (event: NewsUiEvent) -> Unit,
 ) {
-    val state = postState[messageModel.id] ?: NewsPostUiState()
+    val coroutineScope = rememberCoroutineScope()
+    val isLiked = rememberSaveable { mutableStateOf<Boolean?>(null) }
+    val photoPaths = rememberSaveable { mutableStateOf<List<String>?>(null) }
 
     Box(
         modifier = Modifier
@@ -60,29 +73,50 @@ fun NewsPost(
                 .wrapContentHeight()
                 .fillMaxWidth(),
         ) {
-            if(messageModel.photo != null) {
-                if(state.photoPath.isNullOrBlank()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height((messageModel.photo.height / 2).dp)
-                            .clip(MaterialTheme.shapes.small)
-                            .background(MaterialTheme.colorScheme.secondary)
+            if(messageModel.photos != null) {
+                LaunchedEffect(Unit) {
+                    coroutineScope.launch {
+                        photoPaths.value = loadPhotos(messageModel.photos.map { it.photo.id })
+                    }
+                }
+
+                val pagerState = rememberPagerState(initialPage = 0) {
+                    messageModel.photos.size
+                }
+
+                if(messageModel.photos.size == 1) {
+                    PostPhoto(
+                        photoPath = photoPaths.value?.get(0),
+                        photo = messageModel.photos[0],
                     )
-                    onEvent(NewsUiEvent.LoadPhoto(messageModel.id, messageModel.photo.photo.id))
                 }
                 else {
-                    val bitmap = BitmapFactory.decodeFile(state.photoPath).asImageBitmap()
-                    val imageRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
-
-                    Image(
-                        bitmap = bitmap,
-                        contentDescription = "photo",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(imageRatio)
-                            .clip(MaterialTheme.shapes.small)
-                    )
+                    Box {
+                        HorizontalPager(state = pagerState) { i ->
+                            PostPhoto(
+                                photoPath = photoPaths.value?.get(i),
+                                photo = messageModel.photos[i],
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(8.dp)
+                        ) {
+                            Card(
+                                shape = MaterialTheme.shapes.small,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+                                )
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(vertical = 3.dp, horizontal = 8.dp),
+                                    text = "${pagerState.currentPage + 1} ${stringResource(id = R.string.news_counter_divider)} ${messageModel.photos.size}",
+                                )
+                            }
+                        }
+                    }
                 }
             }
             Column(
@@ -132,6 +166,7 @@ fun NewsPost(
                         Text(
                             text = messageModel.channelName,
                             style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = getPostTime(messageModel.timestamp),
@@ -162,19 +197,19 @@ fun NewsPost(
                         tint = if(isStarred) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Text(
-                    text = messageModel.text,
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                )
+                if(messageModel.text.isNotEmpty()) {
+                    Text(
+                        text = messageModel.text,
+                        modifier = Modifier
+                            .padding(top = 12.dp)
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    val isLiked = state.isLiked
-
                     IconButton(
                         modifier = Modifier
                             .padding(end = 16.dp)
@@ -182,9 +217,9 @@ fun NewsPost(
                         onClick = {
                             onEvent(NewsUiEvent.UpdateRating(
                                 messageModel.channelId,
-                                if (isLiked == null) 1 else if(isLiked == false) 2 else 0
+                                if (isLiked.value == null) 1 else if(isLiked.value == false) 2 else 0
                             ))
-                            postState[messageModel.id] = state.copy(isLiked = true)
+                            isLiked.value = true
                         },
                     ) {
                         Icon(
@@ -192,7 +227,7 @@ fun NewsPost(
                             contentDescription = "like",
                             modifier = Modifier
                                 .clip(MaterialTheme.shapes.small),
-                            tint = if(isLiked == null || isLiked == false) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
+                            tint = if(isLiked.value == null || isLiked.value == false) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                         )
                     }
                     IconButton(
@@ -201,9 +236,9 @@ fun NewsPost(
                         onClick = {
                             onEvent(NewsUiEvent.UpdateRating(
                                 messageModel.channelId,
-                                if (isLiked == null) -1 else if(isLiked == false) -2 else 0
+                                if (isLiked.value == null) -1 else if(isLiked.value == false) -2 else 0
                             ))
-                            postState[messageModel.id] = state.copy(isLiked = false)
+                            isLiked.value = false
                         }
                     ) {
                         Icon(
@@ -211,7 +246,7 @@ fun NewsPost(
                             contentDescription = "dislike",
                             modifier = Modifier
                                 .clip(MaterialTheme.shapes.small),
-                            tint = if(isLiked == null || isLiked == true) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
+                            tint = if(isLiked.value == null || isLiked.value == true) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -220,6 +255,33 @@ fun NewsPost(
     }
 
     onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
+}
+
+@Composable
+fun PostPhoto(
+    photoPath: String?,
+    photo: PhotoSize,
+) {
+    if(photoPath.isNullOrBlank()) {
+        Box(
+            modifier = Modifier
+                .height((photo.height / 2).dp)
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.secondary)
+        )
+    }
+    else {
+        val bitmap = BitmapFactory.decodeFile(photoPath).asImageBitmap()
+        val imageRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+
+        Image(
+            bitmap = bitmap,
+            contentDescription = "photo",
+            modifier = Modifier
+                .aspectRatio(imageRatio)
+                .clip(MaterialTheme.shapes.small)
+        )
+    }
 }
 
 private fun getPostTime(date: Int): String {

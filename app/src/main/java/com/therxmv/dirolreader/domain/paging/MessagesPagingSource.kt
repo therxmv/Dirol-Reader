@@ -27,18 +27,54 @@ class MessagesPagingSource(
         try {
             val pageIndex = params.key ?: STARTING_PAGE_INDEX
             val data = messageRepository.getMessagesByPage(client, pageIndex * params.loadSize, PAGE_SIZE)
+
 //            Log.d("rozmi_paging", data.map { it.id }.toString())
 
             LoadResult.Page(
-                data = data,
+                data = groupPhotoMessages(data),
                 prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
                 nextKey = if (data.isEmpty()) null else pageIndex + 1,
             )
         }
         catch (e: Exception) {
+            e.printStackTrace()
             LoadResult.Error(e)
         }
     }
-}
 
-class EmptyListException: java.lang.Exception()
+    private fun groupPhotoMessages(list: List<MessageModel>): List<MessageModel> {
+        val temp = mutableListOf<MessageModel>()
+
+        if(list.isEmpty() || list.size == 1) return list
+
+        var id = 0
+        temp.add(list[id])
+
+        for(i in 1 until list.size) {
+            val prevItem = temp[id]
+            val currentItem = list[i]
+
+            if(prevItem.photos == null || currentItem.photos == null) {
+                temp.add(currentItem)
+                id++
+            }
+            else {
+                if(currentItem.timestamp - prevItem.timestamp <= 10 && currentItem.channelId == prevItem.channelId) {
+                    prevItem.photos.add(currentItem.photos[0])
+
+                    prevItem.id = currentItem.id
+
+                    if(currentItem.text.isNotEmpty()) {
+                        prevItem.text = currentItem.text
+                    }
+                }
+                else {
+                    temp.add(currentItem)
+                    id++
+                }
+            }
+        }
+
+        return temp
+    }
+}

@@ -10,4 +10,5 @@
 
     <!-- News -->
     <string name="news_unread_channels">unread channels</string>
+    <string name="news_counter_divider">of</string>
 </resources>

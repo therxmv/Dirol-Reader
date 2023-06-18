@@ -23,7 +23,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class MessageRemoteDataSource {
     companion object {
-        var lastChannelAndMessageId: Pair<Long, Long>? = null
+        private var lastChannelAndMessageId: Pair<Long, Long>? = null
     }
 
     suspend fun getMessagePhoto(client: Client?, photoId: Int): String {
@@ -69,6 +69,7 @@ class MessageRemoteDataSource {
                                 it.removeAt(0)
                             }
                         }
+//                        Log.d("rozmi", list.map { it.id }.toString())
 
                         lastChannelAndMessageId = Pair(channel.id, list.last().id)
 
@@ -82,7 +83,7 @@ class MessageRemoteDataSource {
                                         c as Chat
 
                                         if (c.photo != null) {
-                                            client.send(TdApi.DownloadFile(c.photo?.small?.id!!, 22, 0, 1, true)) { f ->
+                                            client.send(TdApi.DownloadFile(c.photo?.small?.id!!, 32, 0, 0, true)) { f ->
                                                 f as TdApi.File
 
                                                 cont.resume(
@@ -134,7 +135,7 @@ class MessageRemoteDataSource {
             is TdApi.MessagePhoto -> {
                 defaultModel.copy(
                     text = (message.content as TdApi.MessagePhoto).caption.text,
-                    photo = (message.content as TdApi.MessagePhoto).photo.sizes[2]
+                    photos = mutableListOf((message.content as TdApi.MessagePhoto).photo.sizes.last())
                 )
             }
 

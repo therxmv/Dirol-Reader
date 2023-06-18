@@ -13,8 +13,8 @@ android {
         applicationId "com.therxmv.dirolreader"
         minSdk 23
         targetSdk 33
-        versionCode 70
-        versionName "0.7"
+        versionCode 90
+        versionName "0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -67,10 +67,11 @@ android {
 dependencies {
     implementation project(path: ':libtd')
 
+    // Collapsing toolbar
     implementation 'me.onebone:toolbar-compose:2.3.5'
 
     // Paging
-    implementation "androidx.paging:paging-compose:1.0.0-alpha20"
+    implementation "androidx.paging:paging-compose:3.2.0-beta01"
 
     // Navigation
     implementation "androidx.navigation:navigation-compose:2.6.0"

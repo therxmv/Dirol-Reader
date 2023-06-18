@@ -1,7 +1,6 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,7 +42,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.therxmv.dirolreader.R
-import com.therxmv.dirolreader.ui.news.utils.NewsPostUiState
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbar
 import me.onebone.toolbar.CollapsingToolbarScaffold
@@ -131,8 +129,6 @@ fun NewsScreen(
             },
         ) {
             if(news != null) {
-                val postState = remember { viewModel.postState }
-
                 val starredChannelState = remember { mutableStateMapOf<Long, Boolean>() }
                 val pullRefreshState = rememberPullRefreshState(
                     refreshing = !state.isLoaded,
@@ -160,8 +156,8 @@ fun NewsScreen(
 
                             NewsPost(
                                 item,
-                                postState,
                                 starredChannelState,
+                                viewModel::loadMessagePhoto,
                                 viewModel::onEvent
                             )
                         }

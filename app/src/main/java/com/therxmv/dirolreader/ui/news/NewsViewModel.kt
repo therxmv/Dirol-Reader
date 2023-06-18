@@ -32,8 +32,6 @@ class NewsViewModel @Inject constructor(
 
     private val readMessages = mutableListOf<Long>()
 
-    val postState = mutableStateMapOf<Long, NewsPostUiState>()
-
     private var client: Client? = useCases.getClientUseCase()
 
     var news: Flow<PagingData<MessageModel>>? = null
@@ -60,16 +58,12 @@ class NewsViewModel @Inject constructor(
                     )) {}
                 }
             }
-            is NewsUiEvent.LoadPhoto -> {
-                loadMessagePhoto(event.messageId, event.photoId)
-            }
         }
     }
 
-    private fun loadMessagePhoto(messageId: Long, photoId: Int) {
-        viewModelScope.launch {
-            val path = useCases.getMessagePhotoUseCase(client, photoId)
-            postState[messageId] = postState[messageId]?.copy(photoPath = path) ?: NewsPostUiState(photoPath = path)
+    suspend fun loadMessagePhoto(photoIds: List<Int>): List<String> {
+        return photoIds.map {
+            useCases.getMessagePhotoUseCase(client, it)
         }
     }
 
