@@ -1,6 +1,5 @@
 package com.therxmv.dirolreader.domain.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.therxmv.dirolreader.domain.models.MessageModel
@@ -8,7 +7,6 @@ import com.therxmv.dirolreader.domain.repository.MessageRepository
 import com.therxmv.dirolreader.utils.PAGE_SIZE
 import com.therxmv.dirolreader.utils.STARTING_PAGE_INDEX
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import org.drinkless.td.libcore.telegram.Client
 
@@ -54,13 +52,13 @@ class MessagesPagingSource(
             val prevItem = temp[id]
             val currentItem = list[i]
 
-            if(prevItem.photos == null || currentItem.photos == null) {
+            if(prevItem.mediaList == null || currentItem.mediaList == null) {
                 temp.add(currentItem)
                 id++
             }
             else {
                 if(currentItem.timestamp - prevItem.timestamp <= 10 && currentItem.channelId == prevItem.channelId) {
-                    prevItem.photos.add(currentItem.photos[0])
+                    prevItem.mediaList.add(currentItem.mediaList[0])
 
                     prevItem.id = currentItem.id
 

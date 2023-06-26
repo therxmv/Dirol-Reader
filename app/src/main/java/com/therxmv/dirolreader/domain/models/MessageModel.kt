@@ -1,6 +1,6 @@
 package com.therxmv.dirolreader.domain.models
 
-import org.drinkless.td.libcore.telegram.TdApi
+import com.therxmv.dirolreader.data.models.MediaModel
 
 data class MessageModel(
     var id: Long,
@@ -10,5 +10,5 @@ data class MessageModel(
     val channelAvatarPath: String?,
     val timestamp: Int,
     var text: String,
-    val photos: MutableList<TdApi.PhotoSize>?
+    val mediaList: MutableList<MediaModel>?
 )

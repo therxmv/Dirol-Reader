@@ -50,7 +50,7 @@ import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 import me.onebone.toolbar.rememberCollapsingToolbarState
 
-@OptIn(ExperimentalToolbarApi::class, ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalToolbarApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel()
@@ -157,7 +157,7 @@ fun NewsScreen(
                             NewsPost(
                                 item,
                                 starredChannelState,
-                                viewModel::loadMessagePhoto,
+                                viewModel::loadMessageMedia,
                                 viewModel::onEvent
                             )
                         }

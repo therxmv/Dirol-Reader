@@ -1,14 +1,13 @@
 package com.therxmv.dirolreader.ui.news
 
-import android.util.Log
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.therxmv.dirolreader.data.models.MediaModel
+import com.therxmv.dirolreader.data.models.MediaType
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
-import com.therxmv.dirolreader.ui.news.utils.NewsPostUiState
 import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import com.therxmv.dirolreader.ui.news.utils.NewsUiState
 import com.therxmv.dirolreader.ui.news.utils.ToolbarState
@@ -61,9 +60,9 @@ class NewsViewModel @Inject constructor(
         }
     }
 
-    suspend fun loadMessagePhoto(photoIds: List<Int>): List<String> {
-        return photoIds.map {
-            useCases.getMessagePhotoUseCase(client, it)
+    suspend fun loadMessageMedia(mediaList: List<MediaModel>, loadVideo: Boolean): List<String?> {
+        return mediaList.map {
+            if(it.type == MediaType.VIDEO && !loadVideo) null else useCases.getMessageMediaUseCase(client, it.id)
         }
     }
 

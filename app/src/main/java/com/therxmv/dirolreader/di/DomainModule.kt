@@ -1,7 +1,6 @@
 package com.therxmv.dirolreader.di
 
 import android.content.Context
-import com.therxmv.dirolreader.domain.paging.MessagesPagingSource
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
 import com.therxmv.dirolreader.domain.repository.MessageRepository
@@ -18,7 +17,7 @@ import com.therxmv.dirolreader.domain.usecase.channel.GetLocaleChannelsUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetRemoteChannelsIdsUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.UpdateChannelRatingUseCase
 import com.therxmv.dirolreader.domain.usecase.message.GetMessagePagingUseCase
-import com.therxmv.dirolreader.domain.usecase.message.GetMessagePhotoUseCase
+import com.therxmv.dirolreader.domain.usecase.message.GetMessageMediaUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -88,8 +87,8 @@ class DomainModule {
     }
 
     @Provides
-    fun provideGetMessagePhotoUseCase(messageRepository: MessageRepository): GetMessagePhotoUseCase {
-        return GetMessagePhotoUseCase(messageRepository)
+    fun provideGetMessageMediaUseCase(messageRepository: MessageRepository): GetMessageMediaUseCase {
+        return GetMessageMediaUseCase(messageRepository)
     }
 
     @Provides
@@ -101,7 +100,7 @@ class DomainModule {
         getRemoteChannelsIdsUseCase: GetRemoteChannelsIdsUseCase,
         getMessagePagingUseCase: GetMessagePagingUseCase,
         updateChannelRatingUseCase: UpdateChannelRatingUseCase,
-        getMessagePhotoUseCase: GetMessagePhotoUseCase,
+        getMessagePhotoUseCase: GetMessageMediaUseCase,
     ) = NewsViewModelUseCases(
         getClientUseCase,
         getCurrentUserUseCase,

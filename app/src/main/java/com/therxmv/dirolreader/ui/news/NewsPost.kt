@@ -1,6 +1,10 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.graphics.BitmapFactory
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.ImageButton
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,8 +32,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -37,32 +44,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import com.therxmv.dirolreader.R
+import com.therxmv.dirolreader.data.models.MediaModel
+import com.therxmv.dirolreader.data.models.MediaType
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import kotlinx.coroutines.launch
-import org.drinkless.td.libcore.telegram.TdApi.PhotoSize
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
 import kotlin.reflect.KSuspendFunction1
+import kotlin.reflect.KSuspendFunction2
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NewsPost(
     messageModel: MessageModel,
     starredState: MutableMap<Long, Boolean>,
-    loadPhotos: KSuspendFunction1<List<Int>, List<String>>,
+    loadMedia: KSuspendFunction2<List<MediaModel>, Boolean, List<String?>>,
     onEvent: (event: NewsUiEvent) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+
     val isLiked = rememberSaveable { mutableStateOf<Boolean?>(null) }
-    val photoPaths = rememberSaveable { mutableStateOf<List<String>?>(null) }
+    val mediaPaths = rememberSaveable { mutableStateOf<List<String?>?>(null) }
 
     Box(
         modifier = Modifier
@@ -73,30 +89,63 @@ fun NewsPost(
                 .wrapContentHeight()
                 .fillMaxWidth(),
         ) {
-            if(messageModel.photos != null) {
+            if(messageModel.mediaList != null) {
                 LaunchedEffect(Unit) {
                     coroutineScope.launch {
-                        photoPaths.value = loadPhotos(messageModel.photos.map { it.photo.id })
+                        mediaPaths.value = loadMedia(
+                            messageModel.mediaList,
+                            false
+                        )
                     }
                 }
 
                 val pagerState = rememberPagerState(initialPage = 0) {
-                    messageModel.photos.size
+                    messageModel.mediaList.size
                 }
 
-                if(messageModel.photos.size == 1) {
-                    PostPhoto(
-                        photoPath = photoPaths.value?.get(0),
-                        photo = messageModel.photos[0],
-                    )
+                if(messageModel.mediaList.size == 1) {
+                    val item = messageModel.mediaList[0]
+
+                    when(item.type) {
+                        MediaType.PHOTO -> {
+                            PostPhoto(
+                                photoPath = mediaPaths.value?.get(0),
+                                photo = item,
+                            )
+                        }
+                        MediaType.VIDEO -> {
+                            PostVideo(
+                                0,
+                                videoPath = mediaPaths.value?.get(0),
+                                video = item,
+                                mediaPaths,
+                                loadMedia
+                            )
+                        }
+                    }
                 }
                 else {
                     Box {
                         HorizontalPager(state = pagerState) { i ->
-                            PostPhoto(
-                                photoPath = photoPaths.value?.get(i),
-                                photo = messageModel.photos[i],
-                            )
+                            val item = messageModel.mediaList[i]
+
+                            when(item.type) {
+                                MediaType.PHOTO -> {
+                                    PostPhoto(
+                                        photoPath = mediaPaths.value?.get(i),
+                                        photo = item,
+                                    )
+                                }
+                                MediaType.VIDEO -> {
+                                    PostVideo(
+                                        i,
+                                        videoPath = mediaPaths.value?.get(i),
+                                        video = item,
+                                        mediaPaths,
+                                        loadMedia
+                                    )
+                                }
+                            }
                         }
                         Box(
                             modifier = Modifier
@@ -112,7 +161,7 @@ fun NewsPost(
                                 Text(
                                     modifier = Modifier
                                         .padding(vertical = 3.dp, horizontal = 8.dp),
-                                    text = "${pagerState.currentPage + 1} ${stringResource(id = R.string.news_counter_divider)} ${messageModel.photos.size}",
+                                    text = "${pagerState.currentPage + 1} ${stringResource(id = R.string.news_counter_divider)} ${messageModel.mediaList.size}",
                                 )
                             }
                         }
@@ -260,12 +309,13 @@ fun NewsPost(
 @Composable
 fun PostPhoto(
     photoPath: String?,
-    photo: PhotoSize,
+    photo: MediaModel,
 ) {
     if(photoPath.isNullOrBlank()) {
         Box(
             modifier = Modifier
-                .height((photo.height / 2).dp)
+                .fillMaxWidth()
+                .height((photo.height / 3).dp)
                 .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.secondary)
         )
@@ -282,6 +332,111 @@ fun PostPhoto(
                 .clip(MaterialTheme.shapes.small)
         )
     }
+}
+
+@Composable
+fun PostVideo(
+    pos: Int,
+    videoPath: String?,
+    video: MediaModel,
+    mediaState: MutableState<List<String?>?>,
+    loadMedia: KSuspendFunction2<List<MediaModel>, Boolean, List<String?>>,
+) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val exoPlayer = remember { ExoPlayer.Builder(context).build() }
+
+    DisposableEffect(exoPlayer) {
+        onDispose {
+            exoPlayer.release()
+        }
+    }
+
+    if(videoPath.isNullOrBlank()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height((video.height / 2).dp)
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.secondary),
+            contentAlignment = Alignment.Center
+        ) {
+            IconButton(
+                onClick = {
+                    coroutineScope.launch {
+                        val temp = mediaState.value!!.toMutableList()
+                        temp[pos] = loadMedia(listOf(video), true).first()
+                        mediaState.value = temp
+                    }
+                    // TODO add loader
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.download_icon),
+                    contentDescription = "download",
+                    tint = MaterialTheme.colorScheme.onSecondary
+                )
+            }
+        }
+    }
+    else {
+        val videoRatio = video.width.toFloat() / video.height.toFloat()
+
+        exoPlayer.apply {
+            setMediaItem(MediaItem.fromUri(videoPath))
+            prepare()
+        }
+
+        val playerView = remember {
+            val layout = LayoutInflater.from(context).inflate(R.layout.video_player, null, false)
+            val playerView = layout.findViewById(R.id.playerView) as PlayerView
+
+            handlePlayPauseButtons(playerView, exoPlayer)
+
+            playerView.apply {
+                player = exoPlayer
+            }
+        }
+
+        AndroidView(
+            factory = { playerView },
+            modifier = Modifier
+                .aspectRatio(videoRatio)
+                .clip(MaterialTheme.shapes.small)
+        )
+    }
+}
+
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+private fun handlePlayPauseButtons(playerView: PlayerView, exoPlayer: ExoPlayer) {
+    val playBtn = playerView.findViewById<ImageButton>(R.id.playButton)
+    val pauseBtn = playerView.findViewById<ImageButton>(R.id.pauseButton)
+
+    playBtn.setOnClickListener {
+        if(playerView.player?.playbackState == Player.STATE_ENDED) {
+            playerView.player?.seekTo(0L)
+        }
+
+        it.visibility = View.GONE
+        pauseBtn.visibility = View.VISIBLE
+        playerView.player?.play()
+        playerView.hideController()
+    }
+
+    pauseBtn.setOnClickListener {
+        it.visibility = View.GONE
+        playBtn.visibility = View.VISIBLE
+        playerView.player?.pause()
+    }
+
+    exoPlayer.addListener(object : Player.Listener {
+        override fun onPlaybackStateChanged(state: Int) {
+            if (state == Player.STATE_ENDED) {
+                pauseBtn.visibility = View.GONE
+                playBtn.visibility = View.VISIBLE
+            }
+        }
+    })
 }
 
 private fun getPostTime(date: Int): String {

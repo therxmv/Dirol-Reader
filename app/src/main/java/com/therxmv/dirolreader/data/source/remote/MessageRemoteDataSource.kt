@@ -1,15 +1,14 @@
 package com.therxmv.dirolreader.data.source.remote
 
 import android.util.Log
+import com.therxmv.dirolreader.data.models.MediaModel
+import com.therxmv.dirolreader.data.models.MediaType
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.models.MessageModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flattenConcat
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
@@ -17,7 +16,6 @@ import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 import org.drinkless.td.libcore.telegram.TdApi.Chat
 import org.drinkless.td.libcore.telegram.TdApi.Message
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -133,15 +131,34 @@ class MessageRemoteDataSource {
             }
 
             is TdApi.MessagePhoto -> {
+                val photo = (message.content as TdApi.MessagePhoto).photo.sizes.last()
+
                 defaultModel.copy(
                     text = (message.content as TdApi.MessagePhoto).caption.text,
-                    photos = mutableListOf((message.content as TdApi.MessagePhoto).photo.sizes.last())
+                    mediaList = mutableListOf(
+                        MediaModel(
+                            photo.photo.id,
+                            photo.height,
+                            photo.width,
+                            MediaType.PHOTO
+                        )
+                    )
                 )
             }
 
             is TdApi.MessageVideo -> {
+                val video = (message.content as TdApi.MessageVideo).video
+
                 defaultModel.copy(
-                    text = "*VIDEO is not yet supported* ${(message.content as TdApi.MessageVideo).caption.text}",
+                    text = (message.content as TdApi.MessageVideo).caption.text,
+                    mediaList = mutableListOf(
+                        MediaModel(
+                            video.video.id,
+                            video.height,
+                            video.width,
+                            MediaType.VIDEO
+                        )
+                    )
                 )
             }
 
@@ -152,6 +169,7 @@ class MessageRemoteDataSource {
             }
 
             else -> {
+                Log.d("rozmi", message.content.toString())
                 defaultModel
             }
         }

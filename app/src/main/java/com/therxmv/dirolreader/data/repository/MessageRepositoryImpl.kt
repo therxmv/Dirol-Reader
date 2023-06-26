@@ -51,7 +51,7 @@ class MessageRepositoryImpl(
         return temp.groupBy { it.id }.values.toList()
     }
 
-    override suspend fun getMessagePhoto(client: Client?, photoId: Int): String {
+    override suspend fun getMessageMedia(client: Client?, photoId: Int): String {
         return messageRemoteDataSource.getMessagePhoto(client, photoId)
     }
 
