@@ -140,6 +140,7 @@ class MessageRemoteDataSource {
                             photo.photo.id,
                             photo.height,
                             photo.width,
+                            photo.photo.size,
                             MediaType.PHOTO
                         )
                     )
@@ -156,6 +157,97 @@ class MessageRemoteDataSource {
                             video.video.id,
                             video.height,
                             video.width,
+                            video.video.size,
+                            MediaType.VIDEO
+                        )
+                    )
+                )
+            }
+
+            is TdApi.MessageAnimation -> {
+                val anim = (message.content as TdApi.MessageAnimation).animation
+
+                defaultModel.copy(
+                    text = (message.content as TdApi.MessageAnimation).caption.text,
+                    mediaList = mutableListOf(
+                        MediaModel(
+                            anim.animation.id,
+                            anim.height,
+                            anim.width,
+                            anim.animation.size,
+                            MediaType.VIDEO
+                        )
+                    )
+                )
+            }
+
+            is TdApi.MessageSticker -> {
+                val sticker = (message.content as TdApi.MessageSticker).sticker
+
+                if(sticker.isAnimated) {
+                    defaultModel
+                }
+                else {
+                    defaultModel.copy(
+                        text = "",
+                        mediaList = mutableListOf(
+                            MediaModel(
+                                sticker.sticker.id,
+                                sticker.height,
+                                sticker.width,
+                                sticker.sticker.size,
+                                MediaType.PHOTO
+                            )
+                        )
+                    )
+                }
+            }
+
+            is TdApi.MessageVideoNote -> {
+                val video = (message.content as TdApi.MessageVideoNote).videoNote
+
+                defaultModel.copy(
+                    text = "",
+                    mediaList = mutableListOf(
+                        MediaModel(
+                            video.video.id,
+                            video.length,
+                            video.length,
+                            video.video.size,
+                            MediaType.VIDEO
+                        )
+                    )
+                )
+            }
+
+            is TdApi.MessageAudio -> {
+                val audio = (message.content as TdApi.MessageAudio).audio
+
+                defaultModel.copy(
+                    text = (message.content as TdApi.MessageAudio).caption.text,
+                    mediaList = mutableListOf(
+                        MediaModel(
+                            audio.audio.id,
+                            100,
+                            100,
+                            audio.audio.size,
+                            MediaType.VIDEO
+                        )
+                    )
+                )
+            }
+
+            is TdApi.MessageVoiceNote -> {
+                val voice = (message.content as TdApi.MessageVoiceNote).voiceNote
+
+                defaultModel.copy(
+                    text = (message.content as TdApi.MessageVoiceNote).caption.text,
+                    mediaList = mutableListOf(
+                        MediaModel(
+                            voice.voice.id,
+                            100,
+                            100,
+                            voice.voice.size,
                             MediaType.VIDEO
                         )
                     )

@@ -27,6 +27,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +62,8 @@ import com.therxmv.dirolreader.data.models.MediaType
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import kotlinx.coroutines.launch
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
@@ -92,10 +95,12 @@ fun NewsPost(
             if(messageModel.mediaList != null) {
                 LaunchedEffect(Unit) {
                     coroutineScope.launch {
-                        mediaPaths.value = loadMedia(
-                            messageModel.mediaList,
-                            false
-                        )
+                        if(mediaPaths.value == null) {
+                            mediaPaths.value = loadMedia(
+                                messageModel.mediaList,
+                                false
+                            )
+                        }
                     }
                 }
 
@@ -303,7 +308,7 @@ fun NewsPost(
         }
     }
 
-    onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
+//    onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
 }
 
 @Composable
@@ -353,29 +358,47 @@ fun PostVideo(
     }
 
     if(videoPath.isNullOrBlank()) {
+        val isDownloading = remember { mutableStateOf(false) }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height((video.height / 2).dp)
+                .height(if(video.height > 150) (video.height / 2).dp else video.height.dp)
                 .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.secondary),
             contentAlignment = Alignment.Center
         ) {
-            IconButton(
-                onClick = {
-                    coroutineScope.launch {
-                        val temp = mediaState.value!!.toMutableList()
-                        temp[pos] = loadMedia(listOf(video), true).first()
-                        mediaState.value = temp
-                    }
-                    // TODO add loader
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.download_icon),
-                    contentDescription = "download",
-                    tint = MaterialTheme.colorScheme.onSecondary
+            if(isDownloading.value) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onSecondary
                 )
+            }
+            else {
+                Column(
+                    modifier = Modifier
+                        .clickable {
+                            isDownloading.value = true
+                            coroutineScope.launch {
+                                val temp = mediaState.value?.toMutableList() ?: mutableListOf()
+                                temp[pos] = loadMedia(listOf(video), true).first()
+                                mediaState.value = temp
+                            }
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(36.dp),
+                        painter = painterResource(id = R.drawable.download_icon),
+                        contentDescription = "download",
+                        tint = MaterialTheme.colorScheme.onSecondary,
+                    )
+                    Text(
+                        text = "${(video.size / 1048576F).toBigDecimal().setScale(1, RoundingMode.UP)} MB",
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
@@ -446,22 +469,3 @@ private fun getPostTime(date: Int): String {
     return dateFormat.format(Date(date * 1000L))
     // TODO maybe add "today", "yesterday"
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewNewsPost() {
-//    NewsPost(
-//        MessageModel(
-//            0,
-//            0,
-//            0,
-//            "Channel Name",
-//            null,
-//            1856546,
-//            "Lorem ipsum dolor sit amet, consectetur adipiscing consectetur consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-//        null
-//        ),
-//        null,
-//        { },
-//    )
-//}

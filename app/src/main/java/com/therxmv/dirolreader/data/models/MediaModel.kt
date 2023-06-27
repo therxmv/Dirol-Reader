@@ -4,9 +4,10 @@ data class MediaModel(
     val id: Int,
     val height: Int,
     val width: Int,
+    val size: Int,
     val type: MediaType,
 )
-// TODO add isDownloaded
+
 enum class MediaType {
     PHOTO,
     VIDEO,
