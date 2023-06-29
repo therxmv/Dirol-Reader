@@ -5,6 +5,7 @@ import com.therxmv.dirolreader.data.models.MediaModel
 import com.therxmv.dirolreader.data.models.MediaType
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.models.MessageModel
+import com.therxmv.dirolreader.utils.toMarkdown
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.asFlow
@@ -126,7 +127,7 @@ class MessageRemoteDataSource {
         return when (message.content) {
             is TdApi.MessageText -> {
                 defaultModel.copy(
-                    text = (message.content as TdApi.MessageText).text.text,
+                    text = (message.content as TdApi.MessageText).text.toMarkdown(),
                 )
             }
 
@@ -134,7 +135,7 @@ class MessageRemoteDataSource {
                 val photo = (message.content as TdApi.MessagePhoto).photo.sizes.last()
 
                 defaultModel.copy(
-                    text = (message.content as TdApi.MessagePhoto).caption.text,
+                    text = (message.content as TdApi.MessagePhoto).caption.toMarkdown(),
                     mediaList = mutableListOf(
                         MediaModel(
                             photo.photo.id,
@@ -151,7 +152,7 @@ class MessageRemoteDataSource {
                 val video = (message.content as TdApi.MessageVideo).video
 
                 defaultModel.copy(
-                    text = (message.content as TdApi.MessageVideo).caption.text,
+                    text = (message.content as TdApi.MessageVideo).caption.toMarkdown(),
                     mediaList = mutableListOf(
                         MediaModel(
                             video.video.id,
@@ -168,7 +169,7 @@ class MessageRemoteDataSource {
                 val anim = (message.content as TdApi.MessageAnimation).animation
 
                 defaultModel.copy(
-                    text = (message.content as TdApi.MessageAnimation).caption.text,
+                    text = (message.content as TdApi.MessageAnimation).caption.toMarkdown(),
                     mediaList = mutableListOf(
                         MediaModel(
                             anim.animation.id,
@@ -185,7 +186,9 @@ class MessageRemoteDataSource {
                 val sticker = (message.content as TdApi.MessageSticker).sticker
 
                 if(sticker.isAnimated) {
-                    defaultModel
+                    defaultModel.copy(
+                        text = "Animated sticker is not supported"
+                    )
                 }
                 else {
                     defaultModel.copy(
@@ -224,7 +227,7 @@ class MessageRemoteDataSource {
                 val audio = (message.content as TdApi.MessageAudio).audio
 
                 defaultModel.copy(
-                    text = (message.content as TdApi.MessageAudio).caption.text,
+                    text = (message.content as TdApi.MessageAudio).caption.toMarkdown(),
                     mediaList = mutableListOf(
                         MediaModel(
                             audio.audio.id,
@@ -241,7 +244,7 @@ class MessageRemoteDataSource {
                 val voice = (message.content as TdApi.MessageVoiceNote).voiceNote
 
                 defaultModel.copy(
-                    text = (message.content as TdApi.MessageVoiceNote).caption.text,
+                    text = (message.content as TdApi.MessageVoiceNote).caption.toMarkdown(),
                     mediaList = mutableListOf(
                         MediaModel(
                             voice.voice.id,
@@ -256,7 +259,7 @@ class MessageRemoteDataSource {
 
             is TdApi.MessageDocument -> {
                 defaultModel.copy(
-                    text = "*FILE is not yet supported* ${(message.content as TdApi.MessageDocument).caption.text}",
+                    text = "*FILE is not yet supported* ${(message.content as TdApi.MessageDocument).caption.toMarkdown()}",
                 )
             }
 

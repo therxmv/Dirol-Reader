@@ -67,6 +67,17 @@ android {
 dependencies {
     implementation project(path: ':libtd')
 
+    // Markdown
+    final def markwon_version = '4.6.2'
+
+    implementation "io.noties.markwon:core:$markwon_version"
+    implementation "io.noties.markwon:ext-strikethrough:$markwon_version"
+    implementation "io.noties.markwon:ext-tables:$markwon_version"
+    implementation "io.noties.markwon:html:$markwon_version"
+    implementation "io.noties.markwon:linkify:$markwon_version"
+
+    implementation 'com.github.jeziellago:compose-markdown:0.3.4'
+
     // Exoplayer
     implementation 'androidx.media3:media3-exoplayer:1.1.0-rc01'
     implementation 'androidx.media3:media3-ui:1.1.0-rc01'
