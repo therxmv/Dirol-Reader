@@ -271,11 +271,13 @@ fun NewsPost(
                             .padding(end = 16.dp)
                             .size(24.dp),
                         onClick = {
-                            onEvent(NewsUiEvent.UpdateRating(
-                                messageModel.channelId,
-                                if (isLiked.value == null) 1 else if(isLiked.value == false) 2 else 0
-                            ))
-                            isLiked.value = true
+                            onEvent(
+                                NewsUiEvent.UpdateRating(
+                                    messageModel.channelId,
+                                    if (isLiked.value == null) 1 else if(isLiked.value == false) 2 else 0
+                                )
+                            )
+                            isLiked.value = if(isLiked.value == true) null else true
                         },
                     ) {
                         Icon(
@@ -294,7 +296,7 @@ fun NewsPost(
                                 messageModel.channelId,
                                 if (isLiked.value == null) -1 else if(isLiked.value == false) -2 else 0
                             ))
-                            isLiked.value = false
+                            isLiked.value = if(isLiked.value == false) null else false
                         }
                     ) {
                         Icon(
@@ -310,7 +312,7 @@ fun NewsPost(
         }
     }
 
-//    onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
+    onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
 }
 
 @Composable

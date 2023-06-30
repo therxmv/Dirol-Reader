@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,7 +52,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthScreen(
     onNavigateToNews: () -> Unit,
@@ -87,9 +90,31 @@ fun AuthScreen(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
                     value = inputValue,
-                    onValueChange = { inputValue = it },
+                    onValueChange = {
+                        inputValue = it
+                        viewModel.disableError()
+                    },
                     keyboardOptions = getKeyboardOptions(state.authState),
-                    visualTransformation = if (state.authState == AuthState.PASSWORD) PasswordVisualTransformation() else VisualTransformation.None
+                    visualTransformation = if (state.authState == AuthState.PASSWORD) PasswordVisualTransformation() else VisualTransformation.None,
+                    isError = !state.isValidInput,
+                    supportingText = {
+                        if (!state.isValidInput) {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = stringResource(id = R.string.authIncorrectInput),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    trailingIcon = {
+                        if (!state.isValidInput) {
+                            Icon(
+                                painterResource(id = R.drawable.error_icon),
+                                "error",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
                 )
                 Button(
                     modifier = Modifier

@@ -56,6 +56,12 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun disableError() {
+        _state.value = _state.value.copy(
+            isValidInput = true
+        )
+    }
+
     private fun onAuthorizationStateUpdated(authorizationState: AuthorizationState?) {
         when(authorizationState?.constructor) {
             TdApi.AuthorizationStateWaitTdlibParameters.CONSTRUCTOR -> {
@@ -72,15 +78,24 @@ class AuthViewModel @Inject constructor(
             }
             TdApi.AuthorizationStateWaitPhoneNumber.CONSTRUCTOR -> {
                 Log.d("rozmi_authState", "AuthState.PHONE")
-                _state.value = _state.value.copy(authState = AuthState.PHONE)
+                _state.value = _state.value.copy(
+                    authState = AuthState.PHONE,
+                    isValidInput = _state.value.authState != AuthState.PHONE
+                )
             }
             TdApi.AuthorizationStateWaitCode.CONSTRUCTOR -> {
                 Log.d("rozmi_authState", "AuthState.CODE")
-                _state.value = _state.value.copy(authState = AuthState.CODE)
+                _state.value = _state.value.copy(
+                    authState = AuthState.CODE,
+                    isValidInput = _state.value.authState != AuthState.CODE
+                )
             }
             TdApi.AuthorizationStateWaitPassword.CONSTRUCTOR -> {
                 Log.d("rozmi_authState", "AuthState.PASSWORD")
-                _state.value = _state.value.copy(authState = AuthState.PASSWORD)
+                _state.value = _state.value.copy(
+                    authState = AuthState.PASSWORD,
+                    isValidInput = _state.value.authState != AuthState.PASSWORD
+                )
             }
             TdApi.AuthorizationStateReady.CONSTRUCTOR -> {
                 Log.d("rozmi_authState", "AuthState.READY")

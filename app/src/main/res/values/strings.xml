@@ -7,6 +7,7 @@
     <string name="authTitlePassword">Enter 2-step verification password</string>
     <string name="authTitleError">Oops… Something went wrong</string>
     <string name="authConfirmBtn">Continue</string>
+    <string name="authIncorrectInput">Incorrect input</string>
 
     <!-- News -->
     <string name="news_unread_channels">unread channels</string>
