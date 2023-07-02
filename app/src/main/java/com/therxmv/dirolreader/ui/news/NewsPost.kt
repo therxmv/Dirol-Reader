@@ -312,7 +312,7 @@ fun NewsPost(
         }
     }
 
-    onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
+//    onEvent(NewsUiEvent.MarkAsRead(messageModel.id, messageModel.channelId))
 }
 
 @Composable

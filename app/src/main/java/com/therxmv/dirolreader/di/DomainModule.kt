@@ -12,6 +12,7 @@ import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserAvatarUseCase
 import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserUseCase
 import com.therxmv.dirolreader.domain.usecase.GetTdLibParametersUseCase
 import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
+import com.therxmv.dirolreader.domain.usecase.ProfileViewModelUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.AddChannelToLocaleUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetLocaleChannelsUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetRemoteChannelsIdsUseCase
@@ -110,5 +111,16 @@ class DomainModule {
         getMessagePagingUseCase,
         updateChannelRatingUseCase,
         getMessagePhotoUseCase,
+    )
+
+    @Provides
+    fun provideProfileViewModelUseCase(
+        getClientUseCase: GetClientUseCase,
+        getCurrentUserUseCase: GetCurrentUserUseCase,
+        getCurrentUserAvatarUseCase: GetCurrentUserAvatarUseCase,
+    ) = ProfileViewModelUseCase(
+        getClientUseCase,
+        getCurrentUserUseCase,
+        getCurrentUserAvatarUseCase
     )
 }

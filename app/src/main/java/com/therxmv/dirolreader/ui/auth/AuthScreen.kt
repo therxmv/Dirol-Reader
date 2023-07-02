@@ -2,13 +2,16 @@ package com.therxmv.dirolreader.ui.auth
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -60,6 +65,7 @@ fun AuthScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     var inputValue by remember { mutableStateOf("") }
+    var isDialogOpened by remember { mutableStateOf(false)  }
 
     if(state.authState == AuthState.READY) {
         LaunchedEffect(Unit) {
@@ -71,19 +77,49 @@ fun AuthScreen(
         if (state.authState != AuthState.START
             && state.authState != AuthState.READY)
         {
+            if(isDialogOpened) {
+                AlertDialog(
+                    shape = MaterialTheme.shapes.medium,
+                    onDismissRequest = { isDialogOpened = false },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                isDialogOpened = false
+                                viewModel.onEvent(AuthUiEvent.ConfirmInput(state.authState, inputValue))
+                                inputValue = ""
+                            }
+                        ) {
+                            Text(text = stringResource(id = R.string.auth_dialog_confirm))
+                        }
+                    },
+                    text = {
+                        Text(text = "${stringResource(id = R.string.auth_dialog_title)} $inputValue")
+                    }
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
                     .padding(30.dp),
                 verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Image(
+                    modifier = Modifier
+                        .size(172.dp)
+                        .clip(MaterialTheme.shapes.extraLarge),
+                    painter = painterResource(id = R.drawable.logo_icon),
+                    contentDescription = "Logo",
+                )
                 Text(
                     text = getTitleString(LocalContext.current, state.authState),
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(top = 32.dp)
                 )
                 OutlinedTextField(
                     modifier = Modifier
@@ -101,7 +137,7 @@ fun AuthScreen(
                         if (!state.isValidInput) {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = stringResource(id = R.string.authIncorrectInput),
+                                text = stringResource(id = R.string.auth_incorrect_input),
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
@@ -120,11 +156,16 @@ fun AuthScreen(
                     modifier = Modifier
                         .align(Alignment.End),
                     onClick = {
-                        viewModel.onEvent(AuthUiEvent.ConfirmInput(state.authState, inputValue))
-                        inputValue = ""
+                        if(state.authState == AuthState.PHONE) {
+                            isDialogOpened = true
+                        }
+                        else {
+                            viewModel.onEvent(AuthUiEvent.ConfirmInput(state.authState, inputValue))
+                            inputValue = ""
+                        }
                     },
                 ) {
-                    Text(text = stringResource(id = R.string.authConfirmBtn))
+                    Text(text = stringResource(id = R.string.auth_continue_btn))
                 }
             }
         }
@@ -154,10 +195,10 @@ private fun getKeyboardOptions(state: AuthState): KeyboardOptions {
 
 private fun getTitleString(context: Context, state: AuthState): String {
     return when (state) {
-        AuthState.PHONE -> context.getString(R.string.authTitlePhone)
-        AuthState.CODE -> context.getString(R.string.authTitleCode)
-        AuthState.PASSWORD -> context.getString(R.string.authTitlePassword)
-        AuthState.ERROR -> context.getString(R.string.authTitleError)
+        AuthState.PHONE -> context.getString(R.string.auth_title_phone)
+        AuthState.CODE -> context.getString(R.string.auth_title_code)
+        AuthState.PASSWORD -> context.getString(R.string.auth_title_password)
+        AuthState.ERROR -> context.getString(R.string.auth_title_error)
         else -> ""
     }
 }

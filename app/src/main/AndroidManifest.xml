@@ -16,6 +16,7 @@
         <activity
             android:exported="true"
             android:name=".ui.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.DirolReader">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

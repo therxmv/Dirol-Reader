@@ -10,10 +10,8 @@ class ClientRepositoryImpl: ClientRepository {
     override fun getClient() = client
 
     override fun createClient(updateHandler: Client.ResultHandler): Client? {
-        if(client == null) {
-            client = Client.create(updateHandler, null, null)
-            client?.send(TdApi.SetLogVerbosityLevel(0)) {}
-        }
+        client = Client.create(updateHandler, null, null)
+        client?.send(TdApi.SetLogVerbosityLevel(0)) {}
 
         return client
     }

@@ -6,11 +6,13 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.therxmv.dirolreader.data.models.MediaModel
 import com.therxmv.dirolreader.data.models.MediaType
+import com.therxmv.dirolreader.data.repository.AppSharedPrefsRepository
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
 import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import com.therxmv.dirolreader.ui.news.utils.NewsUiState
 import com.therxmv.dirolreader.ui.news.utils.ToolbarState
+import com.therxmv.dirolreader.utils.FILES_PATH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -20,11 +22,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(
     private val useCases: NewsViewModelUseCases,
+    private val appSharedPrefsRepository: AppSharedPrefsRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(NewsUiState())
     val state = _state.asStateFlow()
@@ -55,6 +59,20 @@ class NewsViewModel @Inject constructor(
                         longArrayOf(event.messageId),
                         true
                     )) {}
+                }
+            }
+        }
+    }
+
+    fun clearCache() {
+        if(appSharedPrefsRepository.isAutoDeleteEnabled) {
+            File(FILES_PATH).listFiles()?.forEach {
+                if(it.isDirectory) {
+                    it.listFiles()?.forEach { elem ->
+                        if(!elem.path.contains(".nomedia")) {
+                            elem.delete()
+                        }
+                    }
                 }
             }
         }

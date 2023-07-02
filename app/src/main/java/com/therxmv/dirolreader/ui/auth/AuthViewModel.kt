@@ -28,6 +28,10 @@ class AuthViewModel @Inject constructor(
     private var client: Client? = null
 
     init {
+        createClient()
+    }
+
+    private fun createClient() {
         client = useCases.createClientUseCase(ClientUpdateHandler())
         getAuthorizationState()
     }
@@ -63,44 +67,56 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun onAuthorizationStateUpdated(authorizationState: AuthorizationState?) {
-        when(authorizationState?.constructor) {
-            TdApi.AuthorizationStateWaitTdlibParameters.CONSTRUCTOR -> {
+        when(authorizationState!!) {
+            is TdApi.AuthorizationStateWaitTdlibParameters -> {
                 Log.d("rozmi_authState", "AuthState.PARAMS")
                 client?.send(TdApi.SetTdlibParameters(useCases.getTdLibParametersUseCase())) {
                     getAuthorizationState()
                 }
             }
-            TdApi.AuthorizationStateWaitEncryptionKey.CONSTRUCTOR -> {
+            is TdApi.AuthorizationStateWaitEncryptionKey -> {
                 Log.d("rozmi_authState", "AuthState.KEY")
                 client?.send(TdApi.CheckDatabaseEncryptionKey()) {
                     getAuthorizationState()
                 }
             }
-            TdApi.AuthorizationStateWaitPhoneNumber.CONSTRUCTOR -> {
+            is TdApi.AuthorizationStateWaitPhoneNumber -> {
                 Log.d("rozmi_authState", "AuthState.PHONE")
                 _state.value = _state.value.copy(
                     authState = AuthState.PHONE,
                     isValidInput = _state.value.authState != AuthState.PHONE
                 )
             }
-            TdApi.AuthorizationStateWaitCode.CONSTRUCTOR -> {
+            is TdApi.AuthorizationStateWaitCode -> {
                 Log.d("rozmi_authState", "AuthState.CODE")
                 _state.value = _state.value.copy(
                     authState = AuthState.CODE,
                     isValidInput = _state.value.authState != AuthState.CODE
                 )
             }
-            TdApi.AuthorizationStateWaitPassword.CONSTRUCTOR -> {
+            is TdApi.AuthorizationStateWaitPassword -> {
                 Log.d("rozmi_authState", "AuthState.PASSWORD")
                 _state.value = _state.value.copy(
                     authState = AuthState.PASSWORD,
                     isValidInput = _state.value.authState != AuthState.PASSWORD
                 )
             }
-            TdApi.AuthorizationStateReady.CONSTRUCTOR -> {
+            is TdApi.AuthorizationStateReady -> {
                 Log.d("rozmi_authState", "AuthState.READY")
                 _state.value = _state.value.copy(authState = AuthState.READY)
                 onCleared()
+            }
+            is TdApi.AuthorizationStateLoggingOut -> {
+                Log.d("rozmi_authState", "AuthState.LOGGING_OUT")
+                createClient()
+            }
+            is TdApi.AuthorizationStateClosing -> {
+                Log.d("rozmi_authState", "AuthState.CLOSING")
+                createClient()
+            }
+            is TdApi.AuthorizationStateClosed -> {
+                Log.d("rozmi_authState", "AuthState.CLOSED")
+                createClient()
             }
             else -> {
                 Log.d("rozmi_authState", "AuthState.ERROR")

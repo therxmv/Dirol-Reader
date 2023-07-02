@@ -7,9 +7,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.therxmv.dirolreader.ui.auth.AuthScreen
 import com.therxmv.dirolreader.ui.news.NewsScreen
+import com.therxmv.dirolreader.ui.profile.ProfileScreen
+import com.therxmv.dirolreader.ui.settings.StorageScreen
+import com.therxmv.dirolreader.ui.settings.ThemingScreen
 
 @Composable
-fun DirolNavHost() {
+fun DirolNavHost(
+    switchDynamicTheme: (Boolean) -> Unit
+) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Destination.AuthScreen.route) {
         composable(route = Destination.AuthScreen.route) {
@@ -23,7 +28,45 @@ fun DirolNavHost() {
             )
         }
         composable(route = Destination.NewsScreen.route) {
-            NewsScreen()
+            NewsScreen(
+                onNavigateToProfile = {
+                    navController.navigate(Destination.ProfileScreen.route) {
+                        popUpTo(Destination.NewsScreen.route) { inclusive = false }
+                    }
+                }
+            )
+        }
+        composable(route = Destination.ProfileScreen.route) {
+            ProfileScreen(
+                navController,
+                onNavigateToTheming = {
+                    navController.navigate(Destination.SettingsThemingScreen.route) {
+                        popUpTo(Destination.ProfileScreen.route) { inclusive = false }
+                    }
+                },
+                onNavigateToStorage = {
+                    navController.navigate(Destination.SettingsStorageScreen.route) {
+                        popUpTo(Destination.ProfileScreen.route) { inclusive = false }
+                    }
+                },
+                onNavigateToAuth = {
+                    navController.navigate(Destination.AuthScreen.route) {
+                        popUpTo(Destination.ProfileScreen.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(route = Destination.SettingsThemingScreen.route) {
+            ThemingScreen(
+                navController,
+                switchDynamicTheme
+            )
+        }
+        composable(route = Destination.SettingsStorageScreen.route) {
+            StorageScreen(
+                navController,
+            )
         }
     }
 }

@@ -2,10 +2,12 @@ package com.therxmv.dirolreader.di
 
 import android.content.Context
 import androidx.room.Room
+import com.therxmv.dirolreader.data.repository.AppSharedPrefsRepository
 import com.therxmv.dirolreader.data.repository.ChannelRepositoryImpl
 import com.therxmv.dirolreader.data.repository.ClientRepositoryImpl
 import com.therxmv.dirolreader.data.repository.MessageRepositoryImpl
 import com.therxmv.dirolreader.data.repository.UserRepositoryImpl
+import com.therxmv.dirolreader.data.source.locale.AppSharedPrefsDataSource
 import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
 import com.therxmv.dirolreader.data.source.locale.DirolDatabase
 import com.therxmv.dirolreader.data.source.remote.ChannelRemoteDataSource
@@ -74,6 +76,18 @@ class DataModule {
     @Singleton
     fun provideMessageRemoteDataSource(): MessageRemoteDataSource {
         return MessageRemoteDataSource()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppSharedPrefsDataSource(@ApplicationContext context: Context): AppSharedPrefsDataSource {
+        return AppSharedPrefsDataSource(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppSharedPrefsRepository(appSharedPrefsDataSource: AppSharedPrefsDataSource): AppSharedPrefsRepository {
+        return AppSharedPrefsRepository(appSharedPrefsDataSource)
     }
 
     @Provides

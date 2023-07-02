@@ -1,6 +1,7 @@
 package com.therxmv.dirolreader.ui.news
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +26,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateMapOf
@@ -33,11 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
@@ -53,15 +59,34 @@ import me.onebone.toolbar.rememberCollapsingToolbarState
 @OptIn(ExperimentalToolbarApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun NewsScreen(
-    viewModel: NewsViewModel = hiltViewModel()
+    viewModel: NewsViewModel = hiltViewModel(),
+    onNavigateToProfile: () -> Unit
 ) {
     val state = viewModel.state.collectAsState().value
     val news = viewModel.news?.collectAsLazyPagingItems()
 
     val coroutineScope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val newsFeedState = rememberLazyListState()
     val toolbarState = rememberCollapsingToolbarScaffoldState()
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_DESTROY -> {
+                    viewModel.clearCache()
+                }
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -118,12 +143,14 @@ fun NewsScreen(
                                 MaterialTheme.shapes.small
                             )
                             .clickable {
-                                // TODO open user profile with channels
+                                onNavigateToProfile()
                             }
                             .road(Alignment.CenterEnd, Alignment.TopCenter)
                     )
-                    coroutineScope.launch {
-                        toolbarState.toolbarState.expand(1000)
+                    LaunchedEffect(Unit) {
+                        coroutineScope.launch {
+                            toolbarState.toolbarState.expand(1000)
+                        }
                     }
                 }
             },
