@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -68,6 +69,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState().value
+    val uriHandler = LocalUriHandler.current
 
     Scaffold(
         topBar = {
@@ -180,14 +182,64 @@ fun ProfileScreen(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .padding(vertical = 4.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .clickable {
+                            uriHandler.openUri("https://t.me/therxmv_channel")
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = R.drawable.telegram_icon),
+                        contentDescription = "telegram"
+                    )
+                    Text(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .padding(horizontal = 20.dp, vertical = 8.dp),
+                        text = stringResource(id = R.string.profile_telegram),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontSize = 20.sp
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .padding(vertical = 4.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .clickable {
+                            uriHandler.openUri("https://github.com/therxmv/Dirol-Reader")
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = R.drawable.github_icon),
+                        contentDescription = "github"
+                    )
+                    Text(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .padding(horizontal = 20.dp, vertical = 8.dp),
+                        text = stringResource(id = R.string.profile_github),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontSize = 20.sp
+                    )
+                }
             }
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val activity = (LocalContext.current as? Activity)
-
                 Text(
                     modifier = Modifier
                         .padding(bottom = 6.dp)

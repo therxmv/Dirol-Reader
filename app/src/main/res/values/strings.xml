@@ -22,6 +22,8 @@
     <string name="profile_storage">Storage Usage</string>
 
     <string name="profile_about">About</string>
+    <string name="profile_telegram">Telegram Channel</string>
+    <string name="profile_github">Source Code</string>
 
     <string name="profile_log_out">Log Out</string>
 
