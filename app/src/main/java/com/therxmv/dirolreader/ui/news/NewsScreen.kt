@@ -8,10 +8,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -56,7 +62,9 @@ import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 import me.onebone.toolbar.rememberCollapsingToolbarState
 
-@OptIn(ExperimentalToolbarApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalToolbarApi::class, ExperimentalMaterialApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel(),
@@ -71,28 +79,11 @@ fun NewsScreen(
     val newsFeedState = rememberLazyListState()
     val toolbarState = rememberCollapsingToolbarScaffoldState()
 
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_DESTROY -> {
-                    viewModel.clearCache()
-                }
-                else -> {}
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-    Surface(
+    Scaffold(
         modifier = Modifier.fillMaxSize()
-    ) {
+    ) { padding ->
         CollapsingToolbarScaffold(
-            modifier = Modifier,
+            modifier = Modifier.padding(top = padding.calculateTopPadding()),
             state = toolbarState,
             scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
             toolbar = {
@@ -163,6 +154,7 @@ fun NewsScreen(
                         viewModel.loadChannels {
                             coroutineScope.launch {
                                 toolbarState.toolbarState.expand(500)
+                                newsFeedState.scrollToItem(0, 0)
                             }
                             news.refresh()
                         }

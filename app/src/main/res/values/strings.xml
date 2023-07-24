@@ -9,7 +9,8 @@
     <string name="auth_continue_btn">Continue</string>
     <string name="auth_incorrect_input">Incorrect input</string>
     <string name="auth_dialog_confirm">Confirm</string>
-    <string name="auth_dialog_title">Before proceeding, please double-check that the phone number you entered is correct:</string>
+    <string name="auth_dialog_title">Are you sure?</string>
+    <string name="auth_dialog_text">Before proceeding, please double-check that the phone number you entered is correct:</string>
 
     <!-- News -->
     <string name="news_unread_channels">unread channels</string>
@@ -25,7 +26,10 @@
     <string name="profile_telegram">Telegram Channel</string>
     <string name="profile_github">Source Code</string>
 
-    <string name="profile_log_out">Log Out</string>
+    <string name="profile_sign_out">Sign Out</string>
+
+    <string name="sign_out_dialog_title">Sign out?</string>
+    <string name="sign_out_dialog_text">Are you sure you want to sign out? You will only be signed out from this device.</string>
 
     <!-- Settings -->
     <string name="settings_dynamic_theme">Dynamic Theme</string>

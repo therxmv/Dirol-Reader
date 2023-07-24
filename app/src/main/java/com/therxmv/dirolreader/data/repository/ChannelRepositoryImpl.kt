@@ -17,13 +17,8 @@ class ChannelRepositoryImpl(
         return channelLocaleDataSource.getAllChannels().map { it.toDomain() }
     }
 
-    override suspend fun addChannelToLocale(channel: ChannelModel) {
-        channelLocaleDataSource.addChannel(channel.toEntity())
-    }
-
-    override suspend fun addChannelToLocale(channel: List<ChannelModel>) {
+    override suspend fun addChannelToLocale(channel: List<ChannelModel>) =
         channelLocaleDataSource.addChannel(channel.map { it.toEntity() })
-    }
 
     override suspend fun getRemoteChannelsIds(client: Client?): Flow<List<ChannelModel>> {
         return channelRemoteDataSource.getRemoteChannelsIds(client)

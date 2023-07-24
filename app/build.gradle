@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
 }
 
 android {
@@ -13,8 +15,8 @@ android {
         applicationId "com.therxmv.dirolreader"
         minSdk 23
         targetSdk 33
-        versionCode 100
-        versionName "1.0"
+        versionCode 110
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -34,8 +36,11 @@ android {
         }
 
         release {
-            minifyEnabled false
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
 
             android.applicationVariants.all { variant ->
                 variant.outputs.all {
@@ -66,6 +71,11 @@ android {
 
 dependencies {
     implementation project(path: ':libtd')
+
+    // Firebase
+    implementation platform("com.google.firebase:firebase-bom:32.2.0")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation "com.google.firebase:firebase-analytics-ktx"
 
     // Markdown
     final def markwon_version = '4.6.2'

@@ -20,11 +20,14 @@ interface DirolDao {
     fun addChannel(channelEntity: ChannelEntity): Long
 
     @Query("UPDATE $CHANNEL_TABLE SET unreadCount = :unreadCount, lastReadMessageId = :lastId WHERE id = :id")
-    fun updateChannel(id: Long, unreadCount: Int, lastId: Long)
+    fun updateChannel(id: Long, unreadCount: Int, lastId: Long): Int
 
     @Transaction
-    fun insertOrUpdateChannel(channelEntity: ChannelEntity) {
+    fun insertOrUpdateChannel(channelEntity: ChannelEntity): Int {
         val id = addChannel(channelEntity)
-        if(id == -1L) updateChannel(channelEntity.id, channelEntity.unreadCount, channelEntity.lastReadMessageId)
+        return if(id == -1L) {
+            updateChannel(channelEntity.id, channelEntity.unreadCount, channelEntity.lastReadMessageId)
+        }
+        else id.toInt()
     }
 }

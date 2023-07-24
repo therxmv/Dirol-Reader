@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.therxmv.dirolreader.domain.usecase.ProfileViewModelUseCase
 import com.therxmv.dirolreader.ui.profile.utils.AppBarState
+import com.therxmv.dirolreader.ui.profile.utils.ProfileUiEvent
 import com.therxmv.dirolreader.ui.profile.utils.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,9 +27,18 @@ class ProfileViewModel @Inject constructor(
         setAppBar()
     }
 
-    fun logOut() {
+    fun onEvent(event: ProfileUiEvent) {
+        when(event) {
+            is ProfileUiEvent.LogOut -> {
+                logOut(event.onComplete)
+            }
+        }
+    }
+
+    private fun logOut(onComplete: () -> Unit) {
         client?.send(TdApi.LogOut()) {}
         client?.close()
+        onComplete()
     }
 
     private fun setAppBar() {

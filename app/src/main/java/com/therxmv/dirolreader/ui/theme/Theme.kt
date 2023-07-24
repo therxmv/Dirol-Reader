@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.therxmv.dirolreader.BuildConfig
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -102,6 +103,22 @@ fun AppTheme(
     systemUiController.setSystemBarsColor(
         color = colorScheme.surface
     )
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val view = LocalView.current
+        if (!view.isInEditMode) {
+            SideEffect {
+                val window = (view.context as Activity).window
+                window.statusBarColor = Color.Transparent.toArgb()
+                window.navigationBarColor = Color.Transparent.toArgb()
+                window.isStatusBarContrastEnforced = false
+                window.isNavigationBarContrastEnforced = false
+
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            }
+        }
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,

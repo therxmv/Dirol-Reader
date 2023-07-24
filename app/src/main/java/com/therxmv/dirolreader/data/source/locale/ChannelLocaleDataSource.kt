@@ -15,13 +15,9 @@ class ChannelLocaleDataSource(
         dirolDao.updateChannelRating(id, num)
     }
 
-    suspend fun addChannel(channelEntity: ChannelEntity) = withContext(Dispatchers.IO) {
-        dirolDao.insertOrUpdateChannel(channelEntity)
-    }
-
     suspend fun addChannel(channelEntity: List<ChannelEntity>) = withContext(Dispatchers.IO) {
-        channelEntity.forEach {
+        channelEntity.map {
             dirolDao.insertOrUpdateChannel(it)
-        }
+        }.size
     }
 }

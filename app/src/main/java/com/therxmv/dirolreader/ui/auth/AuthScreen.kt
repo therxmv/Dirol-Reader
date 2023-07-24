@@ -1,7 +1,8 @@
 package com.therxmv.dirolreader.ui.auth
 
+import android.app.Activity
 import android.content.Context
-import android.util.Log
+import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,20 +21,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -43,19 +41,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.core.view.WindowCompat
 import com.therxmv.dirolreader.R
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.therxmv.dirolreader.ui.auth.utils.AuthState
 import com.therxmv.dirolreader.ui.auth.utils.AuthUiEvent
-import com.therxmv.dirolreader.ui.auth.utils.AuthUiState
-import com.therxmv.dirolreader.ui.navigation.Destination
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +57,8 @@ fun AuthScreen(
     val state = viewModel.state.collectAsStateWithLifecycle().value
     var inputValue by remember { mutableStateOf("") }
     var isDialogOpened by remember { mutableStateOf(false)  }
+    val context = LocalContext.current
+    val surfaceColor = MaterialTheme.colorScheme.surface.toArgb()
 
     if(state.authState == AuthState.READY) {
         LaunchedEffect(Unit) {
@@ -77,6 +70,7 @@ fun AuthScreen(
         if (state.authState != AuthState.START
             && state.authState != AuthState.READY)
         {
+            SwitchImmersive(context, false, surfaceColor)
             if(isDialogOpened) {
                 AlertDialog(
                     shape = MaterialTheme.shapes.medium,
@@ -92,8 +86,11 @@ fun AuthScreen(
                             Text(text = stringResource(id = R.string.auth_dialog_confirm))
                         }
                     },
+                    title = {
+                        Text(text = stringResource(id = R.string.auth_dialog_title))
+                    },
                     text = {
-                        Text(text = "${stringResource(id = R.string.auth_dialog_title)} $inputValue")
+                        Text(text = "${stringResource(id = R.string.auth_dialog_text)} $inputValue")
                     }
                 )
             }
@@ -169,6 +166,9 @@ fun AuthScreen(
                 }
             }
         }
+        else {
+            SwitchImmersive(context, true, surfaceColor)
+        }
     }
 }
 
@@ -190,6 +190,23 @@ private fun getKeyboardOptions(state: AuthState): KeyboardOptions {
         )
 
         else -> KeyboardOptions.Default
+    }
+}
+
+@Composable
+private fun SwitchImmersive(context: Context, isEnabled: Boolean, surfaceColor: Int) {
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val color = if(!isEnabled) surfaceColor else Color.Transparent.toArgb()
+
+        SideEffect {
+            val window = (context as Activity).window
+            window.statusBarColor = color
+            window.navigationBarColor = color
+            window.isStatusBarContrastEnforced = false
+            window.isNavigationBarContrastEnforced = false
+
+            WindowCompat.setDecorFitsSystemWindows(window, !isEnabled)
+        }
     }
 }
 

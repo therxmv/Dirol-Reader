@@ -1,5 +1,6 @@
 package com.therxmv.dirolreader.ui.news
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -33,22 +34,35 @@ class NewsViewModel @Inject constructor(
     private val _state = MutableStateFlow(NewsUiState())
     val state = _state.asStateFlow()
 
+    private val ratingMap = mutableMapOf<Long, Int>()
+
     private val readMessages = mutableListOf<Long>()
 
-    private var client: Client? = useCases.getClientUseCase()
+    private var client: Client? = null
 
     var news: Flow<PagingData<MessageModel>>? = null
 
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("rozmi", "vm cleared")
+        if(appSharedPrefsRepository.isAutoDeleteEnabled) {
+            updateRating()
+            clearCache()
+        }
+    }
+
     init {
+        client = useCases.getClientUseCase()
         loadChannels(null)
     }
 
     fun onEvent(event: NewsUiEvent) {
         when(event) {
             is NewsUiEvent.UpdateRating -> {
-                viewModelScope.launch {
-                    useCases.updateChannelRatingUseCase(event.id, event.num)
+                if(ratingMap.contains(event.id)) {
+                    ratingMap[event.id] = ratingMap[event.id]!! + event.num
                 }
+                else ratingMap[event.id] = event.num
             }
             is NewsUiEvent.MarkAsRead -> {
                 if(!readMessages.contains(event.messageId)) {
@@ -64,7 +78,16 @@ class NewsViewModel @Inject constructor(
         }
     }
 
-    fun clearCache() {
+    private fun updateRating() {
+        ratingMap.forEach {
+            viewModelScope.launch {
+                useCases.updateChannelRatingUseCase(it.key, it.value)
+            }
+        }
+        ratingMap.clear()
+    }
+
+    private fun clearCache() {
         if(appSharedPrefsRepository.isAutoDeleteEnabled) {
             File(FILES_PATH).listFiles()?.forEach {
                 if(it.isDirectory) {
@@ -95,22 +118,26 @@ class NewsViewModel @Inject constructor(
         )
     }
     fun loadChannels(onRefresh: (() -> Unit)?) {
+        updateRating()
+
         _state.value = _state.value.copy(
             isLoaded = false
         )
 
         viewModelScope.launch {
-            delay(500)
+            delay(1000) // fix for issue with instant loading
             useCases.getRemoteChannelsIdsUseCase(client).collectLatest { list ->
                 setToolbar(list.filter { it.unreadCount > 0 }.size)
-                useCases.addChannelToLocaleUseCase(list)
-            }
 
-            if(news == null) {
-                news = useCases.getMessagePagingUseCase(client).cachedIn(viewModelScope)
-            }
-            else {
-                onRefresh?.let { it() }
+                val res = useCases.addChannelToLocaleUseCase(list)
+                if(res == list.size) {
+                    if(news == null) {
+                        news = useCases.getMessagePagingUseCase(client).cachedIn(viewModelScope)
+                    }
+                    else {
+                        onRefresh?.let { it() }
+                    }
+                }
             }
         }
 

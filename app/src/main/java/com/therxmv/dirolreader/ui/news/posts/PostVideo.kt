@@ -60,11 +60,11 @@ fun PostVideo(
 
     if(videoPath.isNullOrBlank()) {
         val isDownloading = remember { mutableStateOf(false) }
+        val videoRatio = video.width.toFloat() / video.height.toFloat()
 
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(if(video.height > 150) (video.height / 2).dp else video.height.dp)
+                .aspectRatio(videoRatio)
                 .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.secondary),
             contentAlignment = Alignment.Center

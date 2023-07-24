@@ -2,6 +2,7 @@ package com.therxmv.dirolreader.ui.news
 
 import android.graphics.BitmapFactory
 import android.text.format.DateUtils
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.therxmv.dirolreader.R
 import com.therxmv.dirolreader.data.models.MediaModel
@@ -212,7 +215,9 @@ fun NewsPost(
                         Text(
                             text = messageModel.channelName,
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
                         )
                         Text(
                             text = getPostTime(messageModel.timestamp),
@@ -256,6 +261,7 @@ fun NewsPost(
                         color = defaultColor,
                         linkColor = linkColor,
                         style = MaterialTheme.typography.bodyLarge,
+                        isTextSelectable = true
                     )
                 }
 

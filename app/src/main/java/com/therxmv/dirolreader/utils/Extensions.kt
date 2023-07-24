@@ -11,53 +11,63 @@ fun TdApi.FormattedText.toMarkdown(): String {
         val endIndex = startIndex + it.length
         var subText = this.text.subSequence(startIndex, endIndex).toString()
 
-        if(subText.last() == ' ') {
+        // remove line break/space/etc from the end of the subString
+        while(subText.last().isWhitespace()) {
             subText = subText.dropLast(1)
         }
 
-        when (it.type) {
-            is TdApi.TextEntityTypeBold -> {
-                result = result.replace(subText, "**$subText**")
-            }
+        // remove line break if it is in the middle of the subString
+        val strList = if(subText.contains(10.toChar())) {
+            subText.split(10.toChar())
+        } else listOf(subText)
 
-            is TdApi.TextEntityTypeItalic -> {
-                result = result.replace(subText, "_${subText}_")
-            }
+        strList.forEach { str ->
+            when (it.type) {
+                is TdApi.TextEntityTypeBold -> {
+                    result = result.replace(str, "**$str**")
+                }
 
-            is TdApi.TextEntityTypeStrikethrough -> {
-                result = result.replace(subText, "~~$subText~~")
-            }
+                is TdApi.TextEntityTypeItalic -> {
+                    result = result.replace(str, "_${str}_")
+                }
 
-            is TdApi.TextEntityTypeUnderline -> {
-                result = result.replace(subText, "__${subText}__")
-            }
+                is TdApi.TextEntityTypeStrikethrough -> {
+                    result = result.replace(str, "~~$str~~")
+                }
 
-            is TdApi.TextEntityTypeCode -> {
-                result = result.replace(subText, "`$subText`")
-            }
+                is TdApi.TextEntityTypeUnderline -> {
+                    result = result.replace(str, "__${str}__")
+                }
 
-            is TdApi.TextEntityTypePre -> {
-                result = result.replace(subText, "```$subText```")
-            }
+                is TdApi.TextEntityTypeCode -> {
+                    result = result.replace(str, "`$str`")
+                }
 
-            is TdApi.TextEntityTypeUrl -> {
-                result = result.replace(subText, "[$subText]($subText)")
-            }
+                is TdApi.TextEntityTypePre -> {
+                    result = result.replace(str, "```$str```")
+                }
 
-            is TdApi.TextEntityTypeTextUrl -> {
-                val url = (it.type as TdApi.TextEntityTypeTextUrl).url
-                result = result.replace(subText, "[$subText]($url)")
-            }
+                is TdApi.TextEntityTypeUrl -> {
+                    result = result.replace(str, "[$str]($str)")
+                }
 
-            is TdApi.TextEntityTypeEmailAddress -> {
-                result = result.replace(subText, "[$subText]($subText)")
-            }
+                is TdApi.TextEntityTypeTextUrl -> {
+                    val url = (it.type as TdApi.TextEntityTypeTextUrl).url
+                    result = result.replace(str, "[$str]($url)")
+                }
 
-            else -> {
-                result = result.replace(subText, subText)
+                is TdApi.TextEntityTypeEmailAddress -> {
+                    result = result.replace(str, "[$str]($str)")
+                }
+
+                else -> {
+                    result = result.replace(str, str)
+                }
             }
         }
     }
 
-    return result
+    return result.map {
+        if(it.code == 10) "\n\r" else it
+    }.joinToString("")
 }

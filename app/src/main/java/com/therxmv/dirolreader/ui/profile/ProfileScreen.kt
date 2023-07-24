@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +61,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.therxmv.dirolreader.BuildConfig
 import com.therxmv.dirolreader.R
+import com.therxmv.dirolreader.ui.auth.utils.AuthUiEvent
+import com.therxmv.dirolreader.ui.profile.utils.ProfileUiEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +75,7 @@ fun ProfileScreen(
 ) {
     val state = viewModel.state.collectAsState().value
     val uriHandler = LocalUriHandler.current
+    var isDialogOpened by remember { mutableStateOf(false)  }
 
     Scaffold(
         topBar = {
@@ -109,6 +115,29 @@ fun ProfileScreen(
             }
         }
     ) { padding ->
+        if(isDialogOpened) {
+            AlertDialog(
+                shape = MaterialTheme.shapes.medium,
+                onDismissRequest = { isDialogOpened = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            isDialogOpened = false
+                            viewModel.onEvent(ProfileUiEvent.LogOut(onNavigateToAuth))
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.auth_dialog_confirm))
+                    }
+                },
+                title = {
+                    Text(text = stringResource(id = R.string.sign_out_dialog_title))
+                },
+                text = {
+                    Text(text = stringResource(id = R.string.sign_out_dialog_text))
+                }
+            )
+        }
+
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -244,10 +273,9 @@ fun ProfileScreen(
                     modifier = Modifier
                         .padding(bottom = 6.dp)
                         .clickable {
-                            viewModel.logOut()
-                            onNavigateToAuth()
+                            isDialogOpened = true
                         },
-                    text = stringResource(id = R.string.profile_log_out),
+                    text = stringResource(id = R.string.profile_sign_out),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.error,
                     textDecoration = TextDecoration.Underline
