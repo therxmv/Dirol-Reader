@@ -2,25 +2,25 @@ package com.therxmv.dirolreader.ui.auth
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.therxmv.dirolreader.data.repository.AppSharedPrefsRepository
 import com.therxmv.dirolreader.domain.usecase.AuthViewModelUseCases
 import com.therxmv.dirolreader.ui.auth.utils.AuthState
 import com.therxmv.dirolreader.ui.auth.utils.AuthUiEvent
 import com.therxmv.dirolreader.ui.auth.utils.AuthUiState
+import com.therxmv.dirolreader.utils.FILES_PATH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 import org.drinkless.td.libcore.telegram.TdApi.AuthorizationState
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val useCases: AuthViewModelUseCases
+    private val useCases: AuthViewModelUseCases,
+    private val appSharedPrefsRepository: AppSharedPrefsRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(AuthUiState())
     val state = _state.asStateFlow()
@@ -29,6 +29,28 @@ class AuthViewModel @Inject constructor(
 
     init {
         createClient()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("rozmi", "cleared")
+        if(appSharedPrefsRepository.isAutoDeleteEnabled) {
+            clearCache()
+        }
+    }
+
+    private fun clearCache() {
+        if(appSharedPrefsRepository.isAutoDeleteEnabled) {
+            File(FILES_PATH).listFiles()?.forEach {
+                if(it.isDirectory) {
+                    it.listFiles()?.forEach { elem ->
+                        if(!elem.path.contains(".nomedia")) {
+                            elem.delete()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun createClient() {

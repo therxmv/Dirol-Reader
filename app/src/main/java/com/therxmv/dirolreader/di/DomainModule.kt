@@ -6,10 +6,6 @@ import com.therxmv.dirolreader.domain.repository.ClientRepository
 import com.therxmv.dirolreader.domain.repository.MessageRepository
 import com.therxmv.dirolreader.domain.repository.UserRepository
 import com.therxmv.dirolreader.domain.usecase.AuthViewModelUseCases
-import com.therxmv.dirolreader.domain.usecase.client.CreateClientUseCase
-import com.therxmv.dirolreader.domain.usecase.client.GetClientUseCase
-import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserAvatarUseCase
-import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserUseCase
 import com.therxmv.dirolreader.domain.usecase.GetTdLibParametersUseCase
 import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
 import com.therxmv.dirolreader.domain.usecase.ProfileViewModelUseCase
@@ -17,8 +13,12 @@ import com.therxmv.dirolreader.domain.usecase.channel.AddChannelToLocaleUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetLocaleChannelsUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.GetRemoteChannelsIdsUseCase
 import com.therxmv.dirolreader.domain.usecase.channel.UpdateChannelRatingUseCase
-import com.therxmv.dirolreader.domain.usecase.message.GetMessagePagingUseCase
+import com.therxmv.dirolreader.domain.usecase.client.CreateClientUseCase
+import com.therxmv.dirolreader.domain.usecase.client.GetClientUseCase
 import com.therxmv.dirolreader.domain.usecase.message.GetMessageMediaUseCase
+import com.therxmv.dirolreader.domain.usecase.message.GetMessagePagingUseCase
+import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserAvatarUseCase
+import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

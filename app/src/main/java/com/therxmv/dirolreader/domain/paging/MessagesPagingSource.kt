@@ -1,6 +1,5 @@
 package com.therxmv.dirolreader.domain.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.therxmv.dirolreader.domain.models.MessageModel
@@ -74,6 +73,16 @@ class MessagesPagingSource(
             }
         }
 
-        return temp
+        return filterDuplicates(temp)
+    }
+
+    private fun filterDuplicates(list: List<MessageModel>): List<MessageModel> {
+        val uniqueList = LinkedHashMap<Long, MessageModel>()
+
+        for (item in list) {
+            uniqueList[item.id] = item
+        }
+
+        return uniqueList.values.toList()
     }
 }

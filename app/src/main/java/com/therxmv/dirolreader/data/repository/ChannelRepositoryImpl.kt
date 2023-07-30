@@ -1,7 +1,7 @@
 package com.therxmv.dirolreader.data.repository
 
-import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
 import com.therxmv.dirolreader.data.entity.toDomain
+import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
 import com.therxmv.dirolreader.data.source.remote.ChannelRemoteDataSource
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.models.toEntity
