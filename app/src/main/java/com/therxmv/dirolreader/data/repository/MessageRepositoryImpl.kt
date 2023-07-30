@@ -1,6 +1,5 @@
 package com.therxmv.dirolreader.data.repository
 
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -12,9 +11,7 @@ import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.paging.MessagesPagingSource
 import com.therxmv.dirolreader.domain.repository.MessageRepository
 import com.therxmv.dirolreader.utils.PAGE_SIZE
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import org.drinkless.td.libcore.telegram.Client
 
 class MessageRepositoryImpl(
@@ -24,6 +21,7 @@ class MessageRepositoryImpl(
     override fun getMessagePaging(client: Client?): Flow<PagingData<MessageModel>> {
         return Pager(
             config = PagingConfig(
+                initialLoadSize = PAGE_SIZE,
                 pageSize = PAGE_SIZE,
                 enablePlaceholders = false,
             ),

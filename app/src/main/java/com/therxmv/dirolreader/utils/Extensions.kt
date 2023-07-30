@@ -1,6 +1,5 @@
 package com.therxmv.dirolreader.utils
 
-import android.util.Log
 import org.drinkless.td.libcore.telegram.TdApi
 
 fun TdApi.FormattedText.toMarkdown(): String {

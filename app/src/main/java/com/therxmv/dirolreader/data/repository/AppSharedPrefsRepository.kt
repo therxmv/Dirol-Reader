@@ -20,4 +20,12 @@ class AppSharedPrefsRepository(
         set(value) {
             appSharedPrefsDataSource.isAutoDeleteEnabled = value
         }
+
+    var channelsRating: MutableMap<Long, Int>
+        get() {
+            return appSharedPrefsDataSource.channelsRating
+        }
+        set(value) {
+            appSharedPrefsDataSource.channelsRating = value
+        }
 }

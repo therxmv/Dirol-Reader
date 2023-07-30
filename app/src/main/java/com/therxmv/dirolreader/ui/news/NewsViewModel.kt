@@ -1,6 +1,5 @@
 package com.therxmv.dirolreader.ui.news
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -13,7 +12,6 @@ import com.therxmv.dirolreader.domain.usecase.NewsViewModelUseCases
 import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import com.therxmv.dirolreader.ui.news.utils.NewsUiState
 import com.therxmv.dirolreader.ui.news.utils.ToolbarState
-import com.therxmv.dirolreader.utils.FILES_PATH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +21,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,15 +39,6 @@ class NewsViewModel @Inject constructor(
 
     var news: Flow<PagingData<MessageModel>>? = null
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("rozmi", "vm cleared")
-        if(appSharedPrefsRepository.isAutoDeleteEnabled) {
-            updateRating()
-            clearCache()
-        }
-    }
-
     init {
         client = useCases.getClientUseCase()
         loadChannels(null)
@@ -63,6 +51,7 @@ class NewsViewModel @Inject constructor(
                     ratingMap[event.id] = ratingMap[event.id]!! + event.num
                 }
                 else ratingMap[event.id] = event.num
+                appSharedPrefsRepository.channelsRating = ratingMap
             }
             is NewsUiEvent.MarkAsRead -> {
                 if(!readMessages.contains(event.messageId)) {
@@ -79,26 +68,13 @@ class NewsViewModel @Inject constructor(
     }
 
     private fun updateRating() {
-        ratingMap.forEach {
+        appSharedPrefsRepository.channelsRating.forEach {
             viewModelScope.launch {
                 useCases.updateChannelRatingUseCase(it.key, it.value)
             }
         }
         ratingMap.clear()
-    }
-
-    private fun clearCache() {
-        if(appSharedPrefsRepository.isAutoDeleteEnabled) {
-            File(FILES_PATH).listFiles()?.forEach {
-                if(it.isDirectory) {
-                    it.listFiles()?.forEach { elem ->
-                        if(!elem.path.contains(".nomedia")) {
-                            elem.delete()
-                        }
-                    }
-                }
-            }
-        }
+        appSharedPrefsRepository.channelsRating = ratingMap
     }
 
     suspend fun loadMessageMedia(mediaList: List<MediaModel>, loadVideo: Boolean): List<String?> {

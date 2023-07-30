@@ -7,5 +7,6 @@ const val PAGE_SIZE = 10
 const val SHARED_PREFS = "sharedPrefs"
 const val SHARED_PREFS_IS_DYNAMIC = "sharedPrefsIsDynamic"
 const val SHARED_PREFS_IS_AUTO_DELETE_ENABLED = "sharedPrefsIsAutoDeleteEnabled"
+const val SHARED_PREFS_CHANNELS_RATING = "sharedPrefsChannelsRating"
 
 const val FILES_PATH = "/data/data/com.therxmv.dirolreader/files/"
