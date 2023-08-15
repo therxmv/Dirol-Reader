@@ -40,7 +40,7 @@ class AppSharedPrefsDataSource(
 
             if(str.isNullOrEmpty()) return mutableMapOf()
 
-            val type = object : TypeToken<Map<Long, Int>>() {}.type
+            val type = TypeToken.getParameterized(Map::class.java, Long::class.java, Int::class.java).type
 
             return Gson().fromJson(str, type)
         }

@@ -103,7 +103,7 @@ fun AppTheme(
         color = colorScheme.surface
     )
 
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val view = LocalView.current
         if (!view.isInEditMode) {
             SideEffect {
