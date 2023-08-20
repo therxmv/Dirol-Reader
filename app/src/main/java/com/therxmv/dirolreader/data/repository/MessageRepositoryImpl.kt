@@ -3,6 +3,7 @@ package com.therxmv.dirolreader.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.therxmv.constants.Paging.PAGE_SIZE
 import com.therxmv.dirolreader.data.entity.toDomain
 import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
 import com.therxmv.dirolreader.data.source.remote.MessageRemoteDataSource
@@ -10,7 +11,6 @@ import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.paging.MessagesPagingSource
 import com.therxmv.dirolreader.domain.repository.MessageRepository
-import com.therxmv.dirolreader.utils.PAGE_SIZE
 import kotlinx.coroutines.flow.Flow
 import org.drinkless.td.libcore.telegram.Client
 

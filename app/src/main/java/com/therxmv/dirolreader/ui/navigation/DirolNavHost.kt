@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.therxmv.dirolreader.ui.auth.AuthScreen
 import com.therxmv.dirolreader.ui.news.NewsScreen
+import com.therxmv.dirolreader.ui.ota.OtaScreen
 import com.therxmv.dirolreader.ui.profile.ProfileScreen
 import com.therxmv.dirolreader.ui.settings.StorageScreen
 import com.therxmv.dirolreader.ui.settings.ThemingScreen
@@ -15,7 +16,17 @@ fun DirolNavHost(
     switchDynamicTheme: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Destination.AuthScreen.route) {
+    NavHost(navController = navController, startDestination = Destination.OtaScreen.route) {
+        composable(route = Destination.OtaScreen.route) {
+            OtaScreen(
+                onNavigateToAuth = {
+                    navController.navigate(Destination.AuthScreen.route) {
+                        popUpTo(Destination.OtaScreen.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
         composable(route = Destination.AuthScreen.route) {
             AuthScreen(
                 onNavigateToNews = {

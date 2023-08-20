@@ -1,13 +1,14 @@
 package com.therxmv.otaupdates.di
 
 import android.content.Context
-import com.therxmv.otaupdates.data.repository.LatestReleaseRepository
+import com.therxmv.constants.GithubRepo.BASE_URL
+import com.therxmv.otaupdates.domain.repository.LatestReleaseRepository
 import com.therxmv.otaupdates.data.repository.LatestReleaseRepositoryImpl
 import com.therxmv.otaupdates.data.source.remote.GithubApiService
 import com.therxmv.otaupdates.data.source.remote.LatestReleaseRemoteDataSource
+import com.therxmv.otaupdates.domain.usecase.GetLatestReleaseUseCase
 import com.therxmv.otaupdates.downloadmanager.Downloader
 import com.therxmv.otaupdates.downloadmanager.LatestReleaseDownloader
-import com.therxmv.otaupdates.utils.GithubRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,7 @@ class OtaModule {
     @Provides
     @Singleton
     fun providesRetrofit() = Retrofit.Builder()
-        .baseUrl(GithubRepo.BASE_URL)
+        .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
@@ -46,5 +47,10 @@ class OtaModule {
     @Provides
     fun provideLatestReleaseDownloader(@ApplicationContext context: Context): Downloader {
         return LatestReleaseDownloader(context)
+    }
+
+    @Provides
+    fun provideGetLatestReleaseUseCase(latestReleaseRepository: LatestReleaseRepository): GetLatestReleaseUseCase {
+        return GetLatestReleaseUseCase(latestReleaseRepository)
     }
 }

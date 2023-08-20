@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Dirol Reader</string>
 
+    <!-- OTA -->
+    <string name="ota_new_update">New version available!</string>
+    <string name="ota_update_later">Update later</string>
+    <string name="ota_download_now">Download Now</string>
+    <string name="ota_downloading">Downloading…</string>
+    <string name="ota_install_update">Install Update</string>
+
     <!-- Auth -->
     <string name="auth_title_phone">Enter your phone number</string>
     <string name="auth_title_code">Enter verification code</string>

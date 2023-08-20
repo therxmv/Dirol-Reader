@@ -1,6 +1,6 @@
 package com.therxmv.otaupdates.downloadmanager
 
-import com.therxmv.otaupdates.data.models.LatestReleaseModel
+import com.therxmv.otaupdates.domain.models.LatestReleaseModel
 
 interface Downloader {
     fun downloadFile(latestReleaseModel: LatestReleaseModel): Long

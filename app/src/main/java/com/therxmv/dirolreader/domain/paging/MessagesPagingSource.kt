@@ -2,10 +2,10 @@ package com.therxmv.dirolreader.domain.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.therxmv.constants.Paging.PAGE_SIZE
+import com.therxmv.constants.Paging.STARTING_PAGE_INDEX
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.repository.MessageRepository
-import com.therxmv.dirolreader.utils.PAGE_SIZE
-import com.therxmv.dirolreader.utils.STARTING_PAGE_INDEX
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.drinkless.td.libcore.telegram.Client

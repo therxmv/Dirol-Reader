@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "DirolReader"
 include ':app', ':libtd'
 include ':ota-updates'
+include ':constants'

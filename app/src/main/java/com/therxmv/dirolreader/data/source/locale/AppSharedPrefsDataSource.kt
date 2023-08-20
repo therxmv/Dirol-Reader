@@ -1,13 +1,15 @@
 package com.therxmv.dirolreader.data.source.locale
 
 import android.content.Context
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.therxmv.dirolreader.utils.SHARED_PREFS
-import com.therxmv.dirolreader.utils.SHARED_PREFS_CHANNELS_RATING
-import com.therxmv.dirolreader.utils.SHARED_PREFS_IS_AUTO_DELETE_ENABLED
-import com.therxmv.dirolreader.utils.SHARED_PREFS_IS_DYNAMIC
+import com.therxmv.constants.SharedPrefs.SHARED_PREFS
+import com.therxmv.constants.SharedPrefs.SHARED_PREFS_CHANNELS_RATING
+import com.therxmv.constants.SharedPrefs.SHARED_PREFS_IS_AUTO_DELETE_ENABLED
+import com.therxmv.constants.SharedPrefs.SHARED_PREFS_IS_DYNAMIC
+import com.therxmv.constants.SharedPrefs.SHARED_PREFS_IS_UPDATE_DOWNLOADED
 
 class AppSharedPrefsDataSource(
     private val context: Context
@@ -51,4 +53,27 @@ class AppSharedPrefsDataSource(
                 putString(SHARED_PREFS_CHANNELS_RATING, str)
             }
         }
+
+    var isUpdateDownloaded: Boolean
+        get() = sharedPrefs.getBoolean(SHARED_PREFS_IS_UPDATE_DOWNLOADED, false)
+        set(value) {
+            sharedPrefs.edit(true) {
+                putBoolean(SHARED_PREFS_IS_UPDATE_DOWNLOADED, value)
+            }
+        }
+
+    fun isUpdateDownloadedChangeListener(callback: (isDownloaded: Boolean) -> Unit) =
+        OnSharedPreferenceChangeListener { _, key ->
+            if(key == SHARED_PREFS_IS_UPDATE_DOWNLOADED) {
+                callback(isUpdateDownloaded)
+            }
+        }
+
+    fun registerChangeListener(listener: OnSharedPreferenceChangeListener) {
+        sharedPrefs.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun unregisterChangeListener(listener: OnSharedPreferenceChangeListener) {
+        sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
+    }
 }
