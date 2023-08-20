@@ -195,7 +195,7 @@ private fun getKeyboardOptions(state: AuthState): KeyboardOptions {
 
 @Composable
 private fun SwitchImmersive(context: Context, isEnabled: Boolean, surfaceColor: Int) {
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val color = if(!isEnabled) surfaceColor else Color.Transparent.toArgb()
 
         SideEffect {

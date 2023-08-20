@@ -13,7 +13,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/constants" />
             <option value="$PROJECT_DIR$/libtd" />
+            <option value="$PROJECT_DIR$/ota-updates" />
           </set>
         </option>
       </GradleProjectSettings>

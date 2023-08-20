@@ -5,8 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.therxmv.constants.Room.CHANNEL_TABLE
 import com.therxmv.dirolreader.data.entity.ChannelEntity
-import com.therxmv.dirolreader.utils.CHANNEL_TABLE
 
 @Dao
 interface DirolDao {

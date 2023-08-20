@@ -3,8 +3,8 @@ package com.therxmv.dirolreader.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.therxmv.constants.Room.CHANNEL_TABLE
 import com.therxmv.dirolreader.domain.models.ChannelModel
-import com.therxmv.dirolreader.utils.CHANNEL_TABLE
 
 @Entity(tableName = CHANNEL_TABLE)
 data class ChannelEntity(

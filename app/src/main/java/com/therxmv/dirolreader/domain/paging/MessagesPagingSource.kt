@@ -2,10 +2,10 @@ package com.therxmv.dirolreader.domain.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.therxmv.constants.Paging.PAGE_SIZE
+import com.therxmv.constants.Paging.STARTING_PAGE_INDEX
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.repository.MessageRepository
-import com.therxmv.dirolreader.utils.PAGE_SIZE
-import com.therxmv.dirolreader.utils.STARTING_PAGE_INDEX
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.drinkless.td.libcore.telegram.Client
@@ -14,6 +14,10 @@ class MessagesPagingSource(
     private val client: Client?,
     private val messageRepository: MessageRepository,
 ): PagingSource<Int, MessageModel>() {
+    companion object {
+        private val readPostsIds = mutableListOf<Long>()
+    }
+
     override fun getRefreshKey(state: PagingState<Int, MessageModel>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
@@ -77,12 +81,12 @@ class MessagesPagingSource(
     }
 
     private fun filterDuplicates(list: List<MessageModel>): List<MessageModel> {
-        val uniqueList = LinkedHashMap<Long, MessageModel>()
+        val temp = list.filter { !readPostsIds.contains(it.id) }
 
-        for (item in list) {
-            uniqueList[item.id] = item
-        }
+        readPostsIds.addAll(
+            temp.map { it.id }
+        )
 
-        return uniqueList.values.toList()
+        return temp
     }
 }

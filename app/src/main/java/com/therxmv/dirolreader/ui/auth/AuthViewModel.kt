@@ -1,13 +1,14 @@
 package com.therxmv.dirolreader.ui.auth
 
+import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.therxmv.constants.Path.FILES_PATH
 import com.therxmv.dirolreader.data.repository.AppSharedPrefsRepository
 import com.therxmv.dirolreader.domain.usecase.AuthViewModelUseCases
 import com.therxmv.dirolreader.ui.auth.utils.AuthState
 import com.therxmv.dirolreader.ui.auth.utils.AuthUiEvent
 import com.therxmv.dirolreader.ui.auth.utils.AuthUiState
-import com.therxmv.dirolreader.utils.FILES_PATH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,9 +35,7 @@ class AuthViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         Log.d("rozmi", "cleared")
-        if(appSharedPrefsRepository.isAutoDeleteEnabled) {
-            clearCache()
-        }
+        clearCache()
     }
 
     private fun clearCache() {
@@ -48,6 +47,13 @@ class AuthViewModel @Inject constructor(
                             elem.delete()
                         }
                     }
+                }
+            }
+
+            val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            downloads.listFiles()?.forEach {
+                if(it.isFile && it.name.contains("Dirol-Reader")) {
+                    it.delete()
                 }
             }
         }

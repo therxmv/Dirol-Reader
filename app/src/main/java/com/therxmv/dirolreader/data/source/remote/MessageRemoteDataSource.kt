@@ -68,7 +68,6 @@ class MessageRemoteDataSource {
                                 it.removeAt(0)
                             }
                         }
-//                        Log.d("rozmi", list.map { it.id }.toString())
 
                         lastChannelAndMessageId = Pair(channel.id, list.last().id)
 
@@ -111,7 +110,7 @@ class MessageRemoteDataSource {
 
     private fun handleMessageType(
         channel: ChannelModel,
-        message: TdApi.Message,
+        message: Message,
     ): MessageModel {
         val defaultModel = MessageModel(
             message.id,
