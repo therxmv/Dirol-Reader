@@ -94,7 +94,7 @@ class OtaViewModel @Inject constructor(
                 val version = release.version.filter { it.isDigit() }.toInt()
 
                 _state.value = _state.value.copy(
-                    isUpdateAvailable = version == BuildConfig.VERSION_CODE, // TODO change == to >
+                    isUpdateAvailable = version > BuildConfig.VERSION_CODE,
                     updateModel = release,
                 )
             }
