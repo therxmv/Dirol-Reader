@@ -15,7 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,10 +49,10 @@ class OtaViewModel @Inject constructor(
     }
 
     private fun checkIfUpdateFileExists(): Boolean {
-        val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val file = File(path, _state.value.updateModel?.fileName ?: "")
+        val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val file = downloads.listFiles()?.firstOrNull { it.isFile && it.name.contains("Dirol-Reader") }
 
-        return file.exists()
+        return file != null
     }
 
     private fun checkIfUpdateDownloaded() {
