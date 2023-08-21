@@ -1,6 +1,7 @@
 package com.therxmv.dirolreader.data.repository
 
 import android.content.SharedPreferences
+import com.therxmv.dirolreader.data.models.ChannelsRatingListModel
 import com.therxmv.dirolreader.data.source.locale.AppSharedPrefsDataSource
 
 class AppSharedPrefsRepository(
@@ -22,7 +23,7 @@ class AppSharedPrefsRepository(
             appSharedPrefsDataSource.isAutoDeleteEnabled = value
         }
 
-    var channelsRating: MutableMap<Long, Int>
+    var channelsRating: ChannelsRatingListModel
         get() {
             return appSharedPrefsDataSource.channelsRating
         }
