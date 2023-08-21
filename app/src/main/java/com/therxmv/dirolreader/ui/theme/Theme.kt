@@ -1,6 +1,7 @@
 package com.therxmv.dirolreader.ui.theme
 
 import android.app.Activity
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -88,6 +89,9 @@ fun AppTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -98,16 +102,20 @@ fun AppTheme(
         else -> LightColors
     }
 
+    // Fix for blinks when navigate
+    window.setBackgroundDrawable(
+        ColorDrawable(colorScheme.surface.toArgb())
+    )
+
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(
         color = colorScheme.surface
     )
 
+    // Immersive mode
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val view = LocalView.current
         if (!view.isInEditMode) {
             SideEffect {
-                val window = (view.context as Activity).window
                 window.statusBarColor = Color.Transparent.toArgb()
                 window.navigationBarColor = Color.Transparent.toArgb()
                 window.isStatusBarContrastEnforced = false

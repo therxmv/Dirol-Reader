@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.therxmv.dirolreader.data.models.ChannelRatingModel
+import com.therxmv.dirolreader.data.models.ChannelsRatingListModel
 import com.therxmv.dirolreader.data.models.MediaModel
 import com.therxmv.dirolreader.data.models.MediaType
 import com.therxmv.dirolreader.data.repository.AppSharedPrefsRepository
@@ -31,7 +33,7 @@ class NewsViewModel @Inject constructor(
     private val _state = MutableStateFlow(NewsUiState())
     val state = _state.asStateFlow()
 
-    private val ratingMap = mutableMapOf<Long, Int>()
+    private val channelsRating = ChannelsRatingListModel()
 
     private val readMessages = mutableListOf<Long>()
 
@@ -47,11 +49,18 @@ class NewsViewModel @Inject constructor(
     fun onEvent(event: NewsUiEvent) {
         when(event) {
             is NewsUiEvent.UpdateRating -> {
-                if(ratingMap.contains(event.id)) {
-                    ratingMap[event.id] = ratingMap[event.id]!! + event.num
+                val itemIndex = channelsRating.list.indexOfFirst { it.channelId == event.id }
+
+                if(itemIndex == -1) {
+                    channelsRating.list.add(ChannelRatingModel(event.id, event.num))
                 }
-                else ratingMap[event.id] = event.num
-                appSharedPrefsRepository.channelsRating = ratingMap
+                else {
+                    val item = channelsRating.list[itemIndex]
+
+                    channelsRating.list[itemIndex] = ChannelRatingModel(event.id, item.rating + event.num)
+                }
+
+                appSharedPrefsRepository.channelsRating = channelsRating
             }
             is NewsUiEvent.MarkAsRead -> {
                 if(!readMessages.contains(event.messageId)) {
@@ -68,13 +77,13 @@ class NewsViewModel @Inject constructor(
     }
 
     private fun updateRating() {
-        appSharedPrefsRepository.channelsRating.forEach {
+        appSharedPrefsRepository.channelsRating.list.forEach {
             viewModelScope.launch {
-                useCases.updateChannelRatingUseCase(it.key, it.value)
+                useCases.updateChannelRatingUseCase(it.channelId, it.rating)
             }
         }
-        ratingMap.clear()
-        appSharedPrefsRepository.channelsRating = ratingMap
+        channelsRating.list.clear()
+        appSharedPrefsRepository.channelsRating = channelsRating
     }
 
     suspend fun loadMessageMedia(mediaList: List<MediaModel>, loadVideo: Boolean): List<String?> {
