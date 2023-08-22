@@ -85,13 +85,13 @@ fun OtaScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    modifier = Modifier
-                        .size(172.dp),
-                    painter = painterResource(id = R.drawable.logo_icon),
-                    contentDescription = "Logo",
-                )
                 if(state.isUpdateAvailable == true && state.updateModel != null) {
+                    Image(
+                        modifier = Modifier
+                            .size(172.dp),
+                        painter = painterResource(id = R.drawable.logo_icon),
+                        contentDescription = "Logo",
+                    )
                     Text(
                         modifier = Modifier.padding(bottom = 24.dp),
                         text = stringResource(id = R.string.ota_new_update),

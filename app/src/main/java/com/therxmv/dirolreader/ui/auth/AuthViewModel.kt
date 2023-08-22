@@ -40,11 +40,15 @@ class AuthViewModel @Inject constructor(
 
     private fun clearCache() {
         if(appSharedPrefsRepository.isAutoDeleteEnabled) {
-            File(FILES_PATH).listFiles()?.forEach {
-                if(it.isDirectory) {
-                    it.listFiles()?.forEach { elem ->
-                        if(!elem.path.contains(".nomedia")) {
-                            elem.delete()
+            File(FILES_PATH).listFiles()?.forEach { folder ->
+                if(folder.isDirectory) {
+                    folder.listFiles()?.firstOrNull { file ->
+                        file.name.contains(".nomedia")
+                    }?.let {
+                        folder.listFiles()?.forEach { elem ->
+                            if(!elem.name.contains(".nomedia")) {
+                                elem.delete()
+                            }
                         }
                     }
                 }

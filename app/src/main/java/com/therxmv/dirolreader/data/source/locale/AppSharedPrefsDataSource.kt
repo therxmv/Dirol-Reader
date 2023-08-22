@@ -42,7 +42,6 @@ class AppSharedPrefsDataSource(
             mmkv.encode(SHARED_PREFS_CHANNELS_RATING, value)
         }
 
-    // TODO make listener for mmkv
     var isUpdateDownloaded: Boolean
         get() = sharedPrefs.getBoolean(SHARED_PREFS_IS_UPDATE_DOWNLOADED, false)
         set(value) {
