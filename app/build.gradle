@@ -16,8 +16,8 @@ android {
         applicationId "com.therxmv.dirolreader"
         minSdk 23
         targetSdk 33
-        versionCode 121
-        versionName "1.2.1"
+        versionCode 122
+        versionName "1.2.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
