@@ -82,10 +82,10 @@ fun NewsPost(
                 .wrapContentHeight()
                 .fillMaxWidth(),
         ) {
-            if(messageModel.mediaList != null) {
+            if (messageModel.mediaList != null) {
                 LaunchedEffect(Unit) {
                     coroutineScope.launch {
-                        if(mediaPaths.value == null) {
+                        if (mediaPaths.value == null) {
                             mediaPaths.value = loadMedia(
                                 messageModel.mediaList,
                                 false
@@ -98,16 +98,17 @@ fun NewsPost(
                     messageModel.mediaList.size
                 }
 
-                if(messageModel.mediaList.size == 1) {
+                if (messageModel.mediaList.size == 1) {
                     val item = messageModel.mediaList[0]
 
-                    when(item.type) {
+                    when (item.type) {
                         MediaType.PHOTO -> {
                             PostPhoto(
                                 photoPath = mediaPaths.value?.get(0),
                                 photo = item,
                             )
                         }
+
                         MediaType.VIDEO -> {
                             PostVideo(
                                 0,
@@ -118,19 +119,19 @@ fun NewsPost(
                             )
                         }
                     }
-                }
-                else {
+                } else {
                     Box {
                         HorizontalPager(state = pagerState) { i ->
                             val item = messageModel.mediaList[i]
 
-                            when(item.type) {
+                            when (item.type) {
                                 MediaType.PHOTO -> {
                                     PostPhoto(
                                         photoPath = mediaPaths.value?.get(i),
                                         photo = item,
                                     )
                                 }
+
                                 MediaType.VIDEO -> {
                                     PostVideo(
                                         i,
@@ -191,8 +192,7 @@ fun NewsPost(
                                 textAlign = TextAlign.Center
                             )
                         }
-                    }
-                    else {
+                    } else {
                         Image(
                             bitmap = BitmapFactory.decodeFile(messageModel.channelAvatarPath).asImageBitmap(),
                             contentDescription = "avatar",
@@ -226,7 +226,7 @@ fun NewsPost(
                     val isStarred = starredState[messageModel.channelId] ?: (messageModel.channelRating >= 100)
 
                     Icon(
-                        painter = if(isStarred) painterResource(id = R.drawable.star_filled_icon) else painterResource(id = R.drawable.star_outline_icon),
+                        painter = if (isStarred) painterResource(id = R.drawable.star_filled_icon) else painterResource(id = R.drawable.star_outline_icon),
                         contentDescription = "star",
                         modifier = Modifier
                             .size(24.dp)
@@ -243,12 +243,12 @@ fun NewsPost(
 
                                 starredState[messageModel.channelId] = !isStarred
                             },
-                        tint = if(isStarred) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = if (isStarred) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
                 // TEXT
-                if(messageModel.text.isNotEmpty()) {
+                if (messageModel.text.isNotEmpty()) {
                     val defaultColor = LocalContentColor.current
                     val linkColor = MaterialTheme.colorScheme.primary
 
@@ -278,10 +278,10 @@ fun NewsPost(
                             onEvent(
                                 NewsUiEvent.UpdateRating(
                                     messageModel.channelId,
-                                    if (isLiked.value == null) 1 else if(isLiked.value == false) 2 else 0
+                                    if (isLiked.value == null) 1 else if (isLiked.value == false) 2 else 0
                                 )
                             )
-                            isLiked.value = if(isLiked.value == true) null else true
+                            isLiked.value = if (isLiked.value == true) null else true
                         },
                     ) {
                         Icon(
@@ -289,18 +289,20 @@ fun NewsPost(
                             contentDescription = "like",
                             modifier = Modifier
                                 .clip(MaterialTheme.shapes.small),
-                            tint = if(isLiked.value == null || isLiked.value == false) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
+                            tint = if (isLiked.value == null || isLiked.value == false) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                         )
                     }
                     IconButton(
                         modifier = Modifier
                             .size(24.dp),
                         onClick = {
-                            onEvent(NewsUiEvent.UpdateRating(
-                                messageModel.channelId,
-                                if (isLiked.value == null) -1 else if(isLiked.value == false) -2 else 0
-                            ))
-                            isLiked.value = if(isLiked.value == false) null else false
+                            onEvent(
+                                NewsUiEvent.UpdateRating(
+                                    messageModel.channelId,
+                                    if (isLiked.value == null) -1 else if (isLiked.value == false) -2 else 0
+                                )
+                            )
+                            isLiked.value = if (isLiked.value == false) null else false
                         }
                     ) {
                         Icon(
@@ -308,7 +310,7 @@ fun NewsPost(
                             contentDescription = "dislike",
                             modifier = Modifier
                                 .clip(MaterialTheme.shapes.small),
-                            tint = if(isLiked.value == null || isLiked.value == true) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
+                            tint = if (isLiked.value == null || isLiked.value == true) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -341,12 +343,15 @@ private fun getPostTime(date: Int): String {
 
             dateFormat.format(Date(date * 1000L))
         }
+
         hours >= 1 -> {
             DateUtils.getRelativeTimeSpanString(postTime, currentTime, DateUtils.HOUR_IN_MILLIS).toString()
         }
+
         minutes >= 1 -> {
             DateUtils.getRelativeTimeSpanString(postTime, currentTime, DateUtils.MINUTE_IN_MILLIS).toString()
         }
+
         else -> {
             stringResource(R.string.news_just_now)
         }

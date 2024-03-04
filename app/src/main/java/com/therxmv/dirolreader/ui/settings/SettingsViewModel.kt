@@ -7,7 +7,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    val appSharedPrefsRepository: AppSharedPrefsRepository
+    private val appSharedPrefsRepository: AppSharedPrefsRepository,
 ) : ViewModel() {
 
+    fun getIsAutoDeleteEnabled() = appSharedPrefsRepository.isAutoDeleteEnabled
+
+    fun setIsAutoDeleteEnabled(value: Boolean) {
+        appSharedPrefsRepository.isAutoDeleteEnabled = value
+    }
+
+    fun getIsDynamic() = appSharedPrefsRepository.isDynamic
 }

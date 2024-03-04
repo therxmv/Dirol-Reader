@@ -5,6 +5,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.therxmv.dirolreader.ui.auth.AuthScreen
+import com.therxmv.dirolreader.ui.navigation.Destination.AuthScreen
+import com.therxmv.dirolreader.ui.navigation.Destination.NewsScreen
+import com.therxmv.dirolreader.ui.navigation.Destination.OtaScreen
+import com.therxmv.dirolreader.ui.navigation.Destination.ProfileScreen
+import com.therxmv.dirolreader.ui.navigation.Destination.SettingsStorageScreen
+import com.therxmv.dirolreader.ui.navigation.Destination.SettingsThemingScreen
 import com.therxmv.dirolreader.ui.news.NewsScreen
 import com.therxmv.dirolreader.ui.ota.OtaScreen
 import com.therxmv.dirolreader.ui.profile.ProfileScreen
@@ -13,67 +19,68 @@ import com.therxmv.dirolreader.ui.settings.ThemingScreen
 
 @Composable
 fun DirolNavHost(
-    switchDynamicTheme: (Boolean) -> Unit
+    switchDynamicTheme: (Boolean) -> Unit,
 ) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Destination.OtaScreen.route) {
-        composable(route = Destination.OtaScreen.route) {
+
+    NavHost(navController = navController, startDestination = OtaScreen.route) {
+        composable(route = OtaScreen.route) {
             OtaScreen(
                 onNavigateToAuth = {
-                    navController.navigate(Destination.AuthScreen.route) {
-                        popUpTo(Destination.OtaScreen.route) { inclusive = true }
+                    navController.navigate(AuthScreen.route) {
+                        popUpTo(OtaScreen.route) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
             )
         }
-        composable(route = Destination.AuthScreen.route) {
+        composable(route = AuthScreen.route) {
             AuthScreen(
                 onNavigateToNews = {
-                    navController.navigate(Destination.NewsScreen.route) {
-                        popUpTo(Destination.AuthScreen.route) { inclusive = true }
+                    navController.navigate(NewsScreen.route) {
+                        popUpTo(AuthScreen.route) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
             )
         }
-        composable(route = Destination.NewsScreen.route) {
+        composable(route = NewsScreen.route) {
             NewsScreen(
                 onNavigateToProfile = {
-                    navController.navigate(Destination.ProfileScreen.route) {
-                        popUpTo(Destination.NewsScreen.route) { inclusive = false }
+                    navController.navigate(ProfileScreen.route) {
+                        popUpTo(NewsScreen.route) { inclusive = false }
                     }
                 }
             )
         }
-        composable(route = Destination.ProfileScreen.route) {
+        composable(route = ProfileScreen.route) {
             ProfileScreen(
                 navController,
                 onNavigateToTheming = {
-                    navController.navigate(Destination.SettingsThemingScreen.route) {
-                        popUpTo(Destination.ProfileScreen.route) { inclusive = false }
+                    navController.navigate(SettingsThemingScreen.route) {
+                        popUpTo(ProfileScreen.route) { inclusive = false }
                     }
                 },
                 onNavigateToStorage = {
-                    navController.navigate(Destination.SettingsStorageScreen.route) {
-                        popUpTo(Destination.ProfileScreen.route) { inclusive = false }
+                    navController.navigate(SettingsStorageScreen.route) {
+                        popUpTo(ProfileScreen.route) { inclusive = false }
                     }
                 },
                 onNavigateToAuth = {
-                    navController.navigate(Destination.AuthScreen.route) {
-                        popUpTo(Destination.ProfileScreen.route) { inclusive = true }
+                    navController.navigate(AuthScreen.route) {
+                        popUpTo(ProfileScreen.route) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
             )
         }
-        composable(route = Destination.SettingsThemingScreen.route) {
+        composable(route = SettingsThemingScreen.route) {
             ThemingScreen(
                 navController,
                 switchDynamicTheme
             )
         }
-        composable(route = Destination.SettingsStorageScreen.route) {
+        composable(route = SettingsStorageScreen.route) {
             StorageScreen(
                 navController,
             )

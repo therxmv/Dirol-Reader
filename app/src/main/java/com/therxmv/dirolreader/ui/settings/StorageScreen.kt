@@ -76,7 +76,7 @@ fun StorageScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                var isChecked by remember { mutableStateOf(viewModel.appSharedPrefsRepository.isAutoDeleteEnabled) }
+                var isChecked by remember { mutableStateOf(viewModel.getIsAutoDeleteEnabled()) }
 
                 Text(
                     modifier = Modifier
@@ -90,7 +90,7 @@ fun StorageScreen(
                 Switch(
                     checked = isChecked,
                     onCheckedChange = {
-                        viewModel.appSharedPrefsRepository.isAutoDeleteEnabled = it
+                        viewModel.setIsAutoDeleteEnabled(it)
                         isChecked = it
                     }
                 )

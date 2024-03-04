@@ -56,7 +56,7 @@ fun PostVideo(
         }
     }
 
-    if(videoPath.isNullOrBlank()) {
+    if (videoPath.isNullOrBlank()) {
         val isDownloading = remember { mutableStateOf(false) }
         val videoRatio = video.width.toFloat() / video.height.toFloat()
 
@@ -67,12 +67,11 @@ fun PostVideo(
                 .background(MaterialTheme.colorScheme.secondary),
             contentAlignment = Alignment.Center
         ) {
-            if(isDownloading.value) {
+            if (isDownloading.value) {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onSecondary
                 )
-            }
-            else {
+            } else {
                 Column(
                     modifier = Modifier
                         .clickable {
@@ -100,8 +99,7 @@ fun PostVideo(
                 }
             }
         }
-    }
-    else {
+    } else {
         val videoRatio = video.width.toFloat() / video.height.toFloat()
 
         exoPlayer.apply {
@@ -135,7 +133,7 @@ private fun handlePlayPauseButtons(playerView: PlayerView, exoPlayer: ExoPlayer)
     val pauseBtn = playerView.findViewById<ImageButton>(R.id.pauseButton)
 
     playBtn.setOnClickListener {
-        if(playerView.player?.playbackState == Player.STATE_ENDED) {
+        if (playerView.player?.playbackState == Player.STATE_ENDED) {
             playerView.player?.seekTo(0L)
         }
 

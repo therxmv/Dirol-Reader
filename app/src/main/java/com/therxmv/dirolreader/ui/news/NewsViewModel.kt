@@ -28,8 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NewsViewModel @Inject constructor(
     private val useCases: NewsViewModelUseCases,
-    private val appSharedPrefsRepository: AppSharedPrefsRepository
-): ViewModel() {
+    private val appSharedPrefsRepository: AppSharedPrefsRepository,
+) : ViewModel() {
     private val _state = MutableStateFlow(NewsUiState())
     val state = _state.asStateFlow()
 
@@ -47,14 +47,13 @@ class NewsViewModel @Inject constructor(
     }
 
     fun onEvent(event: NewsUiEvent) {
-        when(event) {
+        when (event) {
             is NewsUiEvent.UpdateRating -> {
                 val itemIndex = channelsRating.list.indexOfFirst { it.channelId == event.id }
 
-                if(itemIndex == -1) {
+                if (itemIndex == -1) {
                     channelsRating.list.add(ChannelRatingModel(event.id, event.num))
-                }
-                else {
+                } else {
                     val item = channelsRating.list[itemIndex]
 
                     channelsRating.list[itemIndex] = ChannelRatingModel(event.id, item.rating + event.num)
@@ -62,15 +61,18 @@ class NewsViewModel @Inject constructor(
 
                 appSharedPrefsRepository.channelsRating = channelsRating
             }
+
             is NewsUiEvent.MarkAsRead -> {
-                if(!readMessages.contains(event.messageId)) {
+                if (!readMessages.contains(event.messageId)) {
                     readMessages.add(event.messageId)
-                    client?.send(TdApi.ViewMessages(
-                        event.channelId,
-                        0,
-                        longArrayOf(event.messageId),
-                        true
-                    )) {}
+                    client?.send(
+                        TdApi.ViewMessages(
+                            event.channelId,
+                            0,
+                            longArrayOf(event.messageId),
+                            true
+                        )
+                    ) {}
                 }
             }
         }
@@ -86,11 +88,10 @@ class NewsViewModel @Inject constructor(
         appSharedPrefsRepository.channelsRating = channelsRating
     }
 
-    suspend fun loadMessageMedia(mediaList: List<MediaModel>, loadVideo: Boolean): List<String?> {
-        return mediaList.map {
-            if(it.type == MediaType.VIDEO && !loadVideo) null else useCases.getMessageMediaUseCase(client, it.id)
+    suspend fun loadMessageMedia(mediaList: List<MediaModel>, loadVideo: Boolean) =
+        mediaList.map {
+            if (it.type == MediaType.VIDEO && !loadVideo) null else useCases.getMessageMediaUseCase(client, it.id)
         }
-    }
 
     private suspend fun loadToolbarInfo(unreadCount: Int): ToolbarState {
         val user = useCases.getCurrentUserUseCase(client)
@@ -102,6 +103,7 @@ class NewsViewModel @Inject constructor(
             unreadChannels = unreadCount
         )
     }
+
     fun loadChannels(onRefresh: (() -> Unit)?) {
         updateRating()
 
@@ -115,11 +117,10 @@ class NewsViewModel @Inject constructor(
                 setToolbar(list.filter { it.unreadCount > 0 }.size)
 
                 val res = useCases.addChannelToLocaleUseCase(list)
-                if(res == list.size) {
-                    if(news == null) {
+                if (res == list.size) {
+                    if (news == null) {
                         news = useCases.getMessagePagingUseCase(client).cachedIn(viewModelScope)
-                    }
-                    else {
+                    } else {
                         onRefresh?.let { it() }
                     }
                 }

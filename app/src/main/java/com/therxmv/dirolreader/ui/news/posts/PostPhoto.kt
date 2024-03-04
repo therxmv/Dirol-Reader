@@ -17,7 +17,7 @@ fun PostPhoto(
     photoPath: String?,
     photo: MediaModel,
 ) {
-    if(photoPath.isNullOrBlank()) {
+    if (photoPath.isNullOrBlank()) {
         val imageRatio = photo.width.toFloat() / photo.height.toFloat()
         Box(
             modifier = Modifier
@@ -25,8 +25,7 @@ fun PostPhoto(
                 .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.secondary)
         )
-    }
-    else {
+    } else {
         val bitmap = BitmapFactory.decodeFile(photoPath).asImageBitmap()
         val imageRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
 

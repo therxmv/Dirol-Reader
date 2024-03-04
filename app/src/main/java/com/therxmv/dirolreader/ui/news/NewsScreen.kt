@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,13 +47,14 @@ import me.onebone.toolbar.ExperimentalToolbarApi
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
-@OptIn(ExperimentalToolbarApi::class, ExperimentalMaterialApi::class,
+@OptIn(
+    ExperimentalToolbarApi::class, ExperimentalMaterialApi::class,
     ExperimentalMaterial3Api::class
 )
 @Composable
 fun NewsScreen(
     viewModel: NewsViewModel = hiltViewModel(),
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
 ) {
     val state = viewModel.state.collectAsState().value
     val news = viewModel.news?.collectAsLazyPagingItems()
@@ -131,7 +131,7 @@ fun NewsScreen(
                 }
             },
         ) {
-            if(news != null) {
+            if (news != null) {
                 val starredChannelState = remember { mutableStateMapOf<Long, Boolean>() }
                 val pullRefreshState = rememberPullRefreshState(
                     refreshing = !state.isLoaded,
@@ -172,8 +172,7 @@ fun NewsScreen(
                         modifier = Modifier.align(Alignment.TopCenter)
                     )
                 }
-            }
-            else {
+            } else {
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),

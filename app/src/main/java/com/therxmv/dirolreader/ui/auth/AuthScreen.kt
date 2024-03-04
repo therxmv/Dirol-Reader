@@ -56,11 +56,11 @@ fun AuthScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     var inputValue by remember { mutableStateOf("") }
-    var isDialogOpened by remember { mutableStateOf(false)  }
+    var isDialogOpened by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val surfaceColor = MaterialTheme.colorScheme.surface.toArgb()
 
-    if(state.authState == AuthState.READY) {
+    if (state.authState == AuthState.READY) {
         LaunchedEffect(Unit) {
             onNavigateToNews()
         }
@@ -68,10 +68,10 @@ fun AuthScreen(
 
     Scaffold { padding ->
         if (state.authState != AuthState.START
-            && state.authState != AuthState.READY)
-        {
+            && state.authState != AuthState.READY
+        ) {
             SwitchImmersive(context, false, surfaceColor)
-            if(isDialogOpened) {
+            if (isDialogOpened) {
                 AlertDialog(
                     shape = MaterialTheme.shapes.medium,
                     onDismissRequest = { isDialogOpened = false },
@@ -153,10 +153,9 @@ fun AuthScreen(
                     modifier = Modifier
                         .align(Alignment.End),
                     onClick = {
-                        if(state.authState == AuthState.PHONE) {
+                        if (state.authState == AuthState.PHONE) {
                             isDialogOpened = true
-                        }
-                        else {
+                        } else {
                             viewModel.onEvent(AuthUiEvent.ConfirmInput(state.authState, inputValue))
                             inputValue = ""
                         }
@@ -165,8 +164,7 @@ fun AuthScreen(
                     Text(text = stringResource(id = R.string.auth_continue_btn))
                 }
             }
-        }
-        else {
+        } else {
             SwitchImmersive(context, true, surfaceColor)
         }
     }
@@ -195,8 +193,8 @@ private fun getKeyboardOptions(state: AuthState): KeyboardOptions {
 
 @Composable
 private fun SwitchImmersive(context: Context, isEnabled: Boolean, surfaceColor: Int) {
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val color = if(!isEnabled) surfaceColor else Color.Transparent.toArgb()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val color = if (!isEnabled) surfaceColor else Color.Transparent.toArgb()
 
         SideEffect {
             val window = (context as Activity).window

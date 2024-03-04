@@ -84,7 +84,7 @@ fun ThemingScreen(
                     fontSize = 20.sp
                 )
                 Switch(
-                    checked = viewModel.appSharedPrefsRepository.isDynamic,
+                    checked = viewModel.getIsDynamic(),
                     onCheckedChange = {
                         switchDynamicTheme(it)
                     }

@@ -41,12 +41,11 @@ import com.therxmv.dirolreader.ui.ota.utils.OtaUiEvent
 import com.therxmv.dirolreader.ui.ota.utils.OtaUiState
 import java.io.File
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun OtaScreen(
     onNavigateToAuth: () -> Unit,
-    viewModel: OtaViewModel = hiltViewModel()
+    viewModel: OtaViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     val context = LocalContext.current
@@ -55,7 +54,7 @@ fun OtaScreen(
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
-    if(state.isUpdateAvailable == false) {
+    if (state.isUpdateAvailable == false) {
         LaunchedEffect(Unit) {
             onNavigateToAuth()
         }
@@ -69,7 +68,7 @@ fun OtaScreen(
                 .padding(10.dp),
             contentAlignment = Alignment.Center,
         ) {
-            if(state.isUpdateAvailable == true && state.updateModel != null) {
+            if (state.isUpdateAvailable == true && state.updateModel != null) {
                 TextButton(
                     modifier = Modifier.align(Alignment.TopEnd),
                     onClick = {
@@ -85,7 +84,7 @@ fun OtaScreen(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(state.isUpdateAvailable == true && state.updateModel != null) {
+                if (state.isUpdateAvailable == true && state.updateModel != null) {
                     Image(
                         modifier = Modifier
                             .size(172.dp),
@@ -112,17 +111,15 @@ fun OtaScreen(
                     )
                     Button(
                         onClick = {
-                            if(state.downloadState == DownloadState.DOWNLOAD) {
-                                if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P
+                            if (state.downloadState == DownloadState.DOWNLOAD) {
+                                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P
                                     || writeStoragePermissionState.status.isGranted
                                 ) {
                                     viewModel.onEvent(OtaUiEvent.DownloadUpdate)
-                                }
-                                else {
+                                } else {
                                     writeStoragePermissionState.launchPermissionRequest()
                                 }
-                            }
-                            else if(state.downloadState == DownloadState.DOWNLOADED) {
+                            } else if (state.downloadState == DownloadState.DOWNLOADED) {
                                 installUpdate(context, state)
                             }
                         },
@@ -138,7 +135,7 @@ fun OtaScreen(
     }
 }
 
-private fun getDownloadTitle(state: DownloadState) = when(state) {
+private fun getDownloadTitle(state: DownloadState) = when (state) {
     DownloadState.DOWNLOAD -> R.string.ota_download_now
     DownloadState.DOWNLOADING -> R.string.ota_downloading
     DownloadState.DOWNLOADED -> R.string.ota_install_update
@@ -148,11 +145,10 @@ private fun installUpdate(context: Context, state: OtaUiState) {
     val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
     val file = File(path, state.updateModel?.fileName ?: "")
 
-    if(file.exists()) {
-        val uri = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+    if (file.exists()) {
+        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             FileProvider.getUriForFile(context, context.applicationContext.packageName + ".provider", file)
-        }
-        else {
+        } else {
             Uri.fromFile(file)
         }
 
@@ -164,8 +160,7 @@ private fun installUpdate(context: Context, state: OtaUiState) {
 
         try {
             context.startActivity(intent)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

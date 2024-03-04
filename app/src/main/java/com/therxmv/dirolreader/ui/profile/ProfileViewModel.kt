@@ -16,19 +16,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val useCases: ProfileViewModelUseCase
-): ViewModel() {
+    private val useCases: ProfileViewModelUseCase,
+) : ViewModel() {
+
     private val _state = MutableStateFlow(ProfileUiState())
     val state = _state.asStateFlow()
 
     private var client: Client? = useCases.getClientUseCase()
 
     init {
-        setAppBar()
+        setUpAppBar()
     }
 
     fun onEvent(event: ProfileUiEvent) {
-        when(event) {
+        when (event) {
             is ProfileUiEvent.LogOut -> {
                 logOut(event.onComplete)
             }
@@ -41,7 +42,7 @@ class ProfileViewModel @Inject constructor(
         onComplete()
     }
 
-    private fun setAppBar() {
+    private fun setUpAppBar() {
         viewModelScope.launch {
             val user = useCases.getCurrentUserUseCase(client)
             val avatarPath = useCases.getCurrentUserAvatarUseCase(client, user)

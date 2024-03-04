@@ -2,6 +2,7 @@ package com.therxmv.dirolreader.data.source.remote
 
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -16,7 +17,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class ChannelRemoteDataSource {
 
-    suspend fun getRemoteChannelsIds(client: Client?) = withContext(Dispatchers.IO) {
+    suspend fun getRemoteChannelsIds(client: Client?): Flow<List<ChannelModel>> = withContext(Dispatchers.IO) {
         suspendCoroutine {
             client?.send(GetChats(ChatListMain(), Int.MAX_VALUE)) { chats ->
                 chats as Chats
@@ -25,36 +26,26 @@ class ChannelRemoteDataSource {
                     flow {
                         emit(chats.chatIds.toList())
                     }.map {
-                        val allChannels = it.filter { elem ->
+                        it.mapNotNull { elem ->
                             suspendCoroutine { continuation ->
                                 client.send(GetChat(elem)) { c ->
                                     c as TdApi.Chat
+                                    val type = c.type
 
-                                    continuation.resume(
-                                        c.type is TdApi.ChatTypeSupergroup
-                                                && (c.type as TdApi.ChatTypeSupergroup).isChannel
-                                    )
-                                }
-                            }
-                        }
-
-                        val mapped = allChannels.map { elem ->
-                            suspendCoroutine { continuation ->
-                                client.send(GetChat(elem)) { c ->
-                                    c as TdApi.Chat
-
-                                    continuation.resume(
-                                        ChannelModel(
-                                            c.id,
-                                            c.unreadCount,
-                                            c.lastReadInboxMessageId
+                                    if (type is TdApi.ChatTypeSupergroup && type.isChannel) {
+                                        continuation.resume(
+                                            ChannelModel(
+                                                c.id,
+                                                c.unreadCount,
+                                                c.lastReadInboxMessageId
+                                            )
                                         )
-                                    )
+                                    } else {
+                                        continuation.resume(null)
+                                    }
                                 }
                             }
                         }
-
-                        mapped
                     }
                 )
             }

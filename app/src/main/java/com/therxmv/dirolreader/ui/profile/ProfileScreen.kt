@@ -57,7 +57,7 @@ fun ProfileScreen(
 ) {
     val state = viewModel.state.collectAsState().value
     val uriHandler = LocalUriHandler.current
-    var isDialogOpened by remember { mutableStateOf(false)  }
+    var isDialogOpened by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -97,7 +97,7 @@ fun ProfileScreen(
             }
         }
     ) { padding ->
-        if(isDialogOpened) {
+        if (isDialogOpened) {
             AlertDialog(
                 shape = MaterialTheme.shapes.medium,
                 onDismissRequest = { isDialogOpened = false },

@@ -5,3 +5,5 @@ enum class DownloadState {
     DOWNLOADING,
     DOWNLOADED,
 }
+
+fun Boolean.toDownloadState() = if (this) DownloadState.DOWNLOADED else DownloadState.DOWNLOAD
