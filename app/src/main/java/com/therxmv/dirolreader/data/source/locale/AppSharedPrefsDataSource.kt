@@ -12,32 +12,29 @@ import com.therxmv.constants.SharedPrefs.SHARED_PREFS_IS_UPDATE_DOWNLOADED
 import com.therxmv.dirolreader.data.models.ChannelsRatingListModel
 
 class AppSharedPrefsDataSource(
-    private val context: Context
+    context: Context,
 ) {
+
     private val sharedPrefs = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
     private val mmkv = MMKV.defaultMMKV()
 
     var isDynamic: Boolean
-        get() {
-            return mmkv.decodeBool(SHARED_PREFS_IS_DYNAMIC, false)
-        }
+        get() = mmkv.decodeBool(SHARED_PREFS_IS_DYNAMIC, false)
         set(value) {
             mmkv.encode(SHARED_PREFS_IS_DYNAMIC, value)
         }
 
     var isAutoDeleteEnabled: Boolean
-        get() {
-            return mmkv.decodeBool(SHARED_PREFS_IS_AUTO_DELETE_ENABLED, false)
-        }
+        get() = mmkv.decodeBool(SHARED_PREFS_IS_AUTO_DELETE_ENABLED, false)
         set(value) {
             mmkv.encode(SHARED_PREFS_IS_AUTO_DELETE_ENABLED, value)
         }
 
     var channelsRating: ChannelsRatingListModel
-        get() {
-            return mmkv.decodeParcelable(SHARED_PREFS_CHANNELS_RATING, ChannelsRatingListModel::class.java)
-                ?: ChannelsRatingListModel()
-        }
+        get() = mmkv.decodeParcelable(
+            SHARED_PREFS_CHANNELS_RATING,
+            ChannelsRatingListModel::class.java
+        ) ?: ChannelsRatingListModel()
         set(value) {
             mmkv.encode(SHARED_PREFS_CHANNELS_RATING, value)
         }
@@ -52,7 +49,7 @@ class AppSharedPrefsDataSource(
 
     fun isUpdateDownloadedChangeListener(callback: (isDownloaded: Boolean) -> Unit) =
         OnSharedPreferenceChangeListener { _, key ->
-            if(key == SHARED_PREFS_IS_UPDATE_DOWNLOADED) {
+            if (key == SHARED_PREFS_IS_UPDATE_DOWNLOADED) {
                 callback(isUpdateDownloaded)
             }
         }

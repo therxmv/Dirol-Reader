@@ -21,17 +21,16 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class MessageRemoteDataSource {
+
     companion object {
         private var lastChannelAndMessageId: Pair<Long, Long>? = null
     }
 
-    suspend fun getMessagePhoto(client: Client?, photoId: Int): String {
-        return withContext(Dispatchers.IO) {
-            suspendCoroutine {
-                client?.send(TdApi.DownloadFile(photoId, 32, 0, 0, true)) { f ->
-                    f as TdApi.File
-                    it.resume(f.local.path)
-                }
+    suspend fun getMessagePhoto(client: Client?, photoId: Int): String = withContext(Dispatchers.IO) {
+        suspendCoroutine {
+            client?.send(TdApi.DownloadFile(photoId, 32, 0, 0, true)) { f ->
+                f as TdApi.File
+                it.resume(f.local.path)
             }
         }
     }
@@ -40,13 +39,13 @@ class MessageRemoteDataSource {
     suspend fun getMessagesByPage(
         client: Client?,
         channelsList: List<List<ChannelModel>>
-    ): List<MessageModel> {
-        return withContext(Dispatchers.IO) {
+    ): List<MessageModel> =
+        withContext(Dispatchers.IO) {
             channelsList.asFlow().map { elem ->
                 val channel = elem.last()
                 val historyOffset = elem.size + 1
 
-                if(lastChannelAndMessageId == null
+                if (lastChannelAndMessageId == null
                     || lastChannelAndMessageId!!.first != channel.id
                 ) {
                     lastChannelAndMessageId = Pair(channel.id, channel.lastReadMessageId)
@@ -63,8 +62,9 @@ class MessageRemoteDataSource {
                         )
                     ) { ms ->
                         ms as TdApi.Messages
+
                         val list = ms.messages.reversed().toMutableList().also {
-                            if(historyOffset == ms.messages.size) {
+                            if (historyOffset == ms.messages.size) {
                                 it.removeAt(0)
                             }
                         }
@@ -74,6 +74,7 @@ class MessageRemoteDataSource {
                         cont.resume(
                             list.asFlow().map { m ->
                                 m as Message
+
                                 val model = handleMessageType(channel, m)
 
                                 suspendCoroutine { cont ->
@@ -81,7 +82,15 @@ class MessageRemoteDataSource {
                                         c as Chat
 
                                         if (c.photo != null) {
-                                            client.send(TdApi.DownloadFile(c.photo?.small?.id!!, 32, 0, 0, true)) { f ->
+                                            client.send(
+                                                TdApi.DownloadFile(
+                                                    c.photo?.small?.id!!,
+                                                    32,
+                                                    0,
+                                                    0,
+                                                    true
+                                                )
+                                            ) { f ->
                                                 f as TdApi.File
 
                                                 cont.resume(
@@ -106,7 +115,6 @@ class MessageRemoteDataSource {
                 }
             }.flattenConcat().toList()
         }
-    }
 
     private fun handleMessageType(
         channel: ChannelModel,
@@ -184,12 +192,11 @@ class MessageRemoteDataSource {
             is TdApi.MessageSticker -> {
                 val sticker = (message.content as TdApi.MessageSticker).sticker
 
-                if(sticker.isAnimated) {
+                if (sticker.isAnimated) {
                     defaultModel.copy(
                         text = "Animated sticker is not supported"
                     )
-                }
-                else {
+                } else {
                     defaultModel.copy(
                         text = "",
                         mediaList = mutableListOf(

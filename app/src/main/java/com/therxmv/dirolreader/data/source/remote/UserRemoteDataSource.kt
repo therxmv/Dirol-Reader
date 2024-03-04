@@ -8,27 +8,35 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class UserRemoteDataSource {
-    suspend fun getCurrentUser(client: Client?): TdApi.User {
-        return withContext(Dispatchers.IO) {
+
+    suspend fun getCurrentUser(client: Client?): TdApi.User =
+        withContext(Dispatchers.IO) {
             suspendCoroutine {
                 client?.send(TdApi.GetMe()) { u ->
                     it.resume(u as TdApi.User)
                 }
             }
         }
-    }
 
-    suspend fun getCurrentUserAvatar(client: Client?, user: TdApi.User): String {
-        return withContext(Dispatchers.IO) {
+    suspend fun getCurrentUserAvatar(client: Client?, user: TdApi.User): String =
+        withContext(Dispatchers.IO) {
             suspendCoroutine {
                 client?.send(TdApi.GetUserProfilePhotos(user.id, 0, 1)) { p ->
                     p as TdApi.ChatPhotos
-                    client.send(TdApi.DownloadFile(p.photos.first().sizes[1].photo.id, 32, 0, 1, true)) { f ->
+
+                    client.send(
+                        TdApi.DownloadFile(
+                            p.photos.first().sizes[1].photo.id,
+                            32,
+                            0,
+                            1,
+                            true
+                        )
+                    ) { f ->
                         f as TdApi.File
                         it.resume(f.local.path)
                     }
                 }
             }
         }
-    }
 }

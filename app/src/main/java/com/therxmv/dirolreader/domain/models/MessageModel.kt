@@ -10,5 +10,5 @@ data class MessageModel(
     val channelAvatarPath: String?,
     val timestamp: Int,
     var text: String,
-    val mediaList: MutableList<MediaModel>?
+    val mediaList: MutableList<MediaModel>?,
 )

@@ -11,12 +11,12 @@ fun TdApi.FormattedText.toMarkdown(): String {
         var subText = this.text.subSequence(startIndex, endIndex).toString()
 
         // remove line break/space/etc from the end of the subString
-        while(subText.last().isWhitespace()) {
+        while (subText.last().isWhitespace()) {
             subText = subText.dropLast(1)
         }
 
         // remove line break if it is in the middle of the subString
-        val strList = if(subText.contains(10.toChar())) {
+        val strList = if (subText.contains(10.toChar())) {
             subText.split(10.toChar())
         } else listOf(subText)
 
@@ -67,6 +67,6 @@ fun TdApi.FormattedText.toMarkdown(): String {
     }
 
     return result.map {
-        if(it.code == 10) "\n\r" else it
+        if (it.code == 10) "\n\r" else it
     }.joinToString("")
 }

@@ -2,24 +2,22 @@ package com.therxmv.dirolreader.data.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import com.therxmv.constants.Paging.PAGE_SIZE
 import com.therxmv.dirolreader.data.entity.toDomain
 import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
 import com.therxmv.dirolreader.data.source.remote.MessageRemoteDataSource
 import com.therxmv.dirolreader.domain.models.ChannelModel
-import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.domain.paging.MessagesPagingSource
 import com.therxmv.dirolreader.domain.repository.MessageRepository
-import kotlinx.coroutines.flow.Flow
 import org.drinkless.td.libcore.telegram.Client
 
 class MessageRepositoryImpl(
     private val channelLocaleDataSource: ChannelLocaleDataSource,
     private val messageRemoteDataSource: MessageRemoteDataSource,
-): MessageRepository {
-    override fun getMessagePaging(client: Client?): Flow<PagingData<MessageModel>> {
-        return Pager(
+) : MessageRepository {
+
+    override fun getMessagePaging(client: Client?) =
+        Pager(
             config = PagingConfig(
                 initialLoadSize = PAGE_SIZE,
                 pageSize = PAGE_SIZE,
@@ -29,11 +27,12 @@ class MessageRepositoryImpl(
                 MessagesPagingSource(client, this)
             }
         ).flow
-    }
 
-    override suspend fun getMessagesByPage(client: Client?, offset: Int, limit: Int): List<MessageModel> {
-        return messageRemoteDataSource.getMessagesByPage(client, getChannelsList(offset, limit))
-    }
+    override suspend fun getMessagesByPage(
+        client: Client?,
+        offset: Int,
+        limit: Int
+    ) = messageRemoteDataSource.getMessagesByPage(client, getChannelsList(offset, limit))
 
     private suspend fun getChannelsList(offset: Int, limit: Int): List<List<ChannelModel>> {
         val list = mutableListOf<ChannelModel>()
@@ -49,8 +48,6 @@ class MessageRepositoryImpl(
         return temp.groupBy { it.id }.values.toList()
     }
 
-    override suspend fun getMessageMedia(client: Client?, photoId: Int): String {
-        return messageRemoteDataSource.getMessagePhoto(client, photoId)
-    }
-
+    override suspend fun getMessageMedia(client: Client?, photoId: Int) =
+        messageRemoteDataSource.getMessagePhoto(client, photoId)
 }

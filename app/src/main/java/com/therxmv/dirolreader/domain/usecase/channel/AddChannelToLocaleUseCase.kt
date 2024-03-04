@@ -4,7 +4,7 @@ import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 
 class AddChannelToLocaleUseCase(
-    private val channelRepository: ChannelRepository
+    private val channelRepository: ChannelRepository,
 ) {
     suspend operator fun invoke(channel: List<ChannelModel>) =
         channelRepository.addChannelToLocale(channel)

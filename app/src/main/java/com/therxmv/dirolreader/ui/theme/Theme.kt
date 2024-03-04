@@ -50,7 +50,6 @@ private val LightColors = lightColorScheme(
     scrim = md_theme_light_scrim,
 )
 
-
 private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
@@ -87,7 +86,7 @@ private val DarkColors = darkColorScheme(
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val view = LocalView.current
     val window = (view.context as Activity).window
@@ -113,16 +112,18 @@ fun AppTheme(
     )
 
     // Immersive mode
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         if (!view.isInEditMode) {
             SideEffect {
-                window.statusBarColor = Color.Transparent.toArgb()
-                window.navigationBarColor = Color.Transparent.toArgb()
-                window.isStatusBarContrastEnforced = false
-                window.isNavigationBarContrastEnforced = false
+                with(window) {
+                    statusBarColor = Color.Transparent.toArgb()
+                    navigationBarColor = Color.Transparent.toArgb()
+                    isStatusBarContrastEnforced = false
+                    isNavigationBarContrastEnforced = false
 
-                WindowCompat.setDecorFitsSystemWindows(window, false)
-                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+                    WindowCompat.setDecorFitsSystemWindows(this@with, false)
+                    WindowCompat.getInsetsController(this@with, view).isAppearanceLightStatusBars = !darkTheme
+                }
             }
         }
     }

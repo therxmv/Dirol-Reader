@@ -10,6 +10,7 @@ import com.therxmv.dirolreader.data.entity.ChannelEntity
 
 @Dao
 interface DirolDao {
+
     @Query("SELECT * FROM $CHANNEL_TABLE ORDER BY $CHANNEL_TABLE.rating DESC")
     fun getAllChannels(): List<ChannelEntity>
 
@@ -25,9 +26,12 @@ interface DirolDao {
     @Transaction
     fun insertOrUpdateChannel(channelEntity: ChannelEntity): Int {
         val id = addChannel(channelEntity)
-        return if(id == -1L) {
-            updateChannel(channelEntity.id, channelEntity.unreadCount, channelEntity.lastReadMessageId)
-        }
-        else id.toInt()
+        return if (id == -1L) {
+            updateChannel(
+                channelEntity.id,
+                channelEntity.unreadCount,
+                channelEntity.lastReadMessageId
+            )
+        } else id.toInt()
     }
 }

@@ -50,7 +50,10 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideMessageRepositoryImpl(channelLocaleDataSource: ChannelLocaleDataSource, messageRemoteDataSource: MessageRemoteDataSource): MessageRepository {
+    fun provideMessageRepositoryImpl(
+        channelLocaleDataSource: ChannelLocaleDataSource,
+        messageRemoteDataSource: MessageRemoteDataSource
+    ): MessageRepository {
         return MessageRepositoryImpl(channelLocaleDataSource, messageRemoteDataSource)
     }
 

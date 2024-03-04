@@ -13,64 +13,66 @@ import org.drinkless.td.libcore.telegram.Client
 class MessagesPagingSource(
     private val client: Client?,
     private val messageRepository: MessageRepository,
-): PagingSource<Int, MessageModel>() {
+) : PagingSource<Int, MessageModel>() {
+
     companion object {
         private val readPostsIds = mutableListOf<Long>()
     }
 
-    override fun getRefreshKey(state: PagingState<Int, MessageModel>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
+    override fun getRefreshKey(state: PagingState<Int, MessageModel>) =
+        state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
-    }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MessageModel> = withContext(Dispatchers.IO) {
-        try {
-            val pageIndex = params.key ?: STARTING_PAGE_INDEX
-            val data = messageRepository.getMessagesByPage(client, pageIndex * params.loadSize, PAGE_SIZE)
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MessageModel> =
+        withContext(Dispatchers.IO) {
+            try {
+                val pageIndex = params.key ?: STARTING_PAGE_INDEX
+                val data = messageRepository.getMessagesByPage(
+                    client,
+                    pageIndex * params.loadSize,
+                    PAGE_SIZE
+                )
 
 //            Log.d("rozmi_paging", data.map { it.id }.toString())
 
-            LoadResult.Page(
-                data = groupPhotoMessages(data),
-                prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
-                nextKey = if (data.isEmpty()) null else pageIndex + 1,
-            )
+                LoadResult.Page(
+                    data = groupPhotoMessages(data),
+                    prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
+                    nextKey = if (data.isEmpty()) null else pageIndex + 1,
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                LoadResult.Error(e)
+            }
         }
-        catch (e: Exception) {
-            e.printStackTrace()
-            LoadResult.Error(e)
-        }
-    }
 
     private fun groupPhotoMessages(list: List<MessageModel>): List<MessageModel> {
         val temp = mutableListOf<MessageModel>()
 
-        if(list.isEmpty() || list.size == 1) return list
+        if (list.isEmpty() || list.size == 1) return list
 
         var id = 0
         temp.add(list[id])
 
-        for(i in 1 until list.size) {
+        for (i in 1 until list.size) {
             val prevItem = temp[id]
             val currentItem = list[i]
 
-            if(prevItem.mediaList == null || currentItem.mediaList == null) {
+            if (prevItem.mediaList == null || currentItem.mediaList == null) {
                 temp.add(currentItem)
                 id++
-            }
-            else {
-                if(currentItem.timestamp - prevItem.timestamp <= 10 && currentItem.channelId == prevItem.channelId) {
+            } else {
+                if (currentItem.timestamp - prevItem.timestamp <= 10 && currentItem.channelId == prevItem.channelId) {
                     prevItem.mediaList.add(currentItem.mediaList[0])
 
                     prevItem.id = currentItem.id
 
-                    if(currentItem.text.isNotEmpty()) {
+                    if (currentItem.text.isNotEmpty()) {
                         prevItem.text = currentItem.text
                     }
-                }
-                else {
+                } else {
                     temp.add(currentItem)
                     id++
                 }

@@ -5,8 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ChannelLocaleDataSource(
-    private val dirolDao: DirolDao
+    private val dirolDao: DirolDao,
 ) {
+
     suspend fun getAllChannels(): List<ChannelEntity> = withContext(Dispatchers.IO) {
         dirolDao.getAllChannels()
     }

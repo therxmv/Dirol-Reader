@@ -4,7 +4,7 @@ import com.therxmv.dirolreader.domain.repository.ClientRepository
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
-class ClientRepositoryImpl: ClientRepository {
+class ClientRepositoryImpl : ClientRepository {
     private var client: Client? = null
 
     override fun getClient() = client

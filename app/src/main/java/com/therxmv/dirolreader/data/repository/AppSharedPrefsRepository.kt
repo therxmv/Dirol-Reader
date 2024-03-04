@@ -7,39 +7,33 @@ import com.therxmv.dirolreader.data.source.locale.AppSharedPrefsDataSource
 class AppSharedPrefsRepository(
     private val appSharedPrefsDataSource: AppSharedPrefsDataSource
 ) {
+
     var isDynamic: Boolean
-        get() {
-            return appSharedPrefsDataSource.isDynamic
-        }
+        get() = appSharedPrefsDataSource.isDynamic
         set(value) {
             appSharedPrefsDataSource.isDynamic = value
         }
 
     var isAutoDeleteEnabled: Boolean
-        get() {
-            return appSharedPrefsDataSource.isAutoDeleteEnabled
-        }
+        get() = appSharedPrefsDataSource.isAutoDeleteEnabled
         set(value) {
             appSharedPrefsDataSource.isAutoDeleteEnabled = value
         }
 
     var channelsRating: ChannelsRatingListModel
-        get() {
-            return appSharedPrefsDataSource.channelsRating
-        }
+        get() = appSharedPrefsDataSource.channelsRating
         set(value) {
             appSharedPrefsDataSource.channelsRating = value
         }
 
     var isUpdateDownloaded: Boolean
-        get() {
-            return appSharedPrefsDataSource.isUpdateDownloaded
-        }
+        get() = appSharedPrefsDataSource.isUpdateDownloaded
         set(value) {
             appSharedPrefsDataSource.isUpdateDownloaded = value
         }
 
-    fun isUpdateDownloadedChangeListener(callback: (isDownloaded: Boolean) -> Unit) = appSharedPrefsDataSource.isUpdateDownloadedChangeListener(callback)
+    fun isUpdateDownloadedChangeListener(callback: (isDownloaded: Boolean) -> Unit) =
+        appSharedPrefsDataSource.isUpdateDownloadedChangeListener(callback)
 
     fun registerChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
         appSharedPrefsDataSource.registerChangeListener(listener)

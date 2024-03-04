@@ -2,7 +2,6 @@ package com.therxmv.dirolreader.data.source.remote
 
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -16,43 +15,48 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class ChannelRemoteDataSource {
-    suspend fun getRemoteChannelsIds(client: Client?): Flow<List<ChannelModel>> {
-        return withContext(Dispatchers.IO) {
-            suspendCoroutine {
-                client?.send(GetChats(ChatListMain(), Int.MAX_VALUE)) { chats ->
-                    chats as Chats
 
-                    it.resume(
-                        flow {
-                            emit(chats.chatIds.toList())
-                        }.map {
-                            val filtered = it.filter { elem ->
-                                suspendCoroutine { continuation ->
-                                    client.send(GetChat(elem)) { c ->
-                                        c as TdApi.Chat
-                                        continuation.resume(c.type is TdApi.ChatTypeSupergroup && (c.type as TdApi.ChatTypeSupergroup).isChannel)
-                                    }
+    suspend fun getRemoteChannelsIds(client: Client?) = withContext(Dispatchers.IO) {
+        suspendCoroutine {
+            client?.send(GetChats(ChatListMain(), Int.MAX_VALUE)) { chats ->
+                chats as Chats
+
+                it.resume(
+                    flow {
+                        emit(chats.chatIds.toList())
+                    }.map {
+                        val allChannels = it.filter { elem ->
+                            suspendCoroutine { continuation ->
+                                client.send(GetChat(elem)) { c ->
+                                    c as TdApi.Chat
+
+                                    continuation.resume(
+                                        c.type is TdApi.ChatTypeSupergroup
+                                                && (c.type as TdApi.ChatTypeSupergroup).isChannel
+                                    )
                                 }
                             }
-                            val mapped = filtered.map { elem ->
-                                suspendCoroutine { continuation ->
-                                    client.send(GetChat(elem)) { c ->
-                                        c as TdApi.Chat
-                                        continuation.resume(
-                                            ChannelModel(
-                                                c.id,
-                                                c.unreadCount,
-                                                c.lastReadInboxMessageId
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-
-                            mapped
                         }
-                    )
-                }
+
+                        val mapped = allChannels.map { elem ->
+                            suspendCoroutine { continuation ->
+                                client.send(GetChat(elem)) { c ->
+                                    c as TdApi.Chat
+
+                                    continuation.resume(
+                                        ChannelModel(
+                                            c.id,
+                                            c.unreadCount,
+                                            c.lastReadInboxMessageId
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
+                        mapped
+                    }
+                )
             }
         }
     }

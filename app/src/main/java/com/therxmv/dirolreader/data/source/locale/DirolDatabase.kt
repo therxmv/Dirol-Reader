@@ -9,6 +9,6 @@ import com.therxmv.dirolreader.data.entity.ChannelEntity
     version = 1,
     exportSchema = false
 )
-abstract class DirolDatabase: RoomDatabase() {
+abstract class DirolDatabase : RoomDatabase() {
     abstract fun dirolDao(): DirolDao
 }
