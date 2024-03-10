@@ -32,17 +32,17 @@ class ChannelRemoteDataSource {
                                     c as TdApi.Chat
                                     val type = c.type
 
-                                    if (type is TdApi.ChatTypeSupergroup && type.isChannel) {
-                                        continuation.resume(
-                                            ChannelModel(
-                                                c.id,
-                                                c.unreadCount,
-                                                c.lastReadInboxMessageId
-                                            )
+                                    val channel = if (type is TdApi.ChatTypeSupergroup && type.isChannel) {
+                                        ChannelModel(
+                                            c.id,
+                                            c.unreadCount,
+                                            c.lastReadInboxMessageId
                                         )
                                     } else {
-                                        continuation.resume(null)
+                                        null
                                     }
+
+                                    continuation.resume(channel)
                                 }
                             }
                         }

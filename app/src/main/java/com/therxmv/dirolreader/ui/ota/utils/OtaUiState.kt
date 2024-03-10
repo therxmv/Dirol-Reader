@@ -1,9 +1,11 @@
 package com.therxmv.dirolreader.ui.ota.utils
 
-import com.therxmv.otaupdates.domain.models.LatestReleaseModel
+sealed class OtaUiState {
+    object InitialState : OtaUiState()
+    object NoUpdates : OtaUiState()
+    object DownloadUpdate : OtaUiState()
+    object Downloading : OtaUiState()
+    object Downloaded : OtaUiState()
+}
 
-data class OtaUiState(
-    val isUpdateAvailable: Boolean? = null,
-    val downloadState: DownloadState = DownloadState.DOWNLOAD,
-    val updateModel: LatestReleaseModel? = null,
-)
+fun Boolean.toDownloadState() = if (this) OtaUiState.Downloaded else OtaUiState.DownloadUpdate
