@@ -6,7 +6,7 @@ import com.therxmv.otaupdates.domain.models.LatestReleaseModel
 data class LatestReleaseJson(
     @SerializedName("name") val version: String,
     @SerializedName("body") val changeLog: String,
-    @SerializedName("assets") val assets: List<LatestReleaseAssetJson>
+    @SerializedName("assets") val assets: List<LatestReleaseAssetJson>,
 )
 
 data class LatestReleaseAssetJson(

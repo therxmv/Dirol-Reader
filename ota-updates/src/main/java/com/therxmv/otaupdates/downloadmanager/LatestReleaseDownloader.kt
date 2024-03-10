@@ -5,11 +5,13 @@ import android.content.Context
 import android.os.Environment
 import androidx.core.net.toUri
 import com.therxmv.otaupdates.domain.models.LatestReleaseModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class LatestReleaseDownloader @Inject constructor(
-    private val context: Context,
-): Downloader {
+    @ApplicationContext context: Context,
+) : Downloader {
+
     private val downloadManager = context.getSystemService(DownloadManager::class.java)
 
     override fun downloadFile(latestReleaseModel: LatestReleaseModel): Long {

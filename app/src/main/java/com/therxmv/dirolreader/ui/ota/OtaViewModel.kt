@@ -20,8 +20,8 @@ import com.therxmv.dirolreader.ui.ota.utils.OtaUiState.InitialState
 import com.therxmv.dirolreader.ui.ota.utils.OtaUiState.NoUpdates
 import com.therxmv.dirolreader.ui.ota.utils.toDownloadState
 import com.therxmv.otaupdates.domain.models.LatestReleaseModel
+import com.therxmv.otaupdates.domain.usecase.DownloadUpdateUseCase
 import com.therxmv.otaupdates.domain.usecase.GetLatestReleaseUseCase
-import com.therxmv.otaupdates.downloadmanager.Downloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OtaViewModel @Inject constructor(
     private val getLatestReleaseUseCase: GetLatestReleaseUseCase,
-    private val latestReleaseDownloader: Downloader,
+    private val downloadUpdateUseCase: DownloadUpdateUseCase,
     private val appSharedPrefsRepository: AppSharedPrefsRepository,
 ) : ViewModel() {
 
@@ -94,7 +94,7 @@ class OtaViewModel @Inject constructor(
 
     private fun downloadUpdate() {
         updateModel?.let {
-            latestReleaseDownloader.downloadFile(it)
+            downloadUpdateUseCase(it)
 
             _uiState.update { Downloading }
 

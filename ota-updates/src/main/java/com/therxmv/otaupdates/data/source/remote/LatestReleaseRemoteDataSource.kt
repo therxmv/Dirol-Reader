@@ -7,17 +7,14 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class LatestReleaseRemoteDataSource @Inject constructor(
-    private val apiService: GithubApiService
+    private val apiService: GithubApiService,
 ) {
     suspend fun getLatestRelease() = withContext(Dispatchers.IO) {
         try {
             apiService.getLatestRelease(GITHUB_USERNAME, GITHUB_REPO)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
     }
-
-
 }
