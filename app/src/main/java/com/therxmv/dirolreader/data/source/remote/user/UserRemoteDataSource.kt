@@ -1,24 +1,26 @@
-package com.therxmv.dirolreader.data.source.remote
+package com.therxmv.dirolreader.data.source.remote.user
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.td.libcore.telegram.TdApi.User
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class UserRemoteDataSource {
+class UserRemoteDataSource @Inject constructor() : UserSource {
 
-    suspend fun getCurrentUser(client: Client?): TdApi.User =
+    override suspend fun getCurrentUser(client: Client?): User =
         withContext(Dispatchers.IO) {
             suspendCoroutine {
                 client?.send(TdApi.GetMe()) { u ->
-                    it.resume(u as TdApi.User)
+                    it.resume(u as User)
                 }
             }
         }
 
-    suspend fun getCurrentUserAvatar(client: Client?, user: TdApi.User): String =
+    override suspend fun getCurrentUserAvatar(client: Client?, user: User): String =
         withContext(Dispatchers.IO) {
             suspendCoroutine {
                 client?.send(TdApi.GetUserProfilePhotos(user.id, 0, 1)) { p ->

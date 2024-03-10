@@ -10,9 +10,11 @@ import com.therxmv.constants.SharedPrefs.SHARED_PREFS_IS_AUTO_DELETE_ENABLED
 import com.therxmv.constants.SharedPrefs.SHARED_PREFS_IS_DYNAMIC
 import com.therxmv.constants.SharedPrefs.SHARED_PREFS_IS_UPDATE_DOWNLOADED
 import com.therxmv.dirolreader.data.models.ChannelsRatingListModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class AppSharedPrefsDataSource(
-    context: Context,
+class AppSharedPrefsDataSource @Inject constructor(
+    @ApplicationContext context: Context,
 ) {
 
     private val sharedPrefs = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)

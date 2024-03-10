@@ -3,8 +3,9 @@ package com.therxmv.dirolreader.data.repository
 import com.therxmv.dirolreader.domain.repository.ClientRepository
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
+import javax.inject.Inject
 
-class ClientRepositoryImpl : ClientRepository {
+class ClientRepositoryImpl @Inject constructor() : ClientRepository {
     private var client: Client? = null
 
     override fun getClient() = client

@@ -1,4 +1,4 @@
-package com.therxmv.dirolreader.data.source.remote
+package com.therxmv.dirolreader.data.source.remote.message
 
 import android.util.Log
 import com.therxmv.dirolreader.data.models.MediaModel
@@ -17,16 +17,17 @@ import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 import org.drinkless.td.libcore.telegram.TdApi.Chat
 import org.drinkless.td.libcore.telegram.TdApi.Message
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class MessageRemoteDataSource {
+class MessageRemoteDataSource @Inject constructor() : MessageSource {
 
     companion object {
         private var lastChannelAndMessageId: Pair<Long, Long>? = null
     }
 
-    suspend fun getMessagePhoto(client: Client?, photoId: Int): String = withContext(Dispatchers.IO) {
+    override suspend fun getMessagePhoto(client: Client?, photoId: Int): String = withContext(Dispatchers.IO) {
         suspendCoroutine {
             client?.send(TdApi.DownloadFile(photoId, 32, 0, 0, true)) { f ->
                 f as TdApi.File
@@ -36,7 +37,7 @@ class MessageRemoteDataSource {
     }
 
     @OptIn(FlowPreview::class)
-    suspend fun getMessagesByPage(
+    override suspend fun getMessagesByPage(
         client: Client?,
         channelsList: List<List<ChannelModel>>
     ): List<MessageModel> =

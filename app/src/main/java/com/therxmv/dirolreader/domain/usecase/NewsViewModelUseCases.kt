@@ -8,8 +8,9 @@ import com.therxmv.dirolreader.domain.usecase.message.GetMessageMediaUseCase
 import com.therxmv.dirolreader.domain.usecase.message.GetMessagePagingUseCase
 import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserAvatarUseCase
 import com.therxmv.dirolreader.domain.usecase.user.GetCurrentUserUseCase
+import javax.inject.Inject
 
-data class NewsViewModelUseCases(
+data class NewsViewModelUseCases @Inject constructor(
     val getClientUseCase: GetClientUseCase,
     val getCurrentUserUseCase: GetCurrentUserUseCase,
     val getCurrentUserAvatarUseCase: GetCurrentUserAvatarUseCase,

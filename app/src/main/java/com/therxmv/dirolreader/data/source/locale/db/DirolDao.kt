@@ -1,4 +1,4 @@
-package com.therxmv.dirolreader.data.source.locale
+package com.therxmv.dirolreader.data.source.locale.db
 
 import androidx.room.Dao
 import androidx.room.Insert

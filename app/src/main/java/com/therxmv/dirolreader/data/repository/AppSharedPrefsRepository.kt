@@ -3,9 +3,10 @@ package com.therxmv.dirolreader.data.repository
 import android.content.SharedPreferences
 import com.therxmv.dirolreader.data.models.ChannelsRatingListModel
 import com.therxmv.dirolreader.data.source.locale.AppSharedPrefsDataSource
+import javax.inject.Inject
 
-class AppSharedPrefsRepository(
-    private val appSharedPrefsDataSource: AppSharedPrefsDataSource
+class AppSharedPrefsRepository @Inject constructor(
+    private val appSharedPrefsDataSource: AppSharedPrefsDataSource,
 ) {
 
     var isDynamic: Boolean

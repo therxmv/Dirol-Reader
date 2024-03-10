@@ -1,10 +1,11 @@
-package com.therxmv.dirolreader.data.source.locale
+package com.therxmv.dirolreader.data.source.locale.db
 
 import com.therxmv.dirolreader.data.entity.ChannelEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class ChannelLocaleDataSource(
+class ChannelLocaleDataSource @Inject constructor(
     private val dirolDao: DirolDao,
 ) {
 

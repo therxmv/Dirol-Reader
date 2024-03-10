@@ -4,16 +4,17 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.therxmv.constants.Paging.PAGE_SIZE
 import com.therxmv.dirolreader.data.entity.toDomain
-import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
-import com.therxmv.dirolreader.data.source.remote.MessageRemoteDataSource
+import com.therxmv.dirolreader.data.source.locale.db.ChannelLocaleDataSource
+import com.therxmv.dirolreader.data.source.remote.message.MessageSource
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.paging.MessagesPagingSource
 import com.therxmv.dirolreader.domain.repository.MessageRepository
 import org.drinkless.td.libcore.telegram.Client
+import javax.inject.Inject
 
-class MessageRepositoryImpl(
+class MessageRepositoryImpl @Inject constructor(
     private val channelLocaleDataSource: ChannelLocaleDataSource,
-    private val messageRemoteDataSource: MessageRemoteDataSource,
+    private val messageRemoteDataSource: MessageSource,
 ) : MessageRepository {
 
     override fun getMessagePaging(client: Client?) =

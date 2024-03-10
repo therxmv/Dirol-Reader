@@ -1,16 +1,17 @@
 package com.therxmv.dirolreader.data.repository
 
 import com.therxmv.dirolreader.data.entity.toDomain
-import com.therxmv.dirolreader.data.source.locale.ChannelLocaleDataSource
-import com.therxmv.dirolreader.data.source.remote.ChannelRemoteDataSource
+import com.therxmv.dirolreader.data.source.locale.db.ChannelLocaleDataSource
+import com.therxmv.dirolreader.data.source.remote.channel.ChannelRemoteSource
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.models.toEntity
 import com.therxmv.dirolreader.domain.repository.ChannelRepository
 import org.drinkless.td.libcore.telegram.Client
+import javax.inject.Inject
 
-class ChannelRepositoryImpl(
+class ChannelRepositoryImpl @Inject constructor(
     private val channelLocaleDataSource: ChannelLocaleDataSource,
-    private val channelRemoteDataSource: ChannelRemoteDataSource
+    private val channelRemoteDataSource: ChannelRemoteSource,
 ) : ChannelRepository {
 
     override suspend fun getLocaleChannels() =
