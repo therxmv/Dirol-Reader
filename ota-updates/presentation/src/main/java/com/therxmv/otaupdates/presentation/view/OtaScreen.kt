@@ -38,35 +38,39 @@ fun OtaScreen(
 
         is OtaUiState.InitialState -> {}
 
-        else -> OtaUpdateContent(
-            onNavigateToAuth = onNavigateToAuth,
-            updateVersion = viewModel.updateModel?.version.orEmpty(),
-            changeLog = viewModel.updateModel?.changeLog.orEmpty(),
-            updateButtonTitle = uiState.getDownloadTitle(),
-            isButtonEnabled = uiState !is OtaUiState.Downloading,
-            onUpdateClick = {
-                when (uiState) {
-                    is OtaUiState.DownloadUpdate -> {
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || writeStoragePermissionState.status.isGranted) {
-                            viewModel.onEvent(OtaUiEvent.DownloadUpdate)
-                        } else {
-                            writeStoragePermissionState.launchPermissionRequest()
+        else -> {
+            val update = uiState.updateModel
+
+            OtaUpdateContent(
+                onNavigateToAuth = onNavigateToAuth,
+                updateVersion = update?.version.orEmpty(),
+                changeLog = update?.changeLog.orEmpty(),
+                updateButtonTitle = uiState.getDownloadTitle(),
+                isButtonEnabled = uiState !is OtaUiState.Downloading,
+                onUpdateClick = {
+                    when (uiState) {
+                        is OtaUiState.DownloadUpdate -> {
+                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || writeStoragePermissionState.status.isGranted) {
+                                viewModel.onEvent(OtaUiEvent.DownloadUpdate(update))
+                            } else {
+                                writeStoragePermissionState.launchPermissionRequest()
+                            }
                         }
-                    }
 
-                    is OtaUiState.Downloaded -> {
-                        viewModel.onEvent(OtaUiEvent.InstallUpdate(context))
-                    }
+                        is OtaUiState.Downloaded -> {
+                            viewModel.onEvent(OtaUiEvent.InstallUpdate(context, update))
+                        }
 
-                    else -> {}
-                }
-            },
-        )
+                        else -> {}
+                    }
+                },
+            )
+        }
     }
 }
 
 private fun OtaUiState.getDownloadTitle() = when (this) {
-    OtaUiState.Downloading -> R.string.ota_downloading
-    OtaUiState.Downloaded -> R.string.ota_install_update
+    is OtaUiState.Downloading -> R.string.ota_downloading
+    is OtaUiState.Downloaded -> R.string.ota_install_update
     else -> R.string.ota_download_now
 }

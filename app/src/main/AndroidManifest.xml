@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
@@ -19,10 +20,10 @@
         tools:targetApi="33">
 
         <activity
-            android:exported="true"
             android:name=".ui.MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.DirolReader">
+            android:exported="true"
+            android:theme="@style/Theme.DirolReader"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,7 +41,9 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <receiver android:name="com.therxmv.otaupdates.receiver.DownloadCompletedReceiver" android:exported="true">
+        <receiver
+            android:name="com.therxmv.otaupdates.presentation.receiver.DownloadCompletedReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>

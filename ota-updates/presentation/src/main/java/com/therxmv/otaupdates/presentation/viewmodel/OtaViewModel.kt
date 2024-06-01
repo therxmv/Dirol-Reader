@@ -36,8 +36,6 @@ class OtaViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<OtaUiState>(OtaUiState.InitialState)
     val uiState = _uiState.asStateFlow()
 
-    var updateModel: LatestReleaseModel? = null
-
     private lateinit var updatePrefsListener: SharedPreferences.OnSharedPreferenceChangeListener
 
     init {
@@ -46,8 +44,8 @@ class OtaViewModel @Inject constructor(
 
     fun onEvent(event: OtaUiEvent) {
         when (event) {
-            is OtaUiEvent.DownloadUpdate -> downloadUpdate()
-            is OtaUiEvent.InstallUpdate -> installUpdate(event.context, updateModel)
+            is OtaUiEvent.DownloadUpdate -> downloadUpdate(event.updateModel)
+            is OtaUiEvent.InstallUpdate -> installUpdate(event.context, event.updateModel)
         }
     }
 
@@ -58,15 +56,15 @@ class OtaViewModel @Inject constructor(
         return file != null
     }
 
-    private fun checkIfUpdateDownloaded() {
+    private fun checkIfUpdateDownloaded(updateModel: LatestReleaseModel) {
         _uiState.update {
-            (appSharedPrefsRepository.isUpdateDownloaded && checkIfUpdateFileExists()).toDownloadState()
+            (appSharedPrefsRepository.isUpdateDownloaded && checkIfUpdateFileExists()).toDownloadState(updateModel)
         }
     }
 
-    private fun setIsUpdateDownloadedListener() {
+    private fun setIsUpdateDownloadedListener(updateModel: LatestReleaseModel) {
         updatePrefsListener = appSharedPrefsRepository.isUpdateDownloadedChangeListener { isDownloaded ->
-            _uiState.update { (isDownloaded && checkIfUpdateFileExists()).toDownloadState() }
+            _uiState.update { (isDownloaded && checkIfUpdateFileExists()).toDownloadState(updateModel) }
             appSharedPrefsRepository.unregisterChangeListener(updatePrefsListener)
         }
 
@@ -79,8 +77,7 @@ class OtaViewModel @Inject constructor(
                 val version = release.version.filter { it.isDigit() }.toInt()
 
                 if (version > versionCode) {
-                    updateModel = release
-                    checkIfUpdateDownloaded()
+                    checkIfUpdateDownloaded(release)
                 } else {
                     _uiState.update { OtaUiState.NoUpdates }
                 }
@@ -88,13 +85,13 @@ class OtaViewModel @Inject constructor(
         }
     }
 
-    private fun downloadUpdate() {
-        updateModel?.let {
-            downloadUpdateUseCase(it)
+    private fun downloadUpdate(updateModel: LatestReleaseModel?) {
+        updateModel?.let { model ->
+            downloadUpdateUseCase(model)
 
-            _uiState.update { OtaUiState.Downloading }
+            _uiState.update { OtaUiState.Downloading(model) }
 
-            setIsUpdateDownloadedListener()
+            setIsUpdateDownloadedListener(model)
         }
     }
 

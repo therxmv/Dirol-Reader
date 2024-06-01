@@ -1,11 +1,18 @@
 package com.therxmv.otaupdates.presentation.viewmodel.utils
 
-sealed class OtaUiState {
+import com.therxmv.otaupdates.domain.models.LatestReleaseModel
+
+sealed class OtaUiState(open val updateModel: LatestReleaseModel? = null) {
     object InitialState : OtaUiState()
     object NoUpdates : OtaUiState()
-    object DownloadUpdate : OtaUiState()
-    object Downloading : OtaUiState()
-    object Downloaded : OtaUiState()
+    data class DownloadUpdate(override val updateModel: LatestReleaseModel) : OtaUiState(updateModel)
+    data class Downloading(override val updateModel: LatestReleaseModel) : OtaUiState(updateModel)
+    data class Downloaded(override val updateModel: LatestReleaseModel) : OtaUiState(updateModel)
+
 }
 
-fun Boolean.toDownloadState() = if (this) OtaUiState.Downloaded else OtaUiState.DownloadUpdate
+fun Boolean.toDownloadState(updateModel: LatestReleaseModel): OtaUiState = if (this) {
+    OtaUiState.Downloaded(updateModel)
+} else {
+    OtaUiState.DownloadUpdate(updateModel)
+}
