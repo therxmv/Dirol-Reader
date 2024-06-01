@@ -1,0 +1,93 @@
+ext {
+    appConfig = [
+            applicationId           : "com.therxmv.dirolreader",
+            minSdkVersion           : 23,
+            compileSdkVersion       : 34,
+            targetSdkVersion        : 34
+    ]
+
+    compose_bom_version = "2022.10.00"
+    compose_material_version = "1.5.0-beta02"
+    compose_activity_version = "1.7.2"
+    compose_navigation_version = "2.6.0"
+    accompanist_permission_version = "0.30.1"
+    accompanist_ui_controller_version = "0.30.0"
+    core_ktx_version = "1.10.1"
+    lifecycle_runtime_version = "2.6.1"
+    mkkv_version = "1.3.1"
+    gson_version = "2.10.1"
+    firebase_bom_version = "32.2.0"
+    exoplayer_version = "1.1.1"
+    room_version = "2.5.2"
+    hilt_version = "2.44.2"
+    hilt_navigation_version = "1.0.0"
+    collapsing_toolbar_version = "2.3.5"
+    compose_markdown_version = "0.3.4"
+    paging_compose_version = "3.2.0"
+    work_manager_version = "2.8.1"
+    retrofit_version = "2.9.0"
+
+    appDependencies = [
+            composeBom                  : "androidx.compose:compose-bom:$compose_bom_version",
+            composeUi                   : "androidx.compose.ui:ui",
+            composeGraphics             : "androidx.compose.ui:ui-graphics",
+            composeTooling              : "androidx.compose.ui:ui-tooling",
+            composeToolingPreview       : "androidx.compose.ui:ui-tooling-preview",
+            composeMaterial             : "androidx.compose.material:material:$compose_material_version",
+            composeMD3                  : "androidx.compose.material3:material3",
+            composeActivity             : "androidx.activity:activity-compose:$compose_activity_version",
+            composeNavigation           : "androidx.navigation:navigation-compose:$compose_navigation_version",
+            accompanistPermission       : "com.google.accompanist:accompanist-permissions:$accompanist_permission_version",
+            accompanistUiController     : "com.google.accompanist:accompanist-systemuicontroller:$accompanist_ui_controller_version",
+            coreKtx                     : "androidx.core:core-ktx:$core_ktx_version",
+            lifecycleRuntimeKtx         : "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_runtime_version",
+            lifecycleRuntimeCompose     : "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_runtime_version",
+            mkkv                        : "com.tencent:mmkv:$mkkv_version",
+            gson                        : "com.google.code.gson:gson:$gson_version",
+            firebaseBom                 : "com.google.firebase:firebase-bom:$firebase_bom_version",
+            firebaseCrashlytics         : "com.google.firebase:firebase-crashlytics-ktx",
+            firebaseAnalytics           : "com.google.firebase:firebase-analytics-ktx",
+            exoplayer                   : "androidx.media3:media3-exoplayer:$exoplayer_version",
+            exoplayerUi                 : "androidx.media3:media3-ui:$exoplayer_version",
+            room                        : "androidx.room:room-runtime:$room_version",
+            roomCompiler                : "androidx.room:room-compiler:$room_version",
+            hilt                        : "com.google.dagger:hilt-android:$hilt_version",
+            hiltCompiler                : "com.google.dagger:hilt-compiler:$hilt_version",
+            hiltNavigation              : "androidx.hilt:hilt-navigation-compose:$hilt_navigation_version",
+            collapsingToolbar           : "me.onebone:toolbar-compose:$collapsing_toolbar_version",
+            composeMarkdown             : "com.github.jeziellago:compose-markdown:$compose_markdown_version",
+            pagingCompose               : "androidx.paging:paging-compose:$paging_compose_version",
+            workManager                 : "androidx.work:work-runtime-ktx:$work_manager_version",
+            retrofit                    : "com.squareup.retrofit2:retrofit:$retrofit_version",
+            retrofitGson                : "com.squareup.retrofit2:converter-gson:$retrofit_version",
+
+    ]
+
+    libraries = [
+            composeUi: [
+                    appDependencies.composeUi,
+                    appDependencies.composeGraphics,
+                    appDependencies.composeTooling,
+                    appDependencies.composeToolingPreview,
+                    appDependencies.composeMaterial,
+                    appDependencies.composeMD3,
+                    appDependencies.composeActivity,
+                    appDependencies.composeNavigation
+            ],
+
+            firebase: [
+                    appDependencies.firebaseCrashlytics,
+                    appDependencies.firebaseAnalytics
+            ],
+
+            exoplayer: [
+                    appDependencies.exoplayer,
+                    appDependencies.exoplayerUi
+            ],
+
+            retrofit: [
+                    appDependencies.retrofit,
+                    appDependencies.retrofitGson
+            ]
+    ]
+}

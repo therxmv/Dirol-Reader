@@ -1,3 +1,7 @@
+buildscript {
+    apply from: 'global.gradle'
+}
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     id 'com.android.application' version '7.4.2' apply false
@@ -7,3 +11,5 @@ plugins {
     id("com.google.gms.google-services") version "4.3.15" apply false
     id("com.google.firebase.crashlytics") version "2.9.7" apply false
 }
+
+apply from: 'global.gradle'
