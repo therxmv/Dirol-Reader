@@ -44,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.therxmv.dirolreader.R
+import com.therxmv.common.R
 import com.therxmv.dirolreader.data.models.MediaModel
 import com.therxmv.dirolreader.data.models.MediaType
 import com.therxmv.dirolreader.domain.models.MessageModel

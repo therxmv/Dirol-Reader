@@ -5,9 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.therxmv.dirolreader.data.repository.AppSharedPrefsRepository
 import com.therxmv.dirolreader.ui.navigation.DirolNavHost
 import com.therxmv.dirolreader.ui.theme.AppTheme
+import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

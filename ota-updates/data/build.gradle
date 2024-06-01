@@ -1,0 +1,19 @@
+apply from: "$rootDir/gradle/snippets/module-config.gradle"
+apply plugin: 'kotlin-kapt'
+
+android {
+    namespace 'com.therxmv.otaupdates.data'
+}
+
+dependencies {
+    implementation project(":ota-updates:domain")
+    implementation project(":common")
+
+    implementation appDependencies.coreKtx
+
+    implementation appDependencies.hilt
+    kapt appDependencies.hiltCompiler
+
+    implementation libraries.retrofit
+    implementation appDependencies.gson
+}

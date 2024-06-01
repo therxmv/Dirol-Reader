@@ -11,9 +11,13 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/constants" />
+            <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/libtd" />
             <option value="$PROJECT_DIR$/ota-updates" />
+            <option value="$PROJECT_DIR$/ota-updates/data" />
+            <option value="$PROJECT_DIR$/ota-updates/domain" />
+            <option value="$PROJECT_DIR$/ota-updates/presentation" />
+            <option value="$PROJECT_DIR$/shared-preferences" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.therxmv.dirolreader.R
+import com.therxmv.common.R
 import com.therxmv.dirolreader.ui.auth.utils.AuthState
 import com.therxmv.dirolreader.ui.auth.utils.AuthUiEvent
 

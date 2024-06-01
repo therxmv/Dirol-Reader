@@ -61,7 +61,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.3.2'
+        kotlinCompilerExtensionVersion compose_compiler_version
     }
     packagingOptions {
         resources {
@@ -72,8 +72,10 @@ android {
 
 dependencies {
     implementation project(':libtd')
-    implementation project(':ota-updates')
-    implementation project(':constants')
+    implementation project(':common')
+    implementation project(':shared-preferences')
+    implementation project(':ota-updates:presentation')
+    implementation project(':ota-updates:data')
 
     implementation appDependencies.coreKtx
     implementation appDependencies.lifecycleRuntimeKtx

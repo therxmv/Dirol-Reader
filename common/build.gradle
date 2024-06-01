@@ -1,0 +1,9 @@
+apply from: "$rootDir/gradle/snippets/module-config.gradle"
+
+android {
+    namespace 'com.therxmv.common'
+}
+
+dependencies {
+    implementation appDependencies.coreKtx
+}

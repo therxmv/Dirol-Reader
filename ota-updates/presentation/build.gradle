@@ -1,0 +1,31 @@
+apply from: "$rootDir/gradle/snippets/module-config.gradle"
+apply plugin: 'kotlin-kapt'
+
+android {
+    namespace 'com.therxmv.otaupdates.presentation'
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_compiler_version
+    }
+}
+
+dependencies {
+    implementation project(":common")
+    implementation project(":shared-preferences")
+    implementation project(":ota-updates:domain")
+
+    implementation appDependencies.coreKtx
+    implementation appDependencies.lifecycleRuntimeKtx
+    implementation appDependencies.lifecycleRuntimeCompose
+    implementation appDependencies.accompanistPermission
+
+    implementation platform(appDependencies.composeBom)
+    implementation libraries.composeUi
+
+    implementation appDependencies.hilt
+    kapt appDependencies.hiltCompiler
+    implementation appDependencies.hiltNavigation
+}

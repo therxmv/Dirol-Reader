@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.therxmv.constants.Room.CHANNEL_TABLE
+import com.therxmv.common.Room.CHANNEL_TABLE
 import com.therxmv.dirolreader.data.entity.ChannelEntity
 
 @Dao

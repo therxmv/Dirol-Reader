@@ -12,10 +12,10 @@ import com.therxmv.dirolreader.ui.navigation.Destination.ProfileScreen
 import com.therxmv.dirolreader.ui.navigation.Destination.SettingsStorageScreen
 import com.therxmv.dirolreader.ui.navigation.Destination.SettingsThemingScreen
 import com.therxmv.dirolreader.ui.news.NewsScreen
-import com.therxmv.dirolreader.ui.ota.view.OtaScreen
 import com.therxmv.dirolreader.ui.profile.ProfileScreen
 import com.therxmv.dirolreader.ui.settings.StorageScreen
 import com.therxmv.dirolreader.ui.settings.ThemingScreen
+import com.therxmv.otaupdates.presentation.view.OtaScreen
 
 @Composable
 fun DirolNavHost(

@@ -1,0 +1,17 @@
+apply from: "$rootDir/gradle/snippets/module-config.gradle"
+apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
+
+android {
+    namespace 'com.therxmv.sharedpreferences'
+}
+
+dependencies {
+    implementation project(":common")
+
+    implementation appDependencies.coreKtx
+    implementation appDependencies.mkkv
+
+    implementation appDependencies.hilt
+    kapt appDependencies.hiltCompiler
+}

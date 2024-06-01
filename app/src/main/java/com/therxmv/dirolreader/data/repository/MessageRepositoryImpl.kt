@@ -2,7 +2,7 @@ package com.therxmv.dirolreader.data.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import com.therxmv.constants.Paging.PAGE_SIZE
+import com.therxmv.common.Paging.PAGE_SIZE
 import com.therxmv.dirolreader.data.entity.toDomain
 import com.therxmv.dirolreader.data.source.locale.db.ChannelLocaleDataSource
 import com.therxmv.dirolreader.data.source.remote.message.MessageSource

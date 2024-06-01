@@ -3,12 +3,12 @@ package com.therxmv.dirolreader.ui.auth
 import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.therxmv.constants.Path.FILES_PATH
-import com.therxmv.dirolreader.data.repository.AppSharedPrefsRepository
+import com.therxmv.common.Path.FILES_PATH
 import com.therxmv.dirolreader.domain.usecase.AuthViewModelUseCases
 import com.therxmv.dirolreader.ui.auth.utils.AuthState
 import com.therxmv.dirolreader.ui.auth.utils.AuthUiEvent
 import com.therxmv.dirolreader.ui.auth.utils.AuthUiState
+import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

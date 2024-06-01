@@ -30,9 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.therxmv.dirolreader.R
+import com.therxmv.common.R
 import com.therxmv.dirolreader.data.models.MediaModel
 import kotlinx.coroutines.launch
 import java.math.RoundingMode
@@ -127,7 +128,7 @@ fun PostVideo(
     }
 }
 
-@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+@androidx.annotation.OptIn(UnstableApi::class)
 private fun handlePlayPauseButtons(playerView: PlayerView, exoPlayer: ExoPlayer) {
     val playBtn = playerView.findViewById<ImageButton>(R.id.playButton)
     val pauseBtn = playerView.findViewById<ImageButton>(R.id.pauseButton)
