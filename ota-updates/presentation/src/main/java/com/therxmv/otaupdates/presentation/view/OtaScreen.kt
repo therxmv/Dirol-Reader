@@ -44,25 +44,24 @@ fun OtaScreen(
             changeLog = viewModel.updateModel?.changeLog.orEmpty(),
             updateButtonTitle = uiState.getDownloadTitle(),
             isButtonEnabled = uiState !is OtaUiState.Downloading,
-        ) {
-            when (uiState) {
-                is OtaUiState.DownloadUpdate -> {
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P
-                        || writeStoragePermissionState.status.isGranted
-                    ) {
-                        viewModel.onEvent(OtaUiEvent.DownloadUpdate)
-                    } else {
-                        writeStoragePermissionState.launchPermissionRequest()
+            onUpdateClick = {
+                when (uiState) {
+                    is OtaUiState.DownloadUpdate -> {
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || writeStoragePermissionState.status.isGranted) {
+                            viewModel.onEvent(OtaUiEvent.DownloadUpdate)
+                        } else {
+                            writeStoragePermissionState.launchPermissionRequest()
+                        }
                     }
-                }
 
-                is OtaUiState.Downloaded -> {
-                    viewModel.onEvent(OtaUiEvent.InstallUpdate(context))
-                }
+                    is OtaUiState.Downloaded -> {
+                        viewModel.onEvent(OtaUiEvent.InstallUpdate(context))
+                    }
 
-                else -> {}
-            }
-        }
+                    else -> {}
+                }
+            },
+        )
     }
 }
 
