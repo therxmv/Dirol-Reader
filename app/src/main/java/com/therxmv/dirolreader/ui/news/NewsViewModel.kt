@@ -95,10 +95,9 @@ class NewsViewModel @Inject constructor(
 
     private suspend fun loadToolbarInfo(unreadCount: Int): ToolbarState {
         val user = useCases.getCurrentUserUseCase(client)
-        val avatarPath = useCases.getCurrentUserAvatarUseCase(client, user)
 
         return ToolbarState(
-            avatarPath = avatarPath,
+            avatarPath = user.avatarPath,
             userName = "${user.firstName} ${user.lastName}",
             unreadChannels = unreadCount
         )

@@ -45,11 +45,10 @@ class ProfileViewModel @Inject constructor(
     private fun setUpAppBar() {
         viewModelScope.launch {
             val user = useCases.getCurrentUserUseCase(client)
-            val avatarPath = useCases.getCurrentUserAvatarUseCase(client, user)
 
             _state.value = _state.value.copy(
                 appBarState = AppBarState(
-                    avatarPath = avatarPath,
+                    avatarPath = user.avatarPath,
                     userName = "${user.firstName} ${user.lastName}",
                 )
             )
