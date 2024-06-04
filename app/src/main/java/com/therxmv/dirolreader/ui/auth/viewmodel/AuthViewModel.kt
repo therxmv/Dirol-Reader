@@ -1,17 +1,18 @@
-package com.therxmv.dirolreader.ui.auth
+package com.therxmv.dirolreader.ui.auth.viewmodel
 
 import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.therxmv.common.Path.FILES_PATH
 import com.therxmv.dirolreader.domain.usecase.AuthViewModelUseCases
-import com.therxmv.dirolreader.ui.auth.utils.AuthState
-import com.therxmv.dirolreader.ui.auth.utils.AuthUiEvent
-import com.therxmv.dirolreader.ui.auth.utils.AuthUiState
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthInputState
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthUiEvent
 import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 import org.drinkless.td.libcore.telegram.TdApi.AuthorizationState
@@ -23,8 +24,12 @@ class AuthViewModel @Inject constructor(
     private val useCases: AuthViewModelUseCases,
     private val appSharedPrefsRepository: AppSharedPrefsRepository,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(AuthUiState())
-    val state = _state.asStateFlow()
+
+    private val _authState = MutableStateFlow(AuthState.START)
+    val authState = _authState.asStateFlow()
+
+    private val _inputState = MutableStateFlow(AuthInputState())
+    val inputState = _inputState.asStateFlow()
 
     private var client: Client? = null
 
@@ -71,7 +76,17 @@ class AuthViewModel @Inject constructor(
     fun onEvent(event: AuthUiEvent) {
         when (event) {
             is AuthUiEvent.ConfirmInput -> {
-                sendInput(event.authState, event.input)
+                sendInput(_authState.value, _inputState.value.inputValue)
+                _inputState.update { it.copy(inputValue = "") } // TODO make some loading and clear after success
+            }
+
+            is AuthUiEvent.OnValueChange -> {
+                _inputState.update {
+                    it.copy(
+                        inputValue = event.value,
+                        isValidInput = true,
+                    )
+                }
             }
         }
     }
@@ -92,12 +107,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun disableError() {
-        _state.value = _state.value.copy(
-            isValidInput = true
-        )
-    }
-
     private fun onAuthorizationStateUpdated(authorizationState: AuthorizationState?) {
         when (authorizationState!!) {
             is TdApi.AuthorizationStateWaitTdlibParameters -> {
@@ -116,31 +125,31 @@ class AuthViewModel @Inject constructor(
 
             is TdApi.AuthorizationStateWaitPhoneNumber -> {
                 Log.d("rozmi_authState", "AuthState.PHONE")
-                _state.value = _state.value.copy(
-                    authState = AuthState.PHONE,
-                    isValidInput = _state.value.authState != AuthState.PHONE
-                )
+                _authState.update { AuthState.PHONE }
+                _inputState.update { // TODO check previous solution and fix error displaying
+                    it.copy(isValidInput = true)
+                }
             }
 
             is TdApi.AuthorizationStateWaitCode -> {
                 Log.d("rozmi_authState", "AuthState.CODE")
-                _state.value = _state.value.copy(
-                    authState = AuthState.CODE,
-                    isValidInput = _state.value.authState != AuthState.CODE
-                )
+                _authState.update { AuthState.CODE }
+                _inputState.update {
+                    it.copy(isValidInput = true)
+                }
             }
 
             is TdApi.AuthorizationStateWaitPassword -> {
                 Log.d("rozmi_authState", "AuthState.PASSWORD")
-                _state.value = _state.value.copy(
-                    authState = AuthState.PASSWORD,
-                    isValidInput = _state.value.authState != AuthState.PASSWORD
-                )
+                _authState.update { AuthState.PASSWORD }
+                _inputState.update {
+                    it.copy(isValidInput = true)
+                }
             }
 
             is TdApi.AuthorizationStateReady -> {
                 Log.d("rozmi_authState", "AuthState.READY")
-                _state.value = _state.value.copy(authState = AuthState.READY)
+                _authState.update { AuthState.READY }
                 onCleared()
             }
 
@@ -161,7 +170,7 @@ class AuthViewModel @Inject constructor(
 
             else -> {
                 Log.d("rozmi_authState", "AuthState.ERROR")
-                _state.value = _state.value.copy(authState = AuthState.ERROR)
+                _authState.update { AuthState.ERROR }
             }
         }
     }

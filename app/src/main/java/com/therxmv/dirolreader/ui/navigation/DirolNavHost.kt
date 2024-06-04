@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.therxmv.dirolreader.ui.auth.AuthScreen
+import com.therxmv.dirolreader.ui.auth.view.AuthScreen
 import com.therxmv.dirolreader.ui.navigation.Destination.AuthScreen
 import com.therxmv.dirolreader.ui.navigation.Destination.NewsScreen
 import com.therxmv.dirolreader.ui.navigation.Destination.OtaScreen

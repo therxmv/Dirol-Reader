@@ -1,4 +1,4 @@
-package com.therxmv.dirolreader.ui.auth.utils
+package com.therxmv.dirolreader.ui.auth.viewmodel.utils
 
 enum class AuthState {
     START,
