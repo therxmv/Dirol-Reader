@@ -1,4 +1,4 @@
-package com.therxmv.dirolreader.ui.profile.utils
+package com.therxmv.dirolreader.ui.profile.viewmodel.utils
 
 data class ProfileUiState(
     val appBarState: AppBarState = AppBarState(),

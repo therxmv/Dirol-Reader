@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.therxmv.dirolreader.ui.auth.view.AuthScreen
 import com.therxmv.dirolreader.ui.navigation.Destination
 import com.therxmv.dirolreader.ui.news.NewsScreen
-import com.therxmv.dirolreader.ui.profile.ProfileScreen
+import com.therxmv.dirolreader.ui.profile.view.ProfileScreen
 import com.therxmv.dirolreader.ui.settings.view.StorageScreen
 import com.therxmv.dirolreader.ui.settings.view.ThemingScreen
 import com.therxmv.dirolreader.ui.theme.AppTheme

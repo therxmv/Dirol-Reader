@@ -1,11 +1,11 @@
-package com.therxmv.dirolreader.ui.profile
+package com.therxmv.dirolreader.ui.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.therxmv.dirolreader.domain.usecase.ProfileViewModelUseCase
-import com.therxmv.dirolreader.ui.profile.utils.AppBarState
-import com.therxmv.dirolreader.ui.profile.utils.ProfileUiEvent
-import com.therxmv.dirolreader.ui.profile.utils.ProfileUiState
+import com.therxmv.dirolreader.ui.profile.viewmodel.utils.AppBarState
+import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiEvent
+import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
