@@ -7,6 +7,13 @@ import com.therxmv.common.Path.FILES_PATH
 import com.therxmv.dirolreader.domain.usecase.AuthViewModelUseCases
 import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthInputState
 import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState.CODE
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState.ERROR
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState.PASSWORD
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState.PHONE
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState.PROCESSING
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState.READY
+import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState.START
 import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthUiEvent
 import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +32,7 @@ class AuthViewModel @Inject constructor(
     private val appSharedPrefsRepository: AppSharedPrefsRepository,
 ) : ViewModel() {
 
-    private val _authState = MutableStateFlow(AuthState.START)
+    private val _authState = MutableStateFlow(START)
     val authState = _authState.asStateFlow()
 
     private val _inputState = MutableStateFlow(AuthInputState())
@@ -77,7 +84,7 @@ class AuthViewModel @Inject constructor(
         when (event) {
             is AuthUiEvent.ConfirmInput -> {
                 sendInput(_authState.value, _inputState.value.inputValue)
-                _inputState.update { it.copy(inputValue = "") } // TODO make some loading and clear after success
+                _authState.update { PROCESSING }
             }
 
             is AuthUiEvent.OnValueChange -> {
@@ -93,22 +100,31 @@ class AuthViewModel @Inject constructor(
 
     private fun sendInput(authState: AuthState, input: String) {
         when (authState) {
-            AuthState.PHONE -> client?.send(TdApi.SetAuthenticationPhoneNumber(input, null)) { getAuthorizationState() }
-            AuthState.CODE -> client?.send(TdApi.CheckAuthenticationCode(input)) { getAuthorizationState() }
-            AuthState.PASSWORD -> client?.send(TdApi.CheckAuthenticationPassword(input)) { getAuthorizationState() }
+            PHONE -> client?.send(TdApi.SetAuthenticationPhoneNumber(input, null)) {
+                getAuthorizationState(authState)
+            }
+
+            CODE -> client?.send(TdApi.CheckAuthenticationCode(input)) {
+                getAuthorizationState(authState)
+            }
+
+            PASSWORD -> client?.send(TdApi.CheckAuthenticationPassword(input)) {
+                getAuthorizationState(authState)
+            }
+
             else -> {}
         }
     }
 
-    private fun getAuthorizationState() {
+    private fun getAuthorizationState(previousState: AuthState = _authState.value) {
         client?.send(TdApi.GetAuthorizationState()) {
             it as AuthorizationState
-            onAuthorizationStateUpdated(it)
+            onAuthorizationStateUpdated(it, previousState)
         }
     }
 
-    private fun onAuthorizationStateUpdated(authorizationState: AuthorizationState?) {
-        when (authorizationState!!) {
+    private fun onAuthorizationStateUpdated(authorizationState: AuthorizationState, previousState: AuthState) {
+        when (authorizationState) {
             is TdApi.AuthorizationStateWaitTdlibParameters -> {
                 Log.d("rozmi_authState", "AuthState.PARAMS")
                 client?.send(TdApi.SetTdlibParameters(useCases.getTdLibParametersUseCase())) {
@@ -125,31 +141,25 @@ class AuthViewModel @Inject constructor(
 
             is TdApi.AuthorizationStateWaitPhoneNumber -> {
                 Log.d("rozmi_authState", "AuthState.PHONE")
-                _authState.update { AuthState.PHONE }
-                _inputState.update { // TODO check previous solution and fix error displaying
-                    it.copy(isValidInput = true)
-                }
+                setErrorIfSameState(PHONE, previousState)
+                _authState.update { PHONE }
             }
 
             is TdApi.AuthorizationStateWaitCode -> {
                 Log.d("rozmi_authState", "AuthState.CODE")
-                _authState.update { AuthState.CODE }
-                _inputState.update {
-                    it.copy(isValidInput = true)
-                }
+                setErrorIfSameState(CODE, previousState)
+                _authState.update { CODE }
             }
 
             is TdApi.AuthorizationStateWaitPassword -> {
                 Log.d("rozmi_authState", "AuthState.PASSWORD")
-                _authState.update { AuthState.PASSWORD }
-                _inputState.update {
-                    it.copy(isValidInput = true)
-                }
+                setErrorIfSameState(PASSWORD, previousState)
+                _authState.update { PASSWORD }
             }
 
             is TdApi.AuthorizationStateReady -> {
                 Log.d("rozmi_authState", "AuthState.READY")
-                _authState.update { AuthState.READY }
+                _authState.update { READY }
                 onCleared()
             }
 
@@ -170,8 +180,19 @@ class AuthViewModel @Inject constructor(
 
             else -> {
                 Log.d("rozmi_authState", "AuthState.ERROR")
-                _authState.update { AuthState.ERROR }
+                _authState.update { ERROR }
             }
+        }
+    }
+
+    private fun setErrorIfSameState(state: AuthState, previousState: AuthState) {
+        val isValid = state != previousState
+
+        _inputState.update {
+            it.copy(
+                inputValue = it.inputValue.takeUnless { isValid }.orEmpty(),
+                isValidInput = isValid,
+            )
         }
     }
 

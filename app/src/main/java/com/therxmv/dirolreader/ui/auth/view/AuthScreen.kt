@@ -3,6 +3,10 @@ package com.therxmv.dirolreader.ui.auth.view
 import android.app.Activity
 import android.content.Context
 import android.os.Build
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -11,6 +15,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -41,18 +47,32 @@ fun AuthScreen(
         if (authState != AuthState.START
             && authState != AuthState.READY
         ) {
-            SwitchImmersiveMode(context, false, surfaceColor)
-            AuthScreenContent(
-                authState = authState,
-                inputState = inputState,
-                screenPadding = padding,
-                confirmInput = {
-                    viewModel.onEvent(AuthUiEvent.ConfirmInput)
-                },
-                onValueChange = {
-                    viewModel.onEvent(AuthUiEvent.OnValueChange(it))
+            Crossfade(
+                targetState = authState,
+                label = "content",
+            ) {
+                if (it == AuthState.PROCESSING) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    SwitchImmersiveMode(context, false, surfaceColor)
+                    AuthScreenContent(
+                        authState = authState,
+                        inputState = inputState,
+                        screenPadding = padding,
+                        confirmInput = {
+                            viewModel.onEvent(AuthUiEvent.ConfirmInput)
+                        },
+                        onValueChange = {
+                            viewModel.onEvent(AuthUiEvent.OnValueChange(it))
+                        }
+                    )
                 }
-            )
+            }
         } else {
             SwitchImmersiveMode(context, true, surfaceColor)
         }
