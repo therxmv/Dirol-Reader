@@ -1,4 +1,4 @@
-package com.therxmv.dirolreader.ui.settings
+package com.therxmv.dirolreader.ui.settings.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
