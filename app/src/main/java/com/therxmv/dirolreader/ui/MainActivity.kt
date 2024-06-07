@@ -37,6 +37,8 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = isDynamic.value
             ) {
                 Surface {
+                    // TODO remove OTA and Auth from chain by checking/creating all necessary data outside
+                    //  and navigate straight to the News screen
                     NavHost(navController = navController, startDestination = Destination.OtaScreen.route) {
                         composable(route = Destination.OtaScreen.route) {
                             OtaScreen(
