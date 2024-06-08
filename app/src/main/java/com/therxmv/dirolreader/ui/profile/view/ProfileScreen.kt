@@ -1,6 +1,7 @@
 package com.therxmv.dirolreader.ui.profile.view
 
 import android.graphics.BitmapFactory
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,42 +18,55 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.therxmv.dirolreader.ui.commonview.CenteredBoxLoader
 import com.therxmv.dirolreader.ui.commonview.CenteredTopBar
 import com.therxmv.dirolreader.ui.profile.viewmodel.ProfileViewModel
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiEvent
+import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    onNavigateToTheming: () -> Unit,
-    onNavigateToStorage: () -> Unit,
+    onNavigateToRoute: (String) -> Unit,
     onNavigateToAuth: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
-            if (state.appBarState.avatarPath.isNotBlank()) with(state.appBarState) {
-                CenteredTopBar(
-                    title = userName,
-                    navController = navController,
-                    actions = {
-                        AppBarAvatar(avatarPath = avatarPath)
-                    }
-                )
+            if (uiState is ProfileUiState.Ready) {
+                val appBar = (uiState as ProfileUiState.Ready).appBarState
+                if (appBar.avatarPath.isNotEmpty()) {
+                    CenteredTopBar(
+                        title = appBar.userName,
+                        navController = navController,
+                        actions = {
+                            AppBarAvatar(avatarPath = appBar.avatarPath)
+                        }
+                    )
+                }
             }
         }
     ) { padding ->
-        ProfileScreenContent(
-            screenPadding = padding,
-            onNavigateToTheming = onNavigateToTheming,
-            onNavigateToStorage = onNavigateToStorage,
-            doSignOut = {
-                viewModel.onEvent(ProfileUiEvent.LogOut(onNavigateToAuth))
-            },
-        )
+        Crossfade(
+            targetState = uiState,
+            label = "content",
+        ) {
+            when(it) {
+                is ProfileUiState.Ready -> ProfileScreenContent(
+                    screenPadding = padding,
+                    sections = it.sections,
+                    onNavigateToRoute = onNavigateToRoute,
+                    doSignOut = {
+                        viewModel.onEvent(ProfileUiEvent.LogOut(onNavigateToAuth))
+                    },
+                )
+
+                is ProfileUiState.Loading -> CenteredBoxLoader()
+            }
+        }
     }
 }
 

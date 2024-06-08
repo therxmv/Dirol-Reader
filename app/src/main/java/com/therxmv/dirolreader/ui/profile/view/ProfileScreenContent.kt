@@ -1,5 +1,6 @@
 package com.therxmv.dirolreader.ui.profile.view
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,15 +39,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.therxmv.common.R
 import com.therxmv.dirolreader.BuildConfig
+import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiSection
 
 @Composable
 fun ProfileScreenContent(
     screenPadding: PaddingValues,
-    onNavigateToTheming: () -> Unit,
-    onNavigateToStorage: () -> Unit,
+    sections: List<ProfileUiSection>,
+    onNavigateToRoute: (String) -> Unit,
     doSignOut: () -> Unit,
 ) {
-    val uriHandler = LocalUriHandler.current
+    val scrollState = rememberScrollState()
     var isDialogOpened by remember { mutableStateOf(false) }
 
     if (isDialogOpened) {
@@ -62,55 +66,57 @@ fun ProfileScreenContent(
         modifier = Modifier
             .padding(screenPadding)
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween,
+            .fillMaxSize()
+            .verticalScroll(scrollState),
     ) {
-        // TODO provide items(sealed/data) from VM
-        ItemsTitle(
-            text = stringResource(id = R.string.profile_settings),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
+        sections.forEach {
+            ProfileSection(
+                title = it.title,
+                items = it.items,
+                onNavigateToRoute = onNavigateToRoute,
+            )
+        }
 
-        Item(
-            text = stringResource(id = R.string.profile_theme),
-            icon = painterResource(id = R.drawable.theme_icon),
-            onClick = onNavigateToTheming,
-        )
-        Item(
-            text = stringResource(id = R.string.profile_storage),
-            icon = painterResource(id = R.drawable.storage_icon),
-            onClick = onNavigateToStorage,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ItemsTitle(
-            text = stringResource(id = R.string.profile_about),
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Item(
-            text = stringResource(id = R.string.profile_telegram),
-            icon = painterResource(id = R.drawable.telegram_icon),
-            onClick = {
-                uriHandler.openUri("https://t.me/therxmv_channel")
-            },
-        )
-        Item(
-            text = stringResource(id = R.string.profile_github),
-            icon = painterResource(id = R.drawable.github_icon),
-            onClick = {
-                uriHandler.openUri("https://github.com/therxmv/Dirol-Reader")
-            },
-        )
         Spacer(modifier = Modifier.weight(1f))
-
-
         Footer(
             openSignOutDialog = {
                 isDialogOpened = true
             }
         )
     }
+}
+
+@Composable
+private fun ProfileSection(
+    @StringRes title: Int,
+    items: List<ProfileUiSection.Item>,
+    onNavigateToRoute: (String) -> Unit,
+) {
+    val uriHandler = LocalUriHandler.current
+
+    ItemsTitle(
+        text = stringResource(id = title),
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+
+    items.forEach {
+        Item(
+            text = stringResource(id = it.name),
+            icon = painterResource(id = it.icon),
+            onClick = {
+                when(it.onClick) {
+                    is ProfileUiSection.ItemClick.Navigate -> {
+                        onNavigateToRoute(it.onClick.route)
+                    }
+
+                    is ProfileUiSection.ItemClick.OpenBrowser -> {
+                        uriHandler.openUri(it.onClick.link)
+                    }
+                }
+            },
+        )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Composable

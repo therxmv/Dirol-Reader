@@ -26,3 +26,8 @@ object GithubRepo {
     const val GITHUB_USERNAME = "therxmv"
     const val GITHUB_REPO = "Dirol-Reader"
 }
+
+object Links {
+    const val TELEGRAM_CHANNEL = "https://t.me/therxmv_channel"
+    const val GITHUB_REPO = "https://github.com/therxmv/Dirol-Reader"
+}

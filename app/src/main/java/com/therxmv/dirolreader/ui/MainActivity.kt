@@ -72,13 +72,8 @@ class MainActivity : ComponentActivity() {
                         composable(route = Destination.ProfileScreen.route) {
                             ProfileScreen(
                                 navController = navController,
-                                onNavigateToTheming = {
-                                    navController.navigate(Destination.SettingsThemingScreen.route) {
-                                        popUpTo(Destination.ProfileScreen.route) { inclusive = false }
-                                    }
-                                },
-                                onNavigateToStorage = {
-                                    navController.navigate(Destination.SettingsStorageScreen.route) {
+                                onNavigateToRoute = {
+                                    navController.navigate(it) {
                                         popUpTo(Destination.ProfileScreen.route) { inclusive = false }
                                     }
                                 },

@@ -5,6 +5,6 @@ sealed class Destination(val route: String) {
     object AuthScreen: Destination("authScreen")
     object NewsScreen: Destination("newsScreen")
     object ProfileScreen: Destination("profileScreen")
-    object SettingsThemingScreen: Destination("SettingsThemingScreen")
+    object SettingsThemingScreen: Destination("SettingsThemingScreen") // TODO make arguments
     object SettingsStorageScreen: Destination("SettingsStorageScreen")
 }
