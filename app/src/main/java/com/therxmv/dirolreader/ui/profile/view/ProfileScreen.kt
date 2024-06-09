@@ -54,7 +54,7 @@ fun ProfileScreen(
             targetState = uiState,
             label = "content",
         ) {
-            when(it) {
+            when (it) {
                 is ProfileUiState.Ready -> ProfileScreenContent(
                     screenPadding = padding,
                     sections = it.sections,

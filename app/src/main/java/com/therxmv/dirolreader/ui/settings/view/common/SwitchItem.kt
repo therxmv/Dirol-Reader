@@ -10,6 +10,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +26,8 @@ fun SwitchItem(
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
+    var state by rememberSaveable { mutableStateOf(isChecked) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,8 +44,11 @@ fun SwitchItem(
             fontSize = 20.sp
         )
         Switch(
-            checked = isChecked,
-            onCheckedChange = onCheckedChange,
+            checked = state,
+            onCheckedChange = {
+                state = it
+                onCheckedChange(it)
+            },
         )
     }
 }

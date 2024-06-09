@@ -10,6 +10,7 @@ import com.therxmv.dirolreader.ui.profile.viewmodel.utils.AppBarState
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiEvent
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiSection
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiState
+import com.therxmv.dirolreader.ui.settings.viewmodel.utils.SettingsScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -76,12 +77,16 @@ class ProfileViewModel @Inject constructor(
             ProfileUiSection.Item(
                 icon = R.drawable.theme_icon,
                 name = R.string.profile_theme,
-                onClick = ProfileUiSection.ItemClick.Navigate(Destination.SettingsThemingScreen.route)
+                onClick = ProfileUiSection.ItemClick.Navigate(
+                    Destination.SettingsScreen.createRoute(SettingsScreens.THEMING.name)
+                ),
             ),
             ProfileUiSection.Item(
                 icon = R.drawable.storage_icon,
                 name = R.string.profile_storage,
-                onClick = ProfileUiSection.ItemClick.Navigate(Destination.SettingsStorageScreen.route)
+                onClick = ProfileUiSection.ItemClick.Navigate(
+                    Destination.SettingsScreen.createRoute(SettingsScreens.STORAGE.name)
+                )
             ),
         ),
     )

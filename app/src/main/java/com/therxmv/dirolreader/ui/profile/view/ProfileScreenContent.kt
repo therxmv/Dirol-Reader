@@ -104,7 +104,7 @@ private fun ProfileSection(
             text = stringResource(id = it.name),
             icon = painterResource(id = it.icon),
             onClick = {
-                when(it.onClick) {
+                when (it.onClick) {
                     is ProfileUiSection.ItemClick.Navigate -> {
                         onNavigateToRoute(it.onClick.route)
                     }

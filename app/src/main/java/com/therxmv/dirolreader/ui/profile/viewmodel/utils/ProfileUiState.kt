@@ -2,14 +2,17 @@ package com.therxmv.dirolreader.ui.profile.viewmodel.utils
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Stable
 
 sealed class ProfileUiState {
+
+    @Stable
     data class Ready(
         val appBarState: AppBarState,
         val sections: List<ProfileUiSection>,
     ) : ProfileUiState()
 
-    object Loading : ProfileUiState()
+    data object Loading : ProfileUiState()
 }
 
 data class AppBarState(
@@ -17,6 +20,7 @@ data class AppBarState(
     val userName: String,
 )
 
+@Stable
 data class ProfileUiSection(
     @StringRes val title: Int,
     val items: List<Item>,
