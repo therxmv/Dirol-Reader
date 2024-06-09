@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.therxmv.dirolreader.ui.settings.viewmodel.utils.SettingsContentData
 import com.therxmv.dirolreader.ui.settings.viewmodel.utils.SettingsScreens
 import com.therxmv.dirolreader.ui.settings.viewmodel.utils.SettingsUiState
-import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.stateIn
 class SettingsViewModel @AssistedInject constructor(
     @Assisted private val destination: String?,
     @Assisted private val toggleDynamicTheme: (Boolean) -> Unit,
-    private val appSharedPrefsRepository: AppSharedPrefsRepository,
     private val storageViewModel: StorageViewModel,
     private val themingViewModel: ThemingViewModel,
 ) : ViewModel() {
@@ -67,12 +65,4 @@ class SettingsViewModel @AssistedInject constructor(
             SettingsScreens.STORAGE.name -> storageViewModel.loadData()
         }
     }
-
-    fun getIsAutoDeleteEnabled() = appSharedPrefsRepository.isAutoDeleteEnabled
-
-    fun setIsAutoDeleteEnabled(value: Boolean) {
-        appSharedPrefsRepository.isAutoDeleteEnabled = value
-    }
-
-    fun getIsDynamic() = appSharedPrefsRepository.isDynamic
 }
