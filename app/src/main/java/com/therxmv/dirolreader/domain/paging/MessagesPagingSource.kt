@@ -83,7 +83,7 @@ class MessagesPagingSource(
     }
 
     private fun filterDuplicates(list: List<MessageModel>): List<MessageModel> {
-        val temp = list.filter { !readPostsIds.contains(it.id) }
+        val temp = list.filterNot { readPostsIds.contains(it.id) }
 
         readPostsIds.addAll(
             temp.map { it.id }

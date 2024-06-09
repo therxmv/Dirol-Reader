@@ -241,7 +241,7 @@ fun NewsPost(
                                     )
                                 )
 
-                                starredState[messageModel.channelId] = !isStarred
+                                starredState[messageModel.channelId] = isStarred.not()
                             },
                         tint = if (isStarred) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )

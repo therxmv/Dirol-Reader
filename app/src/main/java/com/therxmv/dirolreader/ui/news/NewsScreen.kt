@@ -134,7 +134,7 @@ fun NewsScreen(
             if (news != null) {
                 val starredChannelState = remember { mutableStateMapOf<Long, Boolean>() }
                 val pullRefreshState = rememberPullRefreshState(
-                    refreshing = !state.isLoaded,
+                    refreshing = state.isLoaded.not(),
                     onRefresh = {
                         viewModel.loadChannels {
                             coroutineScope.launch {
@@ -167,7 +167,7 @@ fun NewsScreen(
                         }
                     }
                     PullRefreshIndicator(
-                        refreshing = !state.isLoaded,
+                        refreshing = state.isLoaded.not(),
                         state = pullRefreshState,
                         modifier = Modifier.align(Alignment.TopCenter)
                     )

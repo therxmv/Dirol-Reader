@@ -58,7 +58,7 @@ class AuthViewModel @Inject constructor(
                         file.name.contains(".nomedia")
                     }?.let {
                         folder.listFiles()?.forEach { elem ->
-                            if (!elem.name.contains(".nomedia")) {
+                            if (elem.name.contains(".nomedia").not()) {
                                 elem.delete()
                             }
                         }

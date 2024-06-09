@@ -79,32 +79,34 @@ class MessageRemoteDataSource @Inject constructor() : MessageSource {
                                 val model = handleMessageType(channel, m)
 
                                 suspendCoroutine { cont ->
-                                    client.send(TdApi.GetChat(channel.id)) { c ->
-                                        c as Chat
+                                    client.send(TdApi.GetChat(channel.id)) { chat ->
+                                        chat as Chat
 
-                                        if (c.photo != null) {
+                                        val smallPhotoId = chat.photo?.small?.id
+
+                                        if (smallPhotoId != null) {
                                             client.send(
                                                 TdApi.DownloadFile(
-                                                    c.photo?.small?.id!!,
+                                                    smallPhotoId,
                                                     32,
                                                     0,
                                                     0,
                                                     true
                                                 )
-                                            ) { f ->
-                                                f as TdApi.File
+                                            ) { file ->
+                                                file as TdApi.File
 
                                                 cont.resume(
                                                     model.copy(
-                                                        channelName = c.title,
-                                                        channelAvatarPath = f.local.path
+                                                        channelName = chat.title,
+                                                        channelAvatarPath = file.local.path
                                                     )
                                                 )
                                             }
                                         } else {
                                             cont.resume(
                                                 model.copy(
-                                                    channelName = c.title
+                                                    channelName = chat.title
                                                 )
                                             )
                                         }

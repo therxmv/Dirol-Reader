@@ -63,7 +63,7 @@ class NewsViewModel @Inject constructor(
             }
 
             is NewsUiEvent.MarkAsRead -> {
-                if (!readMessages.contains(event.messageId)) {
+                if (readMessages.contains(event.messageId).not()) {
                     readMessages.add(event.messageId)
                     client?.send(
                         TdApi.ViewMessages(
@@ -90,7 +90,7 @@ class NewsViewModel @Inject constructor(
 
     suspend fun loadMessageMedia(mediaList: List<MediaModel>, loadVideo: Boolean) =
         mediaList.map {
-            if (it.type == MediaType.VIDEO && !loadVideo) null else useCases.getMessageMediaUseCase(client, it.id)
+            if (it.type == MediaType.VIDEO && loadVideo.not()) null else useCases.getMessageMediaUseCase(client, it.id)
         }
 
     private suspend fun loadToolbarInfo(unreadCount: Int): ToolbarState {
