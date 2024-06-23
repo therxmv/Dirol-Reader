@@ -6,7 +6,7 @@ import com.therxmv.common.Links
 import com.therxmv.common.R
 import com.therxmv.dirolreader.domain.usecase.ProfileViewModelUseCase
 import com.therxmv.dirolreader.ui.navigation.Destination
-import com.therxmv.dirolreader.ui.profile.viewmodel.utils.AppBarState
+import com.therxmv.dirolreader.ui.news.viewmodel.utils.ToolbarData
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiEvent
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiSection
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiState
@@ -51,7 +51,7 @@ class ProfileViewModel @Inject constructor(
     private fun setUpAppBar() {
         viewModelScope.launch {
             val user = useCases.getCurrentUserUseCase(client)
-            val appBar = AppBarState(
+            val appBar = ToolbarData(
                 avatarPath = user.avatarPath,
                 userName = "${user.firstName} ${user.lastName}",
             )
