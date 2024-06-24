@@ -3,18 +3,22 @@ package com.therxmv.dirolreader.ui.profile.viewmodel.utils
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Stable
-import com.therxmv.dirolreader.ui.news.viewmodel.utils.ToolbarData
 
 sealed class ProfileUiState {
 
     @Stable
     data class Ready(
-        val appBarState: ToolbarData,
+        val appBarState: AppBarState,
         val sections: List<ProfileUiSection>,
     ) : ProfileUiState()
 
     data object Loading : ProfileUiState()
 }
+
+data class AppBarState(
+    val avatarPath: String,
+    val userName: String,
+)
 
 @Stable
 data class ProfileUiSection(

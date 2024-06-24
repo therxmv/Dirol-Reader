@@ -50,7 +50,7 @@ import com.therxmv.dirolreader.data.models.MediaType
 import com.therxmv.dirolreader.domain.models.MessageModel
 import com.therxmv.dirolreader.ui.news.posts.PostPhoto
 import com.therxmv.dirolreader.ui.news.posts.PostVideo
-import com.therxmv.dirolreader.ui.news.viewmodel.utils.NewsUiEvent
+import com.therxmv.dirolreader.ui.news.utils.NewsUiEvent
 import com.therxmv.dirolreader.utils.MarkdownTextTemp
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
