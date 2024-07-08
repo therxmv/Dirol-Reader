@@ -27,6 +27,10 @@ ext {
     paging_compose_version = "3.2.0"
     work_manager_version = "2.8.1"
     retrofit_version = "2.9.0"
+    junit_version = "4.13.2"
+    mockk_version = "1.13.3"
+    kotlinx_coroutines_version = "1.6.4"
+    kotest_version = "5.5.4"
 
     appDependencies = [
             composeBom                  : "androidx.compose:compose-bom:$compose_bom_version",
@@ -61,7 +65,15 @@ ext {
             workManager                 : "androidx.work:work-runtime-ktx:$work_manager_version",
             retrofit                    : "com.squareup.retrofit2:retrofit:$retrofit_version",
             retrofitGson                : "com.squareup.retrofit2:converter-gson:$retrofit_version",
+    ]
 
+    testDependencies = [
+            junit                   : "junit:junit:$junit_version",
+            mockk                   : "io.mockk:mockk:$mockk_version",
+            mockkAndroid            : "io.mockk:mockk-android:$mockk_version",
+            mockkAgent              : "io.mockk:mockk-agent-jvm:$mockk_version",
+            kotlinxCoroutines       : "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinx_coroutines_version",
+            kotest                  : "io.kotest:kotest-assertions-core:$kotest_version",
     ]
 
     libraries = [
@@ -89,6 +101,15 @@ ext {
             retrofit: [
                     appDependencies.retrofit,
                     appDependencies.retrofitGson
+            ],
+
+            testingUnit: [
+                    testDependencies.junit,
+                    testDependencies.mockk,
+                    testDependencies.mockkAndroid,
+                    testDependencies.mockkAgent,
+                    testDependencies.kotlinxCoroutines,
+                    testDependencies.kotest,
             ]
     ]
 }

@@ -28,4 +28,6 @@ dependencies {
     implementation appDependencies.hilt
     kapt appDependencies.hiltCompiler
     implementation appDependencies.hiltNavigation
+
+    testImplementation libraries.testingUnit
 }

@@ -16,4 +16,6 @@ dependencies {
 
     implementation libraries.retrofit
     implementation appDependencies.gson
+
+    testImplementation libraries.testingUnit
 }

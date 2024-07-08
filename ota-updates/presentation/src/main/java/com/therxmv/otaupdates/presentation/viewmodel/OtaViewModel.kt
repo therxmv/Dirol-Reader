@@ -73,7 +73,7 @@ class OtaViewModel @Inject constructor(
 
     private fun checkVersion() {
         viewModelScope.launch {
-            getLatestReleaseUseCase.invoke()?.let { release ->
+            getLatestReleaseUseCase()?.let { release ->
                 val version = release.version.filter { it.isDigit() }.toInt()
 
                 if (version > versionCode) {
