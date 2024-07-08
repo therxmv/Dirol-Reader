@@ -30,9 +30,10 @@ Introducing **Dirol Reader**, a cutting-edge Android app designed to revolutioni
 - :x: MessageDice
 - :x: MessageGame
 - :x: MessagePoll
+
 Message with premium emoji is coming as unsupported type.
 
 I'm not sure that all of them really needed.
 
 # Plans
-Right now I'm working on improving the overall quality of the code base. Then will on the new features and support for more message types.
+Right now I'm working on improving the overall quality of the code base. Then will focus on the new features and support for more message types.
