@@ -1,13 +1,10 @@
 # :newspaper: Dirol-Reader
 Introducing **Dirol Reader**, a cutting-edge Android app designed to revolutionize your news reading experience. Powered by advanced algorithms and built with user preferences in mind, **Dirol Reader** leverages the **TdLib (Telegram Database Library)** to curate a relevance-based news feed from your favorite channels' posts, keeping you informed and engaged.
 
-# Screenshots
-### Feed screen
-<img src="screenshots/feed1.png" width="300">
-<img src="screenshots/feed2.png" width="300">
+# Demo
+https://github.com/user-attachments/assets/7685d562-500b-4b93-a325-3cda3e7586e6
 
-### Prfile screen
-<img src="screenshots/profile.png" width="300">
+
 
 # Basic features
 - One feed with all unread channels' posts
@@ -31,9 +28,9 @@ Introducing **Dirol Reader**, a cutting-edge Android app designed to revolutioni
 - :x: MessageGame
 - :x: MessagePoll
 
-Message with premium emoji is coming as unsupported type.
-
 I'm not sure that all of them really needed.
 
 # Plans
-Right now I'm working on improving the overall quality of the code base. Then will focus on the new features and support for more message types.
+:white_check_mark: ~Right now I'm working on improving the overall quality of the code base.~
+
+Next step is to add support for more message types and add new features.
