@@ -16,8 +16,8 @@ android {
         applicationId appConfig.applicationId
         minSdk appConfig.minSdkVersion
         targetSdk appConfig.targetSdkVersion
-        versionCode 122
-        versionName "1.2.2"
+        versionCode 200
+        versionName "2.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
