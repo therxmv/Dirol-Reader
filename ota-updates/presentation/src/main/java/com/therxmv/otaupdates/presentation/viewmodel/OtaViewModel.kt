@@ -9,6 +9,7 @@ import android.os.Environment
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.therxmv.common.extractVersion
 import com.therxmv.otaupdates.domain.models.LatestReleaseModel
 import com.therxmv.otaupdates.domain.usecase.DownloadUpdateUseCase
 import com.therxmv.otaupdates.domain.usecase.GetLatestReleaseUseCase
@@ -17,6 +18,7 @@ import com.therxmv.otaupdates.presentation.viewmodel.utils.OtaUiState
 import com.therxmv.otaupdates.presentation.viewmodel.utils.toDownloadState
 import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,6 +33,7 @@ class OtaViewModel @Inject constructor(
     private val downloadUpdateUseCase: DownloadUpdateUseCase,
     private val appSharedPrefsRepository: AppSharedPrefsRepository,
     @Named("VersionCode") private val versionCode: Int,
+    @Named("IO") private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<OtaUiState>(OtaUiState.InitialState)
@@ -39,7 +42,7 @@ class OtaViewModel @Inject constructor(
     private lateinit var updatePrefsListener: SharedPreferences.OnSharedPreferenceChangeListener
 
     init {
-        checkVersion()
+        checkIfApkExists()
     }
 
     fun onEvent(event: OtaUiEvent) {
@@ -49,38 +52,34 @@ class OtaViewModel @Inject constructor(
         }
     }
 
-    private fun checkIfUpdateFileExists(): Boolean {
+    private fun isUpdateFileExists(updateVersion: Int): Boolean {
         val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val file = downloads.listFiles()?.find { it.isFile && it.name.contains("Dirol-Reader") }
+        val file = downloads.listFiles()?.find { it.isFile && it.nameWithoutExtension.contains("Dirol-Reader") }
+        val fileVersion = file?.nameWithoutExtension?.extractVersion()
 
-        return file != null
+        return fileVersion == updateVersion
     }
 
-    private fun checkIfUpdateDownloaded(updateModel: LatestReleaseModel) {
+    private fun isUpdateDownloaded(isDownloaded: Boolean, updateModel: LatestReleaseModel) {
+        val version = updateModel.version.extractVersion()
         _uiState.update {
-            (appSharedPrefsRepository.isUpdateDownloaded && checkIfUpdateFileExists()).toDownloadState(updateModel)
+            (isDownloaded && isUpdateFileExists(version)).toDownloadState(updateModel)
         }
     }
 
     private fun setIsUpdateDownloadedListener(updateModel: LatestReleaseModel) {
         updatePrefsListener = appSharedPrefsRepository.isUpdateDownloadedChangeListener { isDownloaded ->
-            _uiState.update { (isDownloaded && checkIfUpdateFileExists()).toDownloadState(updateModel) }
+            isUpdateDownloaded(isDownloaded = isDownloaded, updateModel= updateModel)
             appSharedPrefsRepository.unregisterChangeListener(updatePrefsListener)
         }
 
         appSharedPrefsRepository.registerChangeListener(updatePrefsListener)
     }
 
-    private fun checkVersion() {
-        viewModelScope.launch {
+    private fun checkIfApkExists() {
+        viewModelScope.launch(ioDispatcher) {
             getLatestReleaseUseCase()?.let { release ->
-                val version = release.version.filter { it.isDigit() }.toInt()
-
-                if (version > versionCode) {
-                    checkIfUpdateDownloaded(release)
-                } else {
-                    _uiState.update { OtaUiState.NoUpdates }
-                }
+                isUpdateDownloaded(isDownloaded = appSharedPrefsRepository.isUpdateDownloaded, updateModel = release)
             }
         }
     }

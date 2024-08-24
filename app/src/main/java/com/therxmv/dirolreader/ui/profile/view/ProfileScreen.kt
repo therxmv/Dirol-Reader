@@ -4,12 +4,12 @@ import android.graphics.BitmapFactory
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,8 +20,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.therxmv.dirolreader.ui.commonview.CenteredBoxLoader
 import com.therxmv.dirolreader.ui.commonview.CenteredTopBar
+import com.therxmv.dirolreader.ui.commonview.DefaultTitle
+import com.therxmv.dirolreader.ui.news.view.post.EmptyAvatar
 import com.therxmv.dirolreader.ui.profile.viewmodel.ProfileViewModel
-import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiEvent
+import com.therxmv.dirolreader.ui.profile.viewmodel.utils.AppBarState
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,24 +31,25 @@ import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiState
 fun ProfileScreen(
     navController: NavController,
     onNavigateToRoute: (String) -> Unit,
-    onNavigateToAuth: () -> Unit,
+    eraseApplication: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val event = viewModel.eventFlow.collectAsState().value
 
     Scaffold(
         topBar = {
             if (uiState is ProfileUiState.Ready) {
                 val appBar = (uiState as ProfileUiState.Ready).appBarState
-                if (appBar.avatarPath.isNotEmpty()) {
-                    CenteredTopBar(
-                        title = appBar.userName,
-                        navController = navController,
-                        actions = {
-                            AppBarAvatar(avatarPath = appBar.avatarPath)
-                        }
-                    )
-                }
+                CenteredTopBar(
+                    title = {
+                        DefaultTitle(title = appBar.userName)
+                    },
+                    navController = navController,
+                    actions = {
+                        AppBarAvatar(state = appBar)
+                    }
+                )
             }
         }
     ) { padding ->
@@ -59,12 +62,20 @@ fun ProfileScreen(
                     screenPadding = padding,
                     sections = it.sections,
                     onNavigateToRoute = onNavigateToRoute,
-                    doSignOut = {
-                        viewModel.onEvent(ProfileUiEvent.LogOut(onNavigateToAuth))
-                    },
+                    doSignOut = viewModel::signOut,
                 )
 
                 is ProfileUiState.Loading -> CenteredBoxLoader()
+            }
+        }
+    }
+
+    LaunchedEffect(event) {
+        if (event == null) return@LaunchedEffect
+
+        when (event) {
+            is ProfileViewModel.Event.SignedOut -> {
+                eraseApplication()
             }
         }
     }
@@ -72,17 +83,20 @@ fun ProfileScreen(
 
 @Composable
 private fun AppBarAvatar(
-    avatarPath: String,
+    state: AppBarState,
 ) {
-    Image(
-        bitmap = BitmapFactory.decodeFile(avatarPath).asImageBitmap(),
-        contentDescription = "Avatar",
-        modifier = Modifier
-            .padding(8.dp)
-            .width(48.dp)
-            .height(48.dp)
-            .clip(
-                MaterialTheme.shapes.small
-            )
-    )
+    if (state.avatarPath.isNotBlank()) {
+        Image(
+            bitmap = BitmapFactory.decodeFile(state.avatarPath).asImageBitmap(),
+            contentDescription = "Avatar",
+            modifier = Modifier
+                .width(48.dp)
+                .height(48.dp)
+                .clip(
+                    MaterialTheme.shapes.small,
+                )
+        )
+    } else {
+        EmptyAvatar(name = state.userName)
+    }
 }

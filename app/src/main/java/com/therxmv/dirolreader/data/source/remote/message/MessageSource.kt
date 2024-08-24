@@ -1,14 +1,11 @@
 package com.therxmv.dirolreader.data.source.remote.message
 
-import com.therxmv.dirolreader.domain.models.ChannelModel
+import com.therxmv.dirolreader.data.entity.ChannelEntity
 import com.therxmv.dirolreader.domain.models.MessageModel
-import org.drinkless.td.libcore.telegram.Client
+import kotlinx.coroutines.flow.MutableStateFlow
 
 interface MessageSource {
-    suspend fun getMessagePhoto(client: Client?, photoId: Int): String
 
-    suspend fun getMessagesByPage(
-        client: Client?,
-        channelsList: List<List<ChannelModel>>
-    ): List<MessageModel>
+    fun getUnreadChannelsFlow(): MutableStateFlow<List<ChannelEntity>>
+    suspend fun getUnreadMessagesByPage(page: Int): List<MessageModel>
 }

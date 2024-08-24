@@ -5,11 +5,9 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.core.content.edit
 import com.tencent.mmkv.MMKV
 import com.therxmv.common.SharedPrefs.SHARED_PREFS
-import com.therxmv.common.SharedPrefs.SHARED_PREFS_CHANNELS_RATING
 import com.therxmv.common.SharedPrefs.SHARED_PREFS_IS_AUTO_DELETE_ENABLED
 import com.therxmv.common.SharedPrefs.SHARED_PREFS_IS_DYNAMIC
 import com.therxmv.common.SharedPrefs.SHARED_PREFS_IS_UPDATE_DOWNLOADED
-import com.therxmv.sharedpreferences.model.ChannelsRatingListModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -30,15 +28,6 @@ class AppSharedPrefsDataSource @Inject constructor(
         get() = mmkv.decodeBool(SHARED_PREFS_IS_AUTO_DELETE_ENABLED, false)
         set(value) {
             mmkv.encode(SHARED_PREFS_IS_AUTO_DELETE_ENABLED, value)
-        }
-
-    var channelsRating: ChannelsRatingListModel
-        get() = mmkv.decodeParcelable(
-            SHARED_PREFS_CHANNELS_RATING,
-            ChannelsRatingListModel::class.java
-        ) ?: ChannelsRatingListModel()
-        set(value) {
-            mmkv.encode(SHARED_PREFS_CHANNELS_RATING, value)
         }
 
     var isUpdateDownloaded: Boolean

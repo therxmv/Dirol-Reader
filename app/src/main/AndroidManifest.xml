@@ -16,19 +16,26 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DirolReader"
+        android:theme="@style/Theme.DirolReader.Splash"
         tools:targetApi="33">
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.splash.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.DirolReader"
+            android:theme="@style/Theme.DirolReader.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.MainNavigationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.DirolReader"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
         <provider

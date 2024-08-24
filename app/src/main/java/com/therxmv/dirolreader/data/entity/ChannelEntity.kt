@@ -20,3 +20,10 @@ fun ChannelEntity.toDomain() = ChannelModel(
     this.lastReadMessageId,
     this.rating,
 )
+
+fun ChannelModel.toEntity() = ChannelEntity(
+    this.id,
+    this.unreadCount,
+    this.lastReadMessageId,
+    this.rating,
+)

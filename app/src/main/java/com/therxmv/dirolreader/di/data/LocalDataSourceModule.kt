@@ -2,7 +2,7 @@ package com.therxmv.dirolreader.di.data
 
 import android.content.Context
 import androidx.room.Room
-import com.therxmv.dirolreader.data.source.locale.db.DirolDatabase
+import com.therxmv.dirolreader.data.source.local.db.DirolDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

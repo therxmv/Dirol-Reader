@@ -1,54 +1,52 @@
 package com.therxmv.dirolreader.data.source.remote.user
 
 import com.therxmv.dirolreader.data.entity.UserEntity
-import kotlinx.coroutines.Dispatchers
+import com.therxmv.dirolreader.data.source.remote.media.MediaSource
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import org.drinkless.td.libcore.telegram.Client
-import org.drinkless.td.libcore.telegram.TdApi
-import org.drinkless.td.libcore.telegram.TdApi.User
+import org.drinkless.tdlib.Client
+import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.ChatPhoto
+import org.drinkless.tdlib.TdApi.User
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class UserRemoteDataSource @Inject constructor() : UserSource {
+class UserRemoteDataSource @Inject constructor(
+    private val client: Client,
+    private val mediaRemoteDataSource: MediaSource,
+    @Named("IO") private val ioDispatcher: CoroutineDispatcher,
+) : UserSource {
 
-    override suspend fun getCurrentUser(client: Client?): UserEntity =
-        withContext(Dispatchers.IO) {
-            val user = getUser(client)
+    override suspend fun getCurrentUser(): UserEntity =
+        withContext(ioDispatcher) {
+            val user = getUser()
+            val profilePhoto = getLastProfilePhoto(user)
 
-            suspendCoroutine {
-                client?.send(TdApi.GetUserProfilePhotos(user.id, 0, 1)) { photos ->
-                    photos as TdApi.ChatPhotos
+            val avatarPath = profilePhoto?.let { photo ->
+                mediaRemoteDataSource.downloadMediaAndGetPath(photo.sizes[1].photo.id)
+            }.orEmpty()
 
-                    client.send(
-                        TdApi.DownloadFile(
-                            /* fileId = */ photos.photos.first().sizes[1].photo.id,
-                            /* priority = */ 32,
-                            /* offset = */ 0,
-                            /* limit = */ 1,
-                            /* synchronous = */ true
-                        )
-                    ) { file ->
-                        file as TdApi.File
+            UserEntity(
+                firstName = user.firstName,
+                lastName = user.lastName,
+                avatarPath = avatarPath,
+            )
+        }
 
-                        it.resume(
-                            UserEntity(
-                                firstName = user.firstName,
-                                lastName = user.lastName,
-                                avatarPath = file.local.path,
-                            )
-                        )
-                    }
-                }
+    private suspend fun getUser(): User =
+        suspendCoroutine {
+            client.send(TdApi.GetMe()) { user ->
+                it.resume(user as User)
             }
         }
 
-    private suspend fun getUser(client: Client?): User =
-        withContext(Dispatchers.IO) {
-            suspendCoroutine {
-                client?.send(TdApi.GetMe()) { user ->
-                    it.resume(user as User)
-                }
+    private suspend fun getLastProfilePhoto(user: User): ChatPhoto? =
+        suspendCoroutine {
+            client.send(TdApi.GetUserProfilePhotos(user.id, 0, 1)) { photos ->
+                photos as TdApi.ChatPhotos
+                it.resume(photos.photos.firstOrNull())
             }
         }
 }

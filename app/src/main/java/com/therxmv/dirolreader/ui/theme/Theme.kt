@@ -3,8 +3,6 @@ package com.therxmv.dirolreader.ui.theme
 import android.app.Activity
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.view.View
-import android.view.Window
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -12,13 +10,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -93,7 +87,6 @@ fun AppTheme(
     val context = LocalContext.current
     val view = LocalView.current
     val window = (view.context as Activity).window
-    val systemUiController = rememberSystemUiController()
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -113,34 +106,9 @@ fun AppTheme(
         ColorDrawable(colorScheme.surface.toArgb())
     )
 
-    systemUiController.setSystemBarsColor(
-        color = colorScheme.surface,
-    )
-
-    SetImmersiveMode(view, window, darkTheme)
-
     MaterialTheme(
         colorScheme = colorScheme,
         shapes = Shapes,
         content = content
     )
-}
-
-@Composable
-private fun SetImmersiveMode(view: View, window: Window, darkTheme: Boolean) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        if (view.isInEditMode.not()) {
-            SideEffect {
-                with(window) {
-                    statusBarColor = Color.Transparent.toArgb()
-                    navigationBarColor = Color.Transparent.toArgb()
-                    isStatusBarContrastEnforced = false
-                    isNavigationBarContrastEnforced = false
-
-                    WindowCompat.setDecorFitsSystemWindows(this@with, false)
-                    WindowCompat.getInsetsController(this@with, view).isAppearanceLightStatusBars = darkTheme.not()
-                }
-            }
-        }
-    }
 }

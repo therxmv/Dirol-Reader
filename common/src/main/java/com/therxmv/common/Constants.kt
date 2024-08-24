@@ -17,7 +17,6 @@ object SharedPrefs {
     const val SHARED_PREFS = "sharedPrefs"
     const val SHARED_PREFS_IS_DYNAMIC = "sharedPrefsIsDynamic"
     const val SHARED_PREFS_IS_AUTO_DELETE_ENABLED = "sharedPrefsIsAutoDeleteEnabled"
-    const val SHARED_PREFS_CHANNELS_RATING = "sharedPrefsChannelsRating"
     const val SHARED_PREFS_IS_UPDATE_DOWNLOADED = "sharedPrefsIsUpdateDownloaded"
 }
 
@@ -30,4 +29,8 @@ object GithubRepo {
 object Links {
     const val TELEGRAM_CHANNEL = "https://t.me/therxmv_channel"
     const val GITHUB_REPO = "https://github.com/therxmv/Dirol-Reader"
+}
+
+object Rating {
+    const val STAR_RATING = 100
 }

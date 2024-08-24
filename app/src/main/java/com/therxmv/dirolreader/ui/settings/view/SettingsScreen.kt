@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.therxmv.dirolreader.ui.commonview.CenteredBoxLoader
 import com.therxmv.dirolreader.ui.commonview.CenteredTopBar
+import com.therxmv.dirolreader.ui.commonview.DefaultTitle
 import com.therxmv.dirolreader.ui.settings.viewmodel.SettingsViewModel
 import com.therxmv.dirolreader.ui.settings.viewmodel.utils.SettingsUiState
 
@@ -25,7 +26,9 @@ fun SettingsScreen(
         topBar = {
             (uiState as? SettingsUiState.Ready)?.data?.let {
                 CenteredTopBar(
-                    title = stringResource(id = it.appBarTitle),
+                    title = {
+                        DefaultTitle(title = stringResource(id = it.appBarTitle))
+                    },
                     navController = navController,
                 )
             }

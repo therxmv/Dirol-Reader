@@ -61,16 +61,6 @@ class OtaViewModelTest {
     }
 
     @Test
-    fun `set NoUpdates when release version is lower then installed`() = runTest {
-        coEvery { mockGetLatestReleaseUseCase.invoke() } returns releaseModel
-
-        advanceUntilIdle()
-
-        coVerify { mockGetLatestReleaseUseCase.invoke() }
-        systemUnderTest.uiState.value.shouldBeInstanceOf<OtaUiState.NoUpdates>()
-    }
-
-    @Test
     fun `set DownloadUpdate when release version is higher then installed`() = runTest {
         coEvery { mockGetLatestReleaseUseCase.invoke() } returns releaseModel.copy(version = "v5.0.0")
 
@@ -81,13 +71,13 @@ class OtaViewModelTest {
     }
 
     @Test
-    fun `set Downloaded when new apk is ready for install`() = runTest {
+    fun `set Downloaded when apk exists and matches update version`() = runTest {
         mockkStatic(Environment::getExternalStoragePublicDirectory)
         every { Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) } returns mockk {
             every { listFiles() } returns arrayOf(
                 mockk(relaxed = true) {
                     every { isFile } returns true
-                    every { name } returns "Dirol-Reader"
+                    every { name } returns "Dirol-Reader-5.0.0.apk"
                 }
             )
         }
@@ -100,12 +90,33 @@ class OtaViewModelTest {
         systemUnderTest.uiState.value.shouldBeInstanceOf<OtaUiState.Downloaded>()
     }
 
+    @Test
+    fun `set DownloadUpdate when apk exists but with different version`() = runTest {
+        mockkStatic(Environment::getExternalStoragePublicDirectory)
+        every { Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) } returns mockk {
+            every { listFiles() } returns arrayOf(
+                mockk(relaxed = true) {
+                    every { isFile } returns true
+                    every { name } returns "Dirol-Reader-1.0.0.apk"
+                }
+            )
+        }
+        every { mockAppSharedPrefsRepository.isUpdateDownloaded } returns true
+        coEvery { mockGetLatestReleaseUseCase.invoke() } returns releaseModel.copy(version = "v5.0.0")
+
+        advanceUntilIdle()
+
+        coVerify { mockGetLatestReleaseUseCase.invoke() }
+        systemUnderTest.uiState.value.shouldBeInstanceOf<OtaUiState.DownloadUpdate>()
+    }
+
     private fun assumeViewModelCreated() {
         systemUnderTest = OtaViewModel(
             getLatestReleaseUseCase = mockGetLatestReleaseUseCase,
             downloadUpdateUseCase = mockDownloadUpdateUseCase,
             appSharedPrefsRepository = mockAppSharedPrefsRepository,
             versionCode = mockVersionCode,
+            ioDispatcher = testDispatcher,
         )
     }
 }

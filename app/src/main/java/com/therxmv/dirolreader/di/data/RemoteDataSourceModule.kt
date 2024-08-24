@@ -2,6 +2,8 @@ package com.therxmv.dirolreader.di.data
 
 import com.therxmv.dirolreader.data.source.remote.channel.ChannelRemoteDataSource
 import com.therxmv.dirolreader.data.source.remote.channel.ChannelRemoteSource
+import com.therxmv.dirolreader.data.source.remote.media.MediaRemoteDataSource
+import com.therxmv.dirolreader.data.source.remote.media.MediaSource
 import com.therxmv.dirolreader.data.source.remote.message.MessageRemoteDataSource
 import com.therxmv.dirolreader.data.source.remote.message.MessageSource
 import com.therxmv.dirolreader.data.source.remote.user.UserRemoteDataSource
@@ -27,4 +29,8 @@ abstract class RemoteDataSourceModule {
     @Binds
     @Singleton
     abstract fun bindsUserRemoteDataSource(source: UserRemoteDataSource): UserSource
+
+    @Binds
+    @Singleton
+    abstract fun bindsMediaRemoteDataSource(source: MediaRemoteDataSource): MediaSource
 }

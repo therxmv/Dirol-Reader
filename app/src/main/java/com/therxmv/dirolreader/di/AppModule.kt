@@ -1,6 +1,7 @@
 package com.therxmv.dirolreader.di
 
 import com.therxmv.dirolreader.BuildConfig
+import com.therxmv.dirolreader.di.data.ClientModule
 import com.therxmv.dirolreader.di.data.LocalDataSourceModule
 import com.therxmv.dirolreader.di.data.RemoteDataSourceModule
 import com.therxmv.dirolreader.di.data.RepositoryModule
@@ -18,6 +19,7 @@ import javax.inject.Singleton
         LocalDataSourceModule::class,
         RepositoryModule::class,
         OtaModule::class,
+        ClientModule::class,
     ]
 )
 @InstallIn(SingletonComponent::class)

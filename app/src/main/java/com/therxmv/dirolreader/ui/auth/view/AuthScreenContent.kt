@@ -38,7 +38,6 @@ import com.therxmv.dirolreader.ui.auth.viewmodel.utils.AuthState
 import com.therxmv.dirolreader.ui.auth.viewmodel.utils.getKeyboardOptions
 import com.therxmv.dirolreader.ui.auth.viewmodel.utils.getTitleString
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthScreenContent(
     authState: AuthState,

@@ -23,6 +23,7 @@
     <string name="news_unread_channels">unread channels</string>
     <string name="news_counter_divider">of</string>
     <string name="news_just_now">Just now</string>
+    <string name="news_all_read">You have read all news</string>
 
     <!-- Profile -->
     <string name="profile_settings">Settings</string>
@@ -36,6 +37,7 @@
     <string name="profile_sign_out">Sign Out</string>
 
     <string name="sign_out_dialog_title">Sign out?</string>
+    <string name="sign_out_dialog_title_in_progress">App will be closed shortly</string>
     <string name="sign_out_dialog_text">Are you sure you want to sign out? You will only be signed out from this device.</string>
 
     <!-- Settings -->

@@ -1,7 +1,6 @@
 package com.therxmv.sharedpreferences.repository
 
 import android.content.SharedPreferences
-import com.therxmv.sharedpreferences.model.ChannelsRatingListModel
 import com.therxmv.sharedpreferences.source.AppSharedPrefsDataSource
 import javax.inject.Inject
 
@@ -19,12 +18,6 @@ class AppSharedPrefsRepository @Inject constructor(
         get() = appSharedPrefsDataSource.isAutoDeleteEnabled
         set(value) {
             appSharedPrefsDataSource.isAutoDeleteEnabled = value
-        }
-
-    var channelsRating: ChannelsRatingListModel
-        get() = appSharedPrefsDataSource.channelsRating
-        set(value) {
-            appSharedPrefsDataSource.channelsRating = value
         }
 
     var isUpdateDownloaded: Boolean

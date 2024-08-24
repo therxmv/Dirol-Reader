@@ -3,6 +3,7 @@ package com.therxmv.dirolreader.ui.settings.viewmodel
 import com.therxmv.common.R
 import com.therxmv.dirolreader.ui.settings.viewmodel.utils.SettingsContentData
 import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,7 +24,7 @@ class ThemingViewModel @Inject constructor(
         _data.update {
             SettingsContentData(
                 appBarTitle = R.string.profile_theme,
-                items = listOf(
+                items = persistentListOf(
                     SettingsContentData.ItemData.Switch(
                         text = R.string.settings_dynamic_theme,
                         isChecked = appSharedPrefsRepository.isDynamic,

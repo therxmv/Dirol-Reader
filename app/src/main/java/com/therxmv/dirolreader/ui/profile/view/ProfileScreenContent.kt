@@ -40,11 +40,12 @@ import androidx.compose.ui.unit.sp
 import com.therxmv.common.R
 import com.therxmv.dirolreader.BuildConfig
 import com.therxmv.dirolreader.ui.profile.viewmodel.utils.ProfileUiSection
+import kotlinx.collections.immutable.PersistentList
 
 @Composable
 fun ProfileScreenContent(
     screenPadding: PaddingValues,
-    sections: List<ProfileUiSection>,
+    sections: PersistentList<ProfileUiSection>,
     onNavigateToRoute: (String) -> Unit,
     doSignOut: () -> Unit,
 ) {
@@ -89,7 +90,7 @@ fun ProfileScreenContent(
 @Composable
 private fun ProfileSection(
     @StringRes title: Int,
-    items: List<ProfileUiSection.Item>,
+    items: PersistentList<ProfileUiSection.Item>,
     onNavigateToRoute: (String) -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current

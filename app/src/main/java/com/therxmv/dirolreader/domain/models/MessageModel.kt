@@ -1,14 +1,16 @@
 package com.therxmv.dirolreader.domain.models
 
-import com.therxmv.dirolreader.data.models.MediaModel
-
 data class MessageModel(
-    var id: Long,
-    val channelId: Long,
-    val channelRating: Int,
-    val channelName: String,
-    val channelAvatarPath: String?,
+    val id: Long,
+    val channelData: ChannelData,
     val timestamp: Int,
-    var text: String,
-    val mediaList: MutableList<MediaModel>?,
+    val text: String,
+    val mediaList: List<MediaModel>?,
+)
+
+data class ChannelData(
+    val id: Long,
+    val rating: Int,
+    val name: String,
+    val avatarPath: String? = null,
 )

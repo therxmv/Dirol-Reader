@@ -1,281 +1,172 @@
 package com.therxmv.dirolreader.data.source.remote.message
 
 import android.util.Log
-import com.therxmv.dirolreader.data.models.MediaModel
-import com.therxmv.dirolreader.data.models.MediaType
+import com.therxmv.dirolreader.data.entity.ChannelEntity
+import com.therxmv.dirolreader.data.entity.toDomain
+import com.therxmv.dirolreader.data.source.remote.channel.ChannelRemoteSource
+import com.therxmv.dirolreader.domain.models.ChannelData
 import com.therxmv.dirolreader.domain.models.ChannelModel
 import com.therxmv.dirolreader.domain.models.MessageModel
-import com.therxmv.dirolreader.utils.toMarkdown
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flattenConcat
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
-import org.drinkless.td.libcore.telegram.Client
-import org.drinkless.td.libcore.telegram.TdApi
-import org.drinkless.td.libcore.telegram.TdApi.Chat
-import org.drinkless.td.libcore.telegram.TdApi.Message
+import org.drinkless.tdlib.Client
+import org.drinkless.tdlib.TdApi
+import org.drinkless.tdlib.TdApi.Chat
+import org.drinkless.tdlib.TdApi.Message
+import org.drinkless.tdlib.TdApi.Messages
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class MessageRemoteDataSource @Inject constructor() : MessageSource {
+class MessageRemoteDataSource @Inject constructor(
+    private val client: Client,
+    private val channelRemoteDataSource: ChannelRemoteSource,
+    @Named("IO") private val ioDispatcher: CoroutineDispatcher,
+) : MessageSource {
 
-    companion object {
-        private var lastChannelAndMessageId: Pair<Long, Long>? = null
+    /**
+     * Used to remember last loaded message of current channel.
+     * Because TdApi doesn't provide good offset to get messages properly for pagination
+     */
+    private var lastMessage: MessageModel? = null
+
+    private var allUnreadChannelsFlow: MutableStateFlow<List<ChannelEntity>> = MutableStateFlow(emptyList())
+    private var pagedChannels: Map<Int, List<ChannelEntity>> = emptyMap()
+
+    override fun getUnreadChannelsFlow() = allUnreadChannelsFlow
+
+    private suspend fun refreshData() {
+        delay(500) // TODO 3 doesn't load actual channel data
+        val list = channelRemoteDataSource.getChannelsForPaging()
+
+        lastMessage = null
+        allUnreadChannelsFlow.update { list }
+        pagedChannels = sortMessagesByPage(list)
     }
 
-    override suspend fun getMessagePhoto(client: Client?, photoId: Int): String = withContext(Dispatchers.IO) {
-        suspendCoroutine {
-            client?.send(TdApi.DownloadFile(photoId, 32, 0, 0, true)) { f ->
-                f as TdApi.File
-                it.resume(f.local.path)
+    override suspend fun getUnreadMessagesByPage(page: Int): List<MessageModel> =
+        withContext(ioDispatcher) {
+            // fetches new data about channels on start and refresh
+            if (page == 0 || allUnreadChannelsFlow.value.isEmpty() || pagedChannels.isEmpty()) {
+                refreshData()
             }
-        }
-    }
 
-    @OptIn(FlowPreview::class)
-    override suspend fun getMessagesByPage(
-        client: Client?,
-        channelsList: List<List<ChannelModel>>
-    ): List<MessageModel> =
-        withContext(Dispatchers.IO) {
-            channelsList.asFlow().map { elem ->
-                val channel = elem.last()
-                val historyOffset = elem.size + 1
+            val channels = pagedChannels[page] ?: return@withContext emptyList()
+            Log.d("rozmi", "pages: ${pagedChannels.size} page: $page - $channels")
 
-                if (lastChannelAndMessageId == null
-                    || lastChannelAndMessageId!!.first != channel.id
-                ) {
-                    lastChannelAndMessageId = Pair(channel.id, channel.lastReadMessageId)
-                }
+            val messages = channels.map {
+                async {
+                    val channel = it.toDomain()
+                    val channelData = getChannelData(channel)
+                    val history = getChannelHistory(channel)
 
-                suspendCoroutine { cont ->
-                    client?.send(
-                        TdApi.GetChatHistory(
-                            channel.id,
-                            lastChannelAndMessageId!!.second,
-                            historyOffset * -1,
-                            historyOffset,
-                            false
-                        )
-                    ) { ms ->
-                        ms as TdApi.Messages
-
-                        val list = ms.messages.reversed().toMutableList().also {
-                            if (historyOffset == ms.messages.size) {
-                                it.removeAt(0)
-                            }
-                        }
-
-                        lastChannelAndMessageId = Pair(channel.id, list.last().id)
-
-                        cont.resume(
-                            list.asFlow().map { m ->
-                                m as Message
-
-                                val model = handleMessageType(channel, m)
-
-                                suspendCoroutine { cont ->
-                                    client.send(TdApi.GetChat(channel.id)) { chat ->
-                                        chat as Chat
-
-                                        val smallPhotoId = chat.photo?.small?.id
-
-                                        if (smallPhotoId != null) {
-                                            client.send(
-                                                TdApi.DownloadFile(
-                                                    smallPhotoId,
-                                                    32,
-                                                    0,
-                                                    0,
-                                                    true
-                                                )
-                                            ) { file ->
-                                                file as TdApi.File
-
-                                                cont.resume(
-                                                    model.copy(
-                                                        channelName = chat.title,
-                                                        channelAvatarPath = file.local.path
-                                                    )
-                                                )
-                                            }
-                                        } else {
-                                            cont.resume(
-                                                model.copy(
-                                                    channelName = chat.title
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        )
+                    history.map { message ->
+                        handleMessageType(channelData, message)
                     }
                 }
-            }.flattenConcat().toList()
+            }.awaitAll()
+
+            return@withContext messages
+                .flatten()
+                .saveLastAndDrop(page)
+                .groupMediaMessagesInOne()
         }
 
-    private fun handleMessageType(
-        channel: ChannelModel,
-        message: Message,
-    ): MessageModel {
-        val defaultModel = MessageModel(
-            message.id,
-            channel.id,
-            channel.rating,
-            "",
-            null,
-            message.date,
-            "This message type is not yet supported",
-            null
-        )
+    private suspend fun getChannelHistory(channel: ChannelModel): List<Message> =
+        suspendCoroutine {
+            val unreadCount = channel.unreadCount
 
-        return when (message.content) {
-            is TdApi.MessageText -> {
-                defaultModel.copy(
-                    text = (message.content as TdApi.MessageText).text.toMarkdown(),
+            val request = if (unreadCount == 1) { // Better to use 0 for one unread message
+                TdApi.GetChatHistory(
+                    /* chatId = */ channel.id,
+                    /* fromMessageId = */ 0,
+                    /* offset = */ 0,
+                    /* limit = */ 1,
+                    /* onlyLocal = */ false,
+                )
+            } else {
+                val limit = channel.unreadCount + 1 // Plus one, because we have last READ messageId
+                val localId = lastMessage?.id
+                    ?.takeIf { lastMessage?.channelData?.id == channel.id }
+
+                val messageId = localId ?: channel.lastReadMessageId
+                val offset = limit * -1
+
+                TdApi.GetChatHistory(
+                    /* chatId = */ channel.id,
+                    /* fromMessageId = */ messageId,
+                    /* offset = */ offset,
+                    /* limit = */ limit,
+                    /* onlyLocal = */ false,
                 )
             }
 
-            is TdApi.MessagePhoto -> {
-                val photo = (message.content as TdApi.MessagePhoto).photo.sizes.last()
+            client.send(request) { messages ->
+                messages as Messages
 
-                defaultModel.copy(
-                    text = (message.content as TdApi.MessagePhoto).caption.toMarkdown(),
-                    mediaList = mutableListOf(
-                        MediaModel(
-                            photo.photo.id,
-                            photo.height,
-                            photo.width,
-                            photo.photo.size,
-                            MediaType.PHOTO
+                val list = messages.messages
+                    .reversed()
+                    .filter { it.id != channel.lastReadMessageId } // Need to drop last READ message
+
+                it.resume(list)
+            }
+        }
+
+    private suspend fun getChannelData(channel: ChannelModel): ChannelData =
+        suspendCoroutine { continuation ->
+            client.send(TdApi.GetChat(channel.id)) { chat ->
+                chat as Chat
+                val smallPhotoId = chat.photo?.small?.id
+
+                if (smallPhotoId != null) {
+                    client.send(
+                        TdApi.DownloadFile(
+                            /* fileId = */ smallPhotoId,
+                            /* priority = */ 32,
+                            /* offset = */ 0,
+                            /* limit = */ 0,
+                            /* synchronous = */ true,
                         )
-                    )
-                )
-            }
+                    ) { file ->
+                        file as TdApi.File
 
-            is TdApi.MessageVideo -> {
-                val video = (message.content as TdApi.MessageVideo).video
-
-                defaultModel.copy(
-                    text = (message.content as TdApi.MessageVideo).caption.toMarkdown(),
-                    mediaList = mutableListOf(
-                        MediaModel(
-                            video.video.id,
-                            video.height,
-                            video.width,
-                            video.video.size,
-                            MediaType.VIDEO
-                        )
-                    )
-                )
-            }
-
-            is TdApi.MessageAnimation -> {
-                val anim = (message.content as TdApi.MessageAnimation).animation
-
-                defaultModel.copy(
-                    text = (message.content as TdApi.MessageAnimation).caption.toMarkdown(),
-                    mediaList = mutableListOf(
-                        MediaModel(
-                            anim.animation.id,
-                            anim.height,
-                            anim.width,
-                            anim.animation.size,
-                            MediaType.VIDEO
-                        )
-                    )
-                )
-            }
-
-            is TdApi.MessageSticker -> {
-                val sticker = (message.content as TdApi.MessageSticker).sticker
-
-                if (sticker.isAnimated) {
-                    defaultModel.copy(
-                        text = "Animated sticker is not supported"
-                    )
-                } else {
-                    defaultModel.copy(
-                        text = "",
-                        mediaList = mutableListOf(
-                            MediaModel(
-                                sticker.sticker.id,
-                                sticker.height,
-                                sticker.width,
-                                sticker.sticker.size,
-                                MediaType.PHOTO
+                        continuation.resume(
+                            ChannelData(
+                                id = channel.id,
+                                rating = channel.rating,
+                                name = chat.title,
+                                avatarPath = file.local.path
                             )
+                        )
+                    }
+                } else {
+                    continuation.resume(
+                        ChannelData(
+                            id = channel.id,
+                            rating = channel.rating,
+                            name = chat.title
                         )
                     )
                 }
             }
+        }
 
-            is TdApi.MessageVideoNote -> {
-                val video = (message.content as TdApi.MessageVideoNote).videoNote
+    private fun List<MessageModel>.saveLastAndDrop(page: Int) = this.run {
+        val last = lastOrNull()
+        val nextPageChannelId = pagedChannels[page + 1]?.firstOrNull()?.id
 
-                defaultModel.copy(
-                    text = "",
-                    mediaList = mutableListOf(
-                        MediaModel(
-                            video.video.id,
-                            video.length,
-                            video.length,
-                            video.video.size,
-                            MediaType.VIDEO
-                        )
-                    )
-                )
-            }
-
-            is TdApi.MessageAudio -> {
-                val audio = (message.content as TdApi.MessageAudio).audio
-
-                defaultModel.copy(
-                    text = (message.content as TdApi.MessageAudio).caption.toMarkdown(),
-                    mediaList = mutableListOf(
-                        MediaModel(
-                            audio.audio.id,
-                            100,
-                            100,
-                            audio.audio.size,
-                            MediaType.VIDEO
-                        )
-                    )
-                )
-            }
-
-            is TdApi.MessageVoiceNote -> {
-                val voice = (message.content as TdApi.MessageVoiceNote).voiceNote
-
-                defaultModel.copy(
-                    text = (message.content as TdApi.MessageVoiceNote).caption.toMarkdown(),
-                    mediaList = mutableListOf(
-                        MediaModel(
-                            voice.voice.id,
-                            100,
-                            100,
-                            voice.voice.size,
-                            MediaType.VIDEO
-                        )
-                    )
-                )
-            }
-
-            is TdApi.MessageDocument -> {
-                defaultModel.copy(
-                    text = "*FILE is not yet supported* ${(message.content as TdApi.MessageDocument).caption.toMarkdown()}",
-                )
-            }
-
-            else -> {
-                Log.d("rozmi", message.content.toString())
-                defaultModel
-            }
+        if (last?.channelData?.id == nextPageChannelId) {
+            lastMessage = last
+            dropLast(1)
+        } else {
+            lastMessage = null
+            this
         }
     }
 }

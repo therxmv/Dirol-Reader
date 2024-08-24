@@ -11,11 +11,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.therxmv.dirolreader.ui.settings.view.common.SwitchItem
 import com.therxmv.dirolreader.ui.settings.viewmodel.utils.SettingsContentData.ItemData
+import kotlinx.collections.immutable.PersistentList
 
 @Composable
 fun SettingsScreenContent(
     screenPadding: PaddingValues,
-    items: List<ItemData>,
+    items: PersistentList<ItemData>,
 ) {
     LazyColumn(
         modifier = Modifier

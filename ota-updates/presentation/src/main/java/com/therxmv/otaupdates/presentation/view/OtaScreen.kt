@@ -3,7 +3,6 @@ package com.therxmv.otaupdates.presentation.view
 import android.Manifest
 import android.os.Build
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
@@ -19,7 +18,7 @@ import com.therxmv.otaupdates.presentation.viewmodel.utils.OtaUiState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun OtaScreen(
-    onNavigateToAuth: () -> Unit,
+    onNavigateToNextScreen: () -> Unit,
     viewModel: OtaViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -30,19 +29,13 @@ fun OtaScreen(
     )
 
     when (uiState) {
-        is OtaUiState.NoUpdates -> {
-            LaunchedEffect(Unit) {
-                onNavigateToAuth()
-            }
-        }
-
         is OtaUiState.InitialState -> {}
 
         else -> {
             val update = uiState.updateModel
 
             OtaUpdateContent(
-                onNavigateToAuth = onNavigateToAuth,
+                onNavigateToAuth = onNavigateToNextScreen,
                 updateVersion = update?.version.orEmpty(),
                 changeLog = update?.changeLog.orEmpty(),
                 updateButtonTitle = uiState.getDownloadTitle(),

@@ -3,4 +3,5 @@
     <color name="primary_300">#30FFEF</color>
     <color name="primary_500">#24E2D4</color>
     <color name="primary_700">#24CCBF</color>
+    <color name="background_color">@android:color/background_light</color>
 </resources>

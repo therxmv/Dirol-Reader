@@ -23,7 +23,7 @@ ext {
     hilt_version = "2.51.1"
     hilt_navigation_version = "1.2.0"
     collapsing_toolbar_version = "2.3.5"
-    compose_markdown_version = "0.3.4"
+    compose_markdown_version = "0.5.3"
     paging_compose_version = "3.2.0"
     work_manager_version = "2.8.1"
     retrofit_version = "2.9.0"
@@ -31,8 +31,12 @@ ext {
     mockk_version = "1.13.3"
     kotlinx_coroutines_version = "1.6.4"
     kotest_version = "5.5.4"
+    core_splash_version = "1.0.1"
+    kotlinx_collections_version = "0.3.7"
+    activity_version = "1.9.1"
 
     appDependencies = [
+            activityKtx                  : "androidx.activity:activity-ktx:$activity_version",
             composeBom                  : "androidx.compose:compose-bom:$compose_bom_version",
             composeUi                   : "androidx.compose.ui:ui",
             composeGraphics             : "androidx.compose.ui:ui-graphics",
@@ -45,6 +49,7 @@ ext {
             accompanistPermission       : "com.google.accompanist:accompanist-permissions:$accompanist_permission_version",
             accompanistUiController     : "com.google.accompanist:accompanist-systemuicontroller:$accompanist_ui_controller_version",
             coreKtx                     : "androidx.core:core-ktx:$core_ktx_version",
+            kotlinCollections           : "org.jetbrains.kotlinx:kotlinx-collections-immutable:$kotlinx_collections_version",
             lifecycleRuntimeKtx         : "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_runtime_version",
             lifecycleRuntimeCompose     : "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_runtime_version",
             mkkv                        : "com.tencent:mmkv:$mkkv_version",
@@ -65,6 +70,7 @@ ext {
             workManager                 : "androidx.work:work-runtime-ktx:$work_manager_version",
             retrofit                    : "com.squareup.retrofit2:retrofit:$retrofit_version",
             retrofitGson                : "com.squareup.retrofit2:converter-gson:$retrofit_version",
+            coreSplashScreen            : "androidx.core:core-splashscreen:$core_splash_version",
     ]
 
     testDependencies = [

@@ -6,8 +6,14 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -20,10 +26,22 @@ class LatestReleaseRemoteDataSourceTest {
             assets = emptyList(),
         )
     }
+    private val mockDispatcher = StandardTestDispatcher()
 
     private val systemUnderTest = LatestReleaseRemoteDataSource(
         apiService = mockGithubApiService,
+        ioDispatcher = mockDispatcher,
     )
+
+    @Before
+    fun setup() {
+        Dispatchers.setMain(mockDispatcher)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `returns latest release data`() = runTest {

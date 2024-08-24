@@ -2,14 +2,15 @@ package com.therxmv.dirolreader.ui.profile.viewmodel.utils
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.PersistentList
 
 sealed class ProfileUiState {
 
-    @Stable
+    @Immutable
     data class Ready(
         val appBarState: AppBarState,
-        val sections: List<ProfileUiSection>,
+        val sections: PersistentList<ProfileUiSection>,
     ) : ProfileUiState()
 
     data object Loading : ProfileUiState()
@@ -20,10 +21,10 @@ data class AppBarState(
     val userName: String,
 )
 
-@Stable
+@Immutable
 data class ProfileUiSection(
     @StringRes val title: Int,
-    val items: List<Item>,
+    val items: PersistentList<Item>,
 ) {
     data class Item(
         @DrawableRes val icon: Int,

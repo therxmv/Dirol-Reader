@@ -3,6 +3,7 @@ package com.therxmv.dirolreader.ui.settings.viewmodel
 import com.therxmv.common.R
 import com.therxmv.dirolreader.ui.settings.viewmodel.utils.SettingsContentData
 import com.therxmv.sharedpreferences.repository.AppSharedPrefsRepository
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,7 +22,7 @@ class StorageViewModel @Inject constructor(
         _data.update {
             SettingsContentData(
                 appBarTitle = R.string.profile_storage,
-                items = listOf(
+                items = persistentListOf(
                     SettingsContentData.ItemData.Switch(
                         text = R.string.settings_clear_cache,
                         isChecked = appSharedPrefsRepository.isAutoDeleteEnabled,
