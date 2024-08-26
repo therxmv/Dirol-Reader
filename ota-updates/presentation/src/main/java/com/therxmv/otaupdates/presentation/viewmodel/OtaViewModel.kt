@@ -9,7 +9,6 @@ import android.os.Environment
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.therxmv.common.extractVersion
 import com.therxmv.otaupdates.domain.models.LatestReleaseModel
 import com.therxmv.otaupdates.domain.usecase.DownloadUpdateUseCase
 import com.therxmv.otaupdates.domain.usecase.GetLatestReleaseUseCase
@@ -52,18 +51,16 @@ class OtaViewModel @Inject constructor(
         }
     }
 
-    private fun isUpdateFileExists(updateVersion: Int): Boolean {
+    private fun isUpdateFileExists(updateModel: LatestReleaseModel): Boolean {
         val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val file = downloads.listFiles()?.find { it.isFile && it.nameWithoutExtension.contains("Dirol-Reader") }
-        val fileVersion = file?.nameWithoutExtension?.extractVersion()
+        val file = File(downloads, updateModel.fileName)
 
-        return fileVersion == updateVersion
+        return file.exists()
     }
 
     private fun isUpdateDownloaded(isDownloaded: Boolean, updateModel: LatestReleaseModel) {
-        val version = updateModel.version.extractVersion()
         _uiState.update {
-            (isDownloaded && isUpdateFileExists(version)).toDownloadState(updateModel)
+            (isDownloaded && isUpdateFileExists(updateModel)).toDownloadState(updateModel)
         }
     }
 
