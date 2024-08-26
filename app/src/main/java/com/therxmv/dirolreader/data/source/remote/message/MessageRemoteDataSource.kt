@@ -47,7 +47,7 @@ class MessageRemoteDataSource @Inject constructor(
 
         lastMessage = null
         allUnreadChannelsFlow.update { list }
-        pagedChannels = sortMessagesByPage(list)
+        pagedChannels = list.sortMessagesByPage()
     }
 
     override suspend fun getUnreadMessagesByPage(page: Int): List<MessageModel> =

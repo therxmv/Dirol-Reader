@@ -60,45 +60,41 @@ fun List<MessageModel>.groupMediaMessagesInOne(): List<MessageModel> { // TODO 2
  * - 2 to listOf(ChannelEntity(id = 2, unreadCount = 3), ChannelEntity(id = 3, unreadCount = 7))
  * - 3 to listOf(ChannelEntity(id = 3, unreadCount = 1))
  */
-fun sortMessagesByPage(
-    channels: List<ChannelEntity>,
-    page: Int = 0,
-    pages: MutableMap<Int, MutableList<ChannelEntity>> = mutableMapOf(),
-): Map<Int, List<ChannelEntity>> {
-    if (channels.isEmpty()) return pages // Break point
-
-    if (pages[page] == null) {
-        pages[page] = mutableListOf()
-    }
-
+fun List<ChannelEntity>.sortMessagesByPage(): Map<Int, List<ChannelEntity>> {
+    val remainingChannels = this.toMutableList()
     val limit = PAGE_SIZE
-    val currentCount = pages[page]?.sumOf { it.unreadCount } ?: 0
-    val channel = channels.first() // definitely exists
-    val list = (channels - channel).toMutableList()
 
-    val offset = channel.unreadCount + currentCount - limit
-    var newPage = page
+    var currentPage = 0
+    val pages: MutableMap<Int, MutableList<ChannelEntity>> = mutableMapOf()
 
-    if (offset > 0) {
-        val countThatFit = channel.unreadCount - offset
-        pages[page]?.add(channel.copy(unreadCount = countThatFit))
+    while (remainingChannels.isNotEmpty()) {
+        val channel = remainingChannels.removeAt(0) // definitely exists
 
-        val restOfThisChannel = channel.copy(
-            unreadCount = channel.unreadCount - countThatFit,
-        )
-        list.add(0, restOfThisChannel)
+        // Initialize the list for the current page if it doesn't exist
+        if (pages[currentPage] == null) {
+            pages[currentPage] = mutableListOf()
+        }
 
-        newPage += 1
-    } else {
-        pages[page]?.add(channel)
+        val currentCount = pages[currentPage]?.sumOf { it.unreadCount } ?: 0
 
-        val shouldAddNewPage = if (channel.unreadCount == limit) 1 else 0
-        newPage += shouldAddNewPage
+        val offset = channel.unreadCount + currentCount - limit
+
+        if (offset > 0) {
+            val countThatFit = channel.unreadCount - offset
+            pages[currentPage]?.add(channel.copy(unreadCount = countThatFit))
+
+            // rest will be resolved on the next iteration
+            val restOfThisChannel = channel.copy(unreadCount = offset)
+            remainingChannels.add(0, restOfThisChannel)
+            currentPage++
+        } else {
+            pages[currentPage]?.add(channel)
+
+            if (currentCount + channel.unreadCount >= limit) {
+                currentPage++
+            }
+        }
     }
 
-    return sortMessagesByPage(
-        channels = list,
-        page = newPage,
-        pages = pages,
-    )
+    return pages
 }

@@ -46,6 +46,11 @@ class SortMessagesByPageTest {
         4 to listOf(channel25Unread.copy(unreadCount = 10)),
     )
 
+    private val case7 = listOf(createChannel(8), createChannel(2), createChannel(3)) to mapOf(
+        0 to listOf(createChannel(8), createChannel(2)),
+        1 to listOf(createChannel(3)),
+    )
+
     private val cases = listOf(
         case1,
         case2,
@@ -53,12 +58,13 @@ class SortMessagesByPageTest {
         case4,
         case5,
         case6,
+        case7,
     ).toMap()
 
     @Test
     fun `should sort channels for pagination correctly`() {
         cases.forEach {
-            val result = sortMessagesByPage(it.key)
+            val result = it.key.sortMessagesByPage()
 
             result shouldBe it.value
         }
