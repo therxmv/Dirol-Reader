@@ -21,7 +21,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtaViewModelTest {
@@ -43,6 +45,10 @@ class OtaViewModelTest {
     private lateinit var systemUnderTest: OtaViewModel
 
     private val testDispatcher = StandardTestDispatcher()
+
+    @JvmField
+    @Rule
+    var rootFolder: TemporaryFolder = TemporaryFolder()
 
     @Before
     fun setup() {
@@ -71,18 +77,13 @@ class OtaViewModelTest {
     }
 
     @Test
-    fun `set Downloaded when apk exists and matches update version`() = runTest {
+    fun `set Downloaded when update apk file exists`() = runTest {
         mockkStatic(Environment::getExternalStoragePublicDirectory)
-        every { Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) } returns mockk {
-            every { listFiles() } returns arrayOf(
-                mockk(relaxed = true) {
-                    every { isFile } returns true
-                    every { name } returns "Dirol-Reader-5.0.0.apk"
-                }
-            )
-        }
+
+        rootFolder.newFile("Dirol-Reader-5.0.0.apk")
+        every { Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) } returns rootFolder.root
         every { mockAppSharedPrefsRepository.isUpdateDownloaded } returns true
-        coEvery { mockGetLatestReleaseUseCase.invoke() } returns releaseModel.copy(version = "v5.0.0")
+        coEvery { mockGetLatestReleaseUseCase.invoke() } returns releaseModel.copy(version = "v5.0.0", fileName = "Dirol-Reader-5.0.0.apk")
 
         advanceUntilIdle()
 
@@ -91,18 +92,13 @@ class OtaViewModelTest {
     }
 
     @Test
-    fun `set DownloadUpdate when apk exists but with different version`() = runTest {
+    fun `set DownloadUpdate when different update apk file exists`() = runTest {
         mockkStatic(Environment::getExternalStoragePublicDirectory)
-        every { Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) } returns mockk {
-            every { listFiles() } returns arrayOf(
-                mockk(relaxed = true) {
-                    every { isFile } returns true
-                    every { name } returns "Dirol-Reader-1.0.0.apk"
-                }
-            )
-        }
+
+        rootFolder.newFile("Dirol-Reader-2.0.0.apk")
+        every { Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) } returns rootFolder.root
         every { mockAppSharedPrefsRepository.isUpdateDownloaded } returns true
-        coEvery { mockGetLatestReleaseUseCase.invoke() } returns releaseModel.copy(version = "v5.0.0")
+        coEvery { mockGetLatestReleaseUseCase.invoke() } returns releaseModel.copy(version = "v5.0.0", fileName = "Dirol-Reader-5.0.0.apk")
 
         advanceUntilIdle()
 
