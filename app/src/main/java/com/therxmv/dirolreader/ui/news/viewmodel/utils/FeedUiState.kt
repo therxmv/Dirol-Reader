@@ -7,3 +7,9 @@ sealed class FeedUiState {
 
     data object InitialState : FeedUiState()
 }
+
+data class ToolbarState(
+    val avatarPath: String = "",
+    val userName: String = "",
+    val unreadChannels: Int = 0,
+)
